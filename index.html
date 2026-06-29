@@ -1,0 +1,1662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Finance Automation · TP Engine · SbS ConvokeAI</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{
+  --green:#1fa85a; --green-d:#15803d; --green-deck:#0e4d2b;
+  --navy:#0f2540; --navy-2:#13315c; --teal:#14b8a6;
+  --blue:#3b82f6; --blue-d:#2563eb; --purple:#8b5cf6; --amber:#f59e0b;
+  --pink:#ec4899; --red:#ef4444;
+  --ink:#1e293b; --ink-soft:#334155; --muted:#64748b; --faint:#94a3b8;
+  --bg:#f4f6fa; --card:#ffffff; --panel:#f8fafc; --hover:#f1f5f9; --line:#e8edf3; --line-2:#eef2f7;
+  --shadow:0 1px 2px rgba(16,32,64,.04),0 4px 18px rgba(16,32,64,.05);
+  --radius:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Inter,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;font-size:14px}
+.app{display:flex;min-height:100vh}
+
+/* ---------- Sidebar ---------- */
+.sidebar{width:248px;background:#fff;border-right:1px solid var(--line);flex-shrink:0;height:100vh;position:sticky;top:0;overflow-y:auto;padding:18px 12px 40px}
+.sidebar::-webkit-scrollbar{width:6px}.sidebar::-webkit-scrollbar-thumb{background:var(--line);border-radius:3px}
+.brand{display:flex;align-items:center;gap:8px;padding:6px 10px 18px}
+.brand .logo{font-weight:800;font-size:26px;letter-spacing:-1px}
+.brand .logo b:nth-child(1){color:var(--ink)}.brand .logo b:nth-child(2){color:var(--green)}.brand .logo b:nth-child(3){color:var(--ink)}
+.brand small{display:block;font-size:8px;letter-spacing:3px;color:var(--faint);font-weight:700;margin-top:-4px;text-align:center}
+.nav-item{display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:10px;color:var(--muted);cursor:pointer;font-size:13.5px;font-weight:500;margin:1px 0;user-select:none}
+.nav-item:hover{background:var(--hover)}
+.nav-item .ic{width:17px;text-align:center;opacity:.7;font-size:14px}
+.nav-item .chev{margin-left:auto;font-size:10px;opacity:.5}
+.nav-item.group-open{color:var(--ink);font-weight:600}
+.nav-sub{padding-left:14px}
+.nav-sub .nav-item{font-size:13px;padding:8px 12px}
+.side-group{font-size:10px;letter-spacing:1.4px;font-weight:800;color:var(--faint);text-transform:uppercase;padding:18px 14px 6px;display:flex;align-items:center;gap:7px}
+.side-group .gic{font-size:12px}
+.nav-item[data-view]{margin-left:4px}
+.nav-item.active{background:#eaf3ff;color:var(--blue-d);font-weight:600}
+.nav-item.active .ic{opacity:1;color:var(--blue-d)}
+
+/* ---------- Main ---------- */
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.topbar{display:flex;align-items:center;justify-content:flex-end;gap:18px;padding:16px 30px 0}
+.topbar .signout{color:var(--blue-d);font-weight:600;font-size:13px;cursor:pointer}
+.today{background:#fff;border:1px solid var(--line);border-radius:9px;padding:6px 12px;font-size:12px;color:var(--muted);font-weight:600}
+.page{padding:18px 30px 60px}
+.crumb{color:var(--faint);font-size:12px;font-weight:600;letter-spacing:.3px}
+.page-head{display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:12px;margin:4px 0 4px}
+.page-title{font-size:25px;font-weight:800;letter-spacing:-.5px}
+.page-sub{color:var(--muted);font-size:13px;margin-top:3px}
+.client-chip{display:inline-flex;align-items:center;gap:7px;background:linear-gradient(90deg,#0e4d2b,#1fa85a);color:#fff;border-radius:30px;padding:6px 14px;font-size:12px;font-weight:600}
+.client-chip .dot{width:7px;height:7px;border-radius:50%;background:#bbf7d0;box-shadow:0 0 0 3px rgba(187,247,208,.3)}
+
+/* sub nav */
+.subnav{display:flex;flex-wrap:wrap;gap:7px;margin:18px 0 22px;border-bottom:1px solid var(--line);padding-bottom:14px}
+.subnav .grp-label{font-size:10px;letter-spacing:1.5px;font-weight:800;color:var(--faint);align-self:center;margin:0 4px 0 10px;text-transform:uppercase}
+.subnav .grp-label:first-child{margin-left:0}
+.tab{padding:8px 14px;border-radius:10px;font-size:13px;font-weight:600;color:#5b6b80;background:#fff;border:1px solid var(--line);cursor:pointer;display:flex;align-items:center;gap:7px;transition:.15s}
+.tab:hover{border-color:#cdd9e8;color:var(--ink)}
+.tab.active{background:var(--navy);color:#fff;border-color:var(--navy);box-shadow:0 6px 16px rgba(15,37,64,.22)}
+.tab .ic{font-size:13px}
+
+section.view{display:none;animation:fade .25s ease}
+section.view.show{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* cards / grid */
+.grid{display:grid;gap:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}
+.card h3{font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px}
+.card .card-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.card .tag{font-size:11px;color:var(--faint);font-weight:600}
+.muted{color:var(--muted)}
+
+/* KPI tiles */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:14px;padding:15px 16px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.kpi .ico{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:12px}
+.kpi .val{font-size:24px;font-weight:800;letter-spacing:-.5px}
+.kpi .lab{font-size:12.5px;color:var(--muted);font-weight:600;margin-top:2px}
+.kpi .sub{font-size:11px;color:var(--faint);margin-top:3px}
+.kpi .delta{position:absolute;top:16px;right:16px;font-size:11px;font-weight:700}
+.delta.up{color:var(--green)}.delta.down{color:var(--red)}
+.bg-blue{background:#e8f1ff;color:var(--blue-d)}.bg-green{background:#e3f7ec;color:var(--green-d)}
+.bg-amber{background:#fef3df;color:#b7791f}.bg-purple{background:#f0eafe;color:#7c3aed}
+.bg-teal{background:#dcf7f3;color:#0d9488}.bg-pink{background:#fde8f3;color:#be185d}
+.bg-navy{background:#e6ebf4;color:var(--navy-2)}.bg-red{background:#fdeaea;color:#dc2626}
+
+/* gradient hero cards */
+.hero-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.hcard{border-radius:16px;padding:18px;color:#fff;position:relative;overflow:hidden;min-height:118px}
+.hcard .hico{font-size:20px;opacity:.95}
+.hcard .hval{font-size:27px;font-weight:800;margin-top:10px}
+.hcard .hlab{font-size:13px;font-weight:600;opacity:.95}
+.hcard .hsub{font-size:11px;opacity:.8;margin-top:2px}
+.g-blue{background:linear-gradient(135deg,#3b82f6,#2563eb)}
+.g-green{background:linear-gradient(135deg,#22c55e,#15803d)}
+.g-amber{background:linear-gradient(135deg,#f59e0b,#d97706)}
+.g-purple{background:linear-gradient(135deg,#8b5cf6,#6d28d9)}
+.g-teal{background:linear-gradient(135deg,#14b8a6,#0d9488)}
+.g-navy{background:linear-gradient(135deg,#1e3a5f,#0f2540)}
+
+/* tables */
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;color:var(--faint);font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;padding:9px 10px;border-bottom:1px solid var(--line)}
+td{padding:11px 10px;border-bottom:1px solid var(--line-2)}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:var(--panel)}
+.num{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+.pill{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700}
+.pill.ok{background:#e3f7ec;color:var(--green-d)}.pill.warn{background:#fef3df;color:#b7791f}
+.pill.bad{background:#fdeaea;color:#dc2626}.pill.info{background:#e8f1ff;color:var(--blue-d)}
+.pill.idle{background:var(--line-2);color:var(--muted)}
+.dotc{width:9px;height:9px;border-radius:50%;display:inline-block}
+
+/* misc controls */
+.btn{border:none;border-radius:10px;padding:9px 15px;font-size:13px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:7px;transition:.15s}
+.btn-primary{background:var(--navy);color:#fff}.btn-primary:hover{background:#1b3b63}
+.btn-green{background:var(--green);color:#fff}.btn-green:hover{background:var(--green-d)}
+.btn-ghost{background:#fff;border:1px solid var(--line);color:var(--ink)}.btn-ghost:hover{border-color:#cbd5e1}
+.seg{display:inline-flex;background:var(--line-2);border-radius:10px;padding:3px}
+.seg button{border:none;background:none;padding:6px 13px;border-radius:8px;font-size:12.5px;font-weight:600;color:var(--muted);cursor:pointer}
+.seg button.active{background:#fff;color:var(--ink);box-shadow:var(--shadow)}
+select,input[type=text]{border:1px solid var(--line);border-radius:9px;padding:8px 11px;font-size:13px;color:var(--ink);background:#fff;font-family:inherit}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.bar-track{height:8px;background:var(--line-2);border-radius:6px;overflow:hidden}
+.bar-fill{height:100%;border-radius:6px}
+.chart-wrap{position:relative}
+.kbd{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--hover);border:1px solid var(--line);border-radius:6px;padding:1px 6px;font-size:12px}
+/* agent flow */
+.agflow{display:flex;gap:0;flex-wrap:wrap;align-items:stretch;justify-content:center}
+.agnode{flex:1;min-width:118px;max-width:160px;text-align:center;padding:11px 8px;border-radius:13px;cursor:pointer;transition:.15s;border:1px solid transparent}
+.agnode:hover{background:var(--panel);border-color:var(--line);transform:translateY(-2px)}
+.agnode .agn{width:42px;height:42px;border-radius:12px;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;font-size:17px;color:#fff;font-weight:800}
+.agnode .agt{font-weight:700;font-size:12px;line-height:1.2}
+.agnode .agr{color:var(--muted);font-size:10.5px;margin:3px 0 7px;line-height:1.25}
+.agarrow{display:flex;align-items:center;color:#cbd5e1;font-size:15px;padding:34px 0 0}
+.rtrace .rt{position:relative;padding:0 0 14px 16px;border-left:2px solid var(--line)}
+.rtrace .rt:last-child{border-left-color:transparent;padding-bottom:0}
+.rtrace .rt::before{content:'';position:absolute;left:-6px;top:3px;width:10px;height:10px;border-radius:50%;background:#fff;border:2px solid var(--blue)}
+.rtrace .rt.flag::before{border-color:var(--amber)}
+.rtrace .rt.check::before{border-color:var(--green)}
+.rttag{font-size:9.5px;font-weight:800;letter-spacing:.5px;padding:1px 6px;border-radius:5px;margin-right:8px}
+.hitl-wrap{display:flex;flex-direction:column;align-items:center;margin-top:4px}
+.hitl-conn{width:2px;height:24px;background:repeating-linear-gradient(to bottom,#f59e0b 0 5px,transparent 5px 10px)}
+.hitl-card{border:1.5px dashed var(--amber);background:#fffaf0;border-radius:14px;padding:14px 20px;max-width:600px;text-align:center}
+
+@media(max-width:1100px){.kpis,.hero-cards{grid-template-columns:repeat(2,1fr)}.sidebar{width:210px}}
+
+/* ===================== RBAC / AUTH (added) ===================== */
+#loginScreen{position:fixed;inset:0;z-index:1000;display:flex;background:#0f2540}
+.login-left{flex:1.1;background:linear-gradient(150deg,#0e4d2b 0%,#0f2540 55%,#13315c 100%);color:#fff;padding:54px 56px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
+.login-left .ll-brand{font-weight:800;font-size:30px;letter-spacing:-1px}
+.login-left .ll-brand b:nth-child(2){color:#5bd98a}
+.login-left .ll-tag{font-size:10px;letter-spacing:4px;color:#9fb4c9;font-weight:700;margin-top:2px}
+.login-left h1{font-size:33px;font-weight:800;line-height:1.15;margin-top:24px;max-width:460px}
+.login-left p.sub{color:#c5d4e6;font-size:14px;margin-top:14px;max-width:430px;line-height:1.6}
+.ll-stats{display:flex;gap:30px;margin-top:28px}
+.ll-stat .v{font-size:25px;font-weight:800}
+.ll-stat .l{font-size:11.5px;color:#9fb4c9;margin-top:2px}
+.ll-demo{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.13);border-radius:14px;padding:15px}
+.ll-demo .dh{font-size:11px;letter-spacing:1.4px;font-weight:800;color:#9fb4c9;text-transform:uppercase;margin-bottom:9px}
+.ll-demo .drow{display:flex;align-items:center;gap:11px;padding:8px 10px;border-radius:10px;cursor:pointer;transition:.15s}
+.ll-demo .drow:hover{background:rgba(255,255,255,.1)}
+.ll-demo .da{width:33px;height:33px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12.5px;color:#fff;flex-shrink:0}
+.ll-demo .dn{font-weight:700;font-size:12.5px}
+.ll-demo .de{font-size:11px;color:#9fb4c9}
+.login-right{flex:1;background:#fff;display:flex;align-items:center;justify-content:center;padding:40px}
+.login-form{width:100%;max-width:360px}
+.login-form h2{font-size:24px;font-weight:800}
+.login-form .lf-sub{color:#64748b;font-size:13.5px;margin:6px 0 24px}
+.login-form label{display:block;font-weight:700;font-size:12.5px;margin:14px 0 6px;color:var(--ink-soft)}
+.login-form input{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:10px;font-size:14px;font-family:inherit}
+.login-form input:focus{outline:none;border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,246,.13)}
+.login-form .lf-btn{width:100%;margin-top:22px;padding:13px;border:none;border-radius:10px;background:#0f2540;color:#fff;font-weight:700;font-size:14.5px;cursor:pointer}
+.login-form .lf-btn:hover{background:#1b3b63}
+.lf-err{display:none;background:#fdeaea;color:#dc2626;font-size:12.5px;font-weight:600;padding:9px 12px;border-radius:9px;margin-top:14px}
+.lf-hint{color:#94a3b8;font-size:11.5px;margin-top:18px;text-align:center}
+@media(max-width:860px){.login-left{display:none}}
+.userbox{display:flex;align-items:center;gap:11px}
+.userbox .uava{width:34px;height:34px;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12.5px}
+.userbox .uname{font-weight:700;font-size:13px;line-height:1.15}
+.userbox .urole{font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px;margin-top:2px;display:inline-block;letter-spacing:.3px}
+.userbox .signout{color:var(--blue-d);font-weight:600;font-size:13px;cursor:pointer;padding-left:8px;margin-left:2px;border-left:1px solid var(--line)}
+/* ===================== MCP FOUNDATION CARDS (added) ===================== */
+.fcard{border:1px solid var(--line);border-radius:14px;padding:18px;cursor:pointer;transition:.16s;background:#fff;position:relative;overflow:hidden}
+.fcard:hover{border-color:#c7d6ea;transform:translateY(-3px);box-shadow:0 10px 26px rgba(16,32,64,.10)}
+.fcard .fic{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:12px}
+.fcard h4{font-size:15px;font-weight:800}
+.fcard p{color:var(--muted);font-size:12.5px;margin-top:5px;line-height:1.5}
+.fcard .fgo{margin-top:12px;font-size:12px;font-weight:700;color:var(--blue-d)}
+/* ===================== MODAL (added) ===================== */
+.fmodal{position:fixed;inset:0;z-index:1200;background:rgba(15,37,64,.55);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;padding:30px}
+.fmodal.show{display:flex}
+.fmodal-card{background:#fff;border-radius:18px;width:100%;max-width:980px;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 30px 80px rgba(0,0,0,.3);overflow:hidden}
+.fmodal-head{display:flex;align-items:center;justify-content:space-between;padding:17px 22px;border-bottom:1px solid var(--line)}
+.fmodal-head h3{font-size:17px;font-weight:800;display:flex;align-items:center;gap:9px}
+.fmodal-x{cursor:pointer;font-size:17px;color:var(--muted);width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center}
+.fmodal-x:hover{background:var(--hover);color:var(--ink)}
+.fmodal-body{padding:20px 22px;overflow-y:auto}
+.ftabs{display:flex;gap:7px;margin-bottom:18px;flex-wrap:wrap}
+.ftab{padding:8px 15px;border-radius:10px;font-size:13px;font-weight:700;color:#5b6b80;background:#fff;border:1px solid var(--line);cursor:pointer}
+.ftab.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.fpanel{display:none}.fpanel.show{display:block}
+.tool-row{display:flex;align-items:center;gap:12px;padding:11px 12px;border:1px solid var(--line);border-radius:11px;margin-bottom:8px;cursor:pointer}
+.tool-row:hover{background:var(--panel)}
+.tool-row input{width:17px;height:17px}
+.api-field{margin-bottom:14px}
+.api-field label{display:block;font-weight:700;font-size:12px;margin-bottom:6px;color:var(--ink-soft)}
+.api-field input,.api-field textarea,.api-field select{width:100%;font-family:ui-monospace,Menlo,monospace;font-size:13px;border:1px solid var(--line);border-radius:9px;padding:10px}
+.api-field textarea{min-height:118px;resize:vertical}
+.resp-box{background:#0f2540;color:#cfe3ff;border-radius:11px;padding:14px;font-family:ui-monospace,Menlo,monospace;font-size:12.5px;white-space:pre-wrap;max-height:230px;overflow:auto}
+.log-line{display:flex;gap:10px;align-items:center;padding:7px 10px;border-bottom:1px solid var(--line-2);font-family:ui-monospace,Menlo,monospace;font-size:12px}
+.log-lv{font-weight:800;padding:1px 7px;border-radius:5px;font-size:10.5px}
+.lv-INFO{background:#e8f1ff;color:#2563eb}.lv-WARN{background:#fef3df;color:#b7791f}.lv-ERROR{background:#fdeaea;color:#dc2626}
+.reg-card{border:1px solid var(--line);border-radius:11px;padding:13px 15px;margin-bottom:9px;cursor:pointer}
+.reg-card:hover{background:var(--panel)}
+.schema-json{background:#0f2540;color:#cfe3ff;border-radius:11px;padding:14px;font-family:ui-monospace,Menlo,monospace;font-size:12px;white-space:pre;overflow:auto;max-height:320px}
+
+/* ===== THEME (light / dark) ===== */
+.theme-toggle{width:38px;height:38px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:.15s}
+.theme-toggle:hover{background:var(--hover)}
+.login-toggle{position:absolute;top:18px;right:18px;z-index:1001}
+html[data-theme="dark"]{
+  --bg:#0b1320; --card:#111d30; --panel:#16243a; --hover:#1b2c45;
+  --ink:#e6edf6; --ink-soft:#c4d0e2; --muted:#93a4bd; --faint:#73849c;
+  --line:#22314a; --line-2:#1b2941; --navy:#1e3a5f; --navy-2:#274b78;
+  --shadow:0 1px 2px rgba(0,0,0,.35),0 6px 22px rgba(0,0,0,.4);
+}
+html[data-theme="dark"] .sidebar,
+html[data-theme="dark"] .today,
+html[data-theme="dark"] .tab,
+html[data-theme="dark"] .kpi,
+html[data-theme="dark"] .btn-ghost,
+html[data-theme="dark"] .seg button.active,
+html[data-theme="dark"] .fcard,
+html[data-theme="dark"] .fmodal-card,
+html[data-theme="dark"] .ftab,
+html[data-theme="dark"] .login-right{background:var(--card)}
+html[data-theme="dark"] .tab,html[data-theme="dark"] .ftab{color:var(--muted)}
+html[data-theme="dark"] .rtrace .rt::before{background:var(--card)}
+html[data-theme="dark"] .nav-item.active{background:rgba(59,130,246,.16);color:#8fbaff}
+html[data-theme="dark"] .nav-item.active .ic{color:#8fbaff}
+html[data-theme="dark"] .hitl-card{background:#2a2410;border-color:#a16207}
+html[data-theme="dark"] select,
+html[data-theme="dark"] input[type=text],
+html[data-theme="dark"] input[type=password],
+html[data-theme="dark"] textarea,
+html[data-theme="dark"] .login-form input{background:var(--panel);color:var(--ink);border-color:var(--line)}
+</style>
+</head>
+<body>
+<!-- ===== LOGIN SCREEN (added) ===== -->
+<div id="loginScreen">
+  <button class="theme-toggle login-toggle" onclick="toggleTheme()" title="Toggle dark / light">🌙</button>
+  <div class="login-left">
+    <div>
+      <div class="ll-brand"><b>S</b><b>b</b><b>S</b></div>
+      <div class="ll-tag">BEYOND IT &middot; TP ENGINE v4.0</div>
+    </div>
+    <div>
+      <h1>Finance Automation &amp; Transfer Pricing Platform</h1>
+      <p class="sub">Consolidated allocation, reconciliation and agentic close &mdash; secured by role-based access control.</p>
+      <div class="ll-stats">
+        <div class="ll-stat"><div class="v">$300M+</div><div class="l">Allocated / period</div></div>
+        <div class="ll-stat"><div class="v">3.94M</div><div class="l">Rows ingested</div></div>
+        <div class="ll-stat"><div class="v">8</div><div class="l">AI agents</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="login-right">
+    <div class="login-form">
+      <h2>Sign in</h2>
+      <div class="lf-sub">Access the TP Engine console</div>
+      <label>Email</label>
+      <input id="loginEmail" type="text" placeholder="you@sbs.com" autocomplete="username">
+      <label>Password</label>
+      <input id="loginPw" type="password" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" autocomplete="current-password">
+      <div class="lf-err" id="loginErr">Invalid email or password. Try a demo account.</div>
+      <button class="lf-btn" onclick="doLogin()">Sign in &rarr;</button>
+    </div>
+  </div>
+</div>
+<div class="app">
+  <!-- ===== SIDEBAR ===== -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div><div class="logo"><b>S</b><b>b</b><b>S</b></div><small>BEYOND IT</small></div>
+    </div>
+
+    <div class="side-group"><span class="gic">🗄️</span> Data Platform</div>
+    <div class="nav-item" data-view="migrator"><span class="ic">🔌</span> Data Migrator</div>
+    <div class="nav-item" data-view="transformer"><span class="ic">🔄</span> Transformer</div>
+    <div class="nav-item" data-view="pipeline"><span class="ic">🛰️</span> Integration</div>
+    <div class="nav-item" data-view="scheduler"><span class="ic">⏱️</span> Scheduler</div>
+
+    <div class="side-group"><span class="gic">📊</span> Analytics</div>
+    <div class="nav-item" data-view="overview"><span class="ic">▦</span> Overview</div>
+    <div class="nav-item" data-view="explorer"><span class="ic">🔎</span> Allocation Explorer</div>
+    <div class="nav-item" data-view="recon"><span class="ic">⚖️</span> Reconciliation</div>
+    <div class="nav-item" data-view="scenario"><span class="ic">🎚️</span> Scenario Lab</div>
+
+    <div class="side-group"><span class="gic">🤖</span> AI Agents</div>
+    <div class="nav-item" data-view="orchestration"><span class="ic">🔗</span> Orchestration Flow</div>
+    <div class="nav-item" data-view="ag-intake"><span class="ic">📥</span> Intake Agent</div>
+    <div class="nav-item" data-view="ag-datareview"><span class="ic">🔍</span> Data Review Agent</div>
+    <div class="nav-item" data-view="ag-entity"><span class="ic">🗺️</span> Entity Mapping Agent</div>
+    <div class="nav-item" data-view="ag-pricing"><span class="ic">⚖️</span> Pricing Method Agent</div>
+    <div class="nav-item" data-view="ag-benchmark"><span class="ic">📈</span> Benchmark Agent</div>
+    <div class="nav-item" data-view="ag-risk"><span class="ic">⚠️</span> Risk Agent</div>
+    <div class="nav-item" data-view="ag-doc"><span class="ic">📄</span> Documentation Agent</div>
+    <div class="nav-item" data-view="ag-approval"><span class="ic">✅</span> Approval Agent</div>
+
+    <div class="side-group"><span class="gic">🧠</span> Natural Language Processing</div>
+    <div class="nav-item" data-view="nlp-understanding"><span class="ic">🏷️</span> Language Understanding</div>
+    <div class="nav-item" data-view="nlp-retrieval"><span class="ic">💬</span> Knowledge Retrieval</div>
+    <div class="nav-item" data-view="nlp-langgen"><span class="ic">📝</span> Language Generation &amp; Transformation</div>
+
+    <div class="side-group"><span class="gic">🎧</span> Customer Support AI</div>
+    <div class="nav-item" data-view="cs-channels"><span class="ic">🗂️</span> Channel Management</div>
+    <div class="nav-item" data-view="cs-agentassist"><span class="ic">🧑‍💼</span> Agent Assist</div>
+
+    <!-- Governance menu hidden per request -->
+  </aside>
+
+  <!-- ===== MAIN ===== -->
+  <div class="main">
+    <div class="topbar">
+      <button class="theme-toggle" onclick="toggleTheme()" title="Toggle dark / light">🌙</button>
+      <div class="userbox" id="userBox" style="display:none">
+        <div class="uava" id="userAvatar"></div>
+        <div><div class="uname" id="userName"></div><span class="urole" id="userRole"></span></div>
+        <span class="signout" onclick="signOut()">↪ Sign Out</span>
+      </div>
+    </div>
+    <div class="page">
+      <div class="crumb">Finance Support</div>
+      <div class="page-head">
+        <div>
+          <div class="page-title">Finance Automation</div>
+          <div class="page-sub">TP Engine v4.0 — Consolidated Transfer Pricing &amp; Data Platform · <span id="periodLabel">Period 2018.02</span></div>
+        </div>
+        <div class="row">
+          <span class="client-chip"><span class="dot"></span> Sample Client · Consolidated Group</span>
+          <span class="today">Today: 27 June</span>
+        </div>
+      </div>
+
+      <div style="border-bottom:1px solid var(--line);margin:16px 0 22px"></div>
+
+      <!-- ===================== OVERVIEW ===================== -->
+      <section class="view show" id="view-overview"></section>
+      <!-- ===================== EXPLORER ===================== -->
+      <section class="view" id="view-explorer"></section>
+      <!-- ===================== RECON ===================== -->
+      <section class="view" id="view-recon"></section>
+      <!-- ===================== SCENARIO ===================== -->
+      <section class="view" id="view-scenario"></section>
+      <!-- ===================== AI AGENTS ===================== -->
+      <section class="view" id="view-orchestration"></section>
+      <section class="view" id="view-agents"></section>
+      <!-- ===================== MIGRATOR ===================== -->
+      <section class="view" id="view-migrator"></section>
+      <!-- ===================== TRANSFORMER ===================== -->
+      <section class="view" id="view-transformer"></section>
+      <!-- ===================== PIPELINE ===================== -->
+      <section class="view" id="view-pipeline"></section>
+      <!-- ===================== SCHEDULER ===================== -->
+      <section class="view" id="view-scheduler"></section>
+      <!-- ===================== COMPLIANCE ===================== -->
+      <!-- NLP + Customer Support AI views (added) -->
+      <section class="view" id="view-nlp-understanding"></section>
+      <section class="view" id="view-nlp-retrieval"></section>
+      <section class="view" id="view-nlp-langgen"></section>
+      <section class="view" id="view-cs-channels"></section>
+      <section class="view" id="view-cs-agentassist"></section>
+      <section class="view" id="view-compliance"></section>
+
+      <div style="text-align:center;color:var(--faint);font-size:11px;margin-top:34px">2026 © SbS Corp. All Rights Reserved. · TP Engine modernisation POC — illustrative data</div>
+    </div>
+  </div>
+</div>
+<!-- ===== MCP FOUNDATION MODAL (added) ===== -->
+<div class="fmodal" id="fmodal">
+  <div class="fmodal-card">
+    <div class="fmodal-head"><h3 id="fmodalTitle"></h3><span class="fmodal-x" onclick="closeFoundationModal()">&#10005;</span></div>
+    <div class="fmodal-body" id="fmodalBody"></div>
+  </div>
+</div>
+<script>
+/* ============================================================
+   TP ENGINE — DATA MODEL  (illustrative; real TP terminology)
+   ============================================================ */
+const fmtM = v => '$'+(v/1e6).toFixed(1)+'M';
+const fmtK = v => '$'+(v/1e3).toFixed(0)+'K';
+const fmt$ = v => '$'+Math.round(v).toLocaleString();
+const pct = v => (v*100).toFixed(1)+'%';
+
+const MODELS = [
+  {key:'mcio', name:'Technology & Operations', short:'T&O', color:'#3b82f6', base:98.4e6, markup:.10, drivers:['tp','pv','mt','it','bl']},
+  {key:'hq',   name:'Corporate HQ',          short:'HQ',   color:'#8b5cf6', base:71.2e6, markup:.10, drivers:['di','inr']},
+  {key:'ap',   name:'APAC & EMEA',           short:'AP',   color:'#f59e0b', base:54.9e6, markup:.10, drivers:['di','inr']},
+  {key:'cs',   name:'Cost Sharing (RAB)',  short:'CS',   color:'#14b8a6', base:42.7e6, markup:.10, drivers:['rab','bl']},
+];
+const REGIONS = [
+  {k:'CAN',     n:'Canada',            w:[.16,.07,.10,.22]},
+  {k:'USA',     n:'United States',     w:[.21,.20,.05,.14]},
+  {k:'Europe',  n:'Europe',            w:[.14,.18,.16,.20]},
+  {k:'ASIAPAC', n:'Asia-Pacific',      w:[.12,.14,.27,.10]},
+  {k:'CEMEA',n:'CEMEA',          w:[.08,.10,.18,.07]},
+  {k:'LATAM',  n:'Latin America',            w:[.07,.09,.06,.08]},
+  {k:'Brazil',  n:'Brazil',            w:[.06,.06,.04,.07]},
+  {k:'SharedSvc',n:'Shared Services',           w:[.06,.08,.05,.05]},
+  {k:'HoldCo',   n:'Holdings Co',              w:[.06,.04,.05,.04]},
+  {k:'FinCo',    n:'Finance Co',                w:[.04,.04,.04,.03]},
+];
+const DRIVERS = [
+  {k:'pe', n:'Personnel Expense',    use:'Incentives reclass'},
+  {k:'hc', n:'Headcount',            use:'Facilities reclass'},
+  {k:'tp', n:'Transaction Volume',use:'Operations BAU'},
+  {k:'pv', n:'Sales Volume',       use:'Operations BAU'},
+  {k:'mt', n:'Customer Volume', use:'Operations BAU'},
+  {k:'it', n:'Account Volume',   use:'Operations BAU'},
+  {k:'bl', n:'Blended (50/50)',      use:'Regional projects'},
+  {k:'rab',n:'RAB (Revenue-based)',  use:'Cost Sharing'},
+  {k:'di', n:'Direct (100%)',        use:'HQ direct pools'},
+  {k:'inr',n:'Indirect Net Revenue', use:'HQ indirect'},
+];
+const DRIVER_SHARE={pe:.06,hc:.05,tp:.17,pv:.15,mt:.10,it:.08,bl:.09,rab:.13,di:.07,inr:.10};
+
+const FILES=[
+  {n:'Regional Run-Rate Master',     rows:'18,402', mb:2.1,  src:'SharePoint',   fmt:'XLSX'},
+  {n:'Transaction Volume Data',  rows:'2,940,118', mb:88.4, src:'Azure Blob', fmt:'CSV'},
+  {n:'Volume Metrics Data File',     rows:'612,300', mb:24.7, src:'Azure Blob',  fmt:'CSV'},
+  {n:'Overhead & Indirect Allocations',       rows:'4,118',  mb:0.9,  src:'SharePoint',   fmt:'XLSX'},
+  {n:'Cost Center Hierarchy',      rows:'9,640',  mb:1.4,  src:'SAP GL',       fmt:'DB'},
+  {n:'Legal Entity Hierarchy',     rows:'1,205',  mb:0.3,  src:'SAP GL',       fmt:'DB'},
+  {n:'Headcount Data',             rows:'27,880', mb:3.2,  src:'Workday',      fmt:'API'},
+  {n:'GL Account Hierarchy',       rows:'14,902', mb:2.0,  src:'SAP GL',       fmt:'DB'},
+  {n:'Source Cost Ledger', rows:'341,556',mb:41.3, src:'Access .accdb',fmt:'MDB'},
+  {n:'Cost Sharing Data (RAB)',      rows:'6,210',  mb:1.1,  src:'SharePoint',   fmt:'XLSX'},
+  {n:'Activity Code Hierarchy',    rows:'3,540',  mb:0.6,  src:'SAP GL',       fmt:'DB'},
+];
+const POOLS=[
+  {n:'Technology & Operations — BAU',  model:'mcio', v:42.6e6},
+  {n:'Subsidiary A',                model:'mcio', v:8.1e6},
+  {n:'Subsidiary B',            model:'mcio', v:11.4e6},
+  {n:'Subsidiary C',               model:'mcio', v:3.9e6},
+  {n:'Subsidiary D',               model:'mcio', v:2.7e6},
+  {n:'Subsidiary E',               model:'mcio', v:5.2e6},
+  {n:'Corporate HQ — Direct (LATAM/US/Intl)',model:'hq', v:29.8e6},
+  {n:'Corporate HQ — Indirect Net Revenue',model:'hq', v:31.1e6},
+  {n:'No Allocation — Marketing',model:'hq', v:0,note:'Carve-out (990)'},
+  {n:'No Allocation — Prof. Fees',model:'hq',v:0,note:'Carve-out (990)'},
+  {n:'APAC & EMEA — Direct (Pool 450)',model:'ap', v:18.4e6},
+  {n:'APAC & EMEA — Direct (Pool 614)',model:'ap',v:14.9e6},
+  {n:'APAC & EMEA — Indirect (Pool 400)',model:'ap',v:21.6e6},
+  {n:'Cost Sharing — RAB Pool',  model:'cs',  v:33.2e6},
+  {n:'Personnel Cost Pool (Cost+)',model:'cs',v:6.4e6},
+  {n:'Professional Fees (Cost+)',model:'cs',v:3.1e6},
+];
+const PERIODS=[
+  {k:'2017.11',m:.92},{k:'2017.12',m:.95},{k:'2018.01',m:.97},
+  {k:'2018.02',m:1.00},{k:'2018.03',m:1.04},
+];
+var STATE={period:'2018.02', modelFilter:'all', scenario:{rab:0,markup:10,driver:0}, drift:false};
+var charts={};
+function pm(){return PERIODS.find(p=>p.k===STATE.period).m}
+function modelAllocated(m){return m.base*(1+m.markup)*pm()}
+function totalAllocated(){return MODELS.reduce((s,m)=>s+modelAllocated(m),0)}
+// region totals using model weights
+function regionTotals(scenario){
+  const out={}; REGIONS.forEach(r=>out[r.k]=0);
+  MODELS.forEach((m,mi)=>{
+    let alloc=modelAllocated(m);
+    REGIONS.forEach((r,ri)=>{
+      let w=r.w[mi];
+      if(scenario){
+        if(m.key==='cs'&&r.k==='Europe') w*=(1+scenario.rab/100);
+        if(scenario.markup!==10) alloc=m.base*(1+scenario.markup/100)*pm();
+      }
+      out[r.k]+=alloc*w;
+    });
+  });
+  return out;
+}
+function driverTotals(){
+  const t=totalAllocated(); const out={};
+  DRIVERS.forEach(d=>out[d.k]=t*(DRIVER_SHARE[d.k]||0));
+  return out;
+}
+
+/* ============================================================
+   SHELL HELPERS
+   ============================================================ */
+function kpiTile(c){return `<div class="kpi">
+  ${c.delta?`<span class="delta ${c.delta[0]==='-'?'down':'up'}">${c.delta}</span>`:''}
+  <div class="ico ${c.bg}">${c.ic}</div>
+  <div class="val">${c.val}</div><div class="lab">${c.lab}</div>
+  ${c.sub?`<div class="sub">${c.sub}</div>`:''}</div>`}
+function destroyCharts(){Object.keys(charts).forEach(k=>{if(charts[k]){charts[k].destroy();delete charts[k]}})}
+Chart.defaults.font.family="-apple-system,Segoe UI,Inter,sans-serif";
+Chart.defaults.font.size=11.5; Chart.defaults.color="#64748b";Chart.defaults.plugins.legend.labels.boxWidth=12;Chart.defaults.plugins.legend.labels.boxHeight=12;Chart.defaults.plugins.legend.labels.usePointStyle=true;
+function currentTheme(){return document.documentElement.getAttribute('data-theme')||'light';}
+function GRIDC(){return currentTheme()==='dark'?'#22314a':'#eef2f7';}
+function applyTheme(t){document.documentElement.setAttribute('data-theme',t);try{localStorage.setItem('tp_theme',t);}catch(e){}
+  document.querySelectorAll('.theme-toggle').forEach(b=>{b.textContent=t==='dark'?'☀️':'🌙';});
+  if(window.Chart){Chart.defaults.color=t==='dark'?'#93a4bd':'#64748b';}}
+function toggleTheme(){applyTheme(currentTheme()==='dark'?'light':'dark'); if(window.CURRENT_USER) render(current);}
+
+/* ============================================================
+   PERIOD CONTROL (global)
+   ============================================================ */
+function periodControl(){
+  return `<div class="row" style="gap:6px"><span class="muted" style="font-size:12px;font-weight:600">Period</span>
+  <select onchange="setPeriod(this.value)">${PERIODS.map(p=>`<option ${p.k===STATE.period?'selected':''}>${p.k}</option>`).join('')}</select></div>`;
+}
+function setPeriod(v){STATE.period=v;document.getElementById('periodLabel').textContent='Period '+v;render(current);}
+
+/* ============================================================
+   OVERVIEW
+   ============================================================ */
+function renderOverview(el){
+  const tot=totalAllocated();
+  el.innerHTML=`
+  <div class="grid hero-cards" style="margin-bottom:16px">
+    <div class="hcard g-navy"><div class="hico">＄</div><div class="hval">${fmtM(tot)}</div><div class="hlab">Total Allocated</div><div class="hsub">cost-plus, ${STATE.period}</div></div>
+    <div class="hcard g-blue"><div class="hico">🧮</div><div class="hval">4</div><div class="hlab">Allocation Models</div><div class="hsub">T&O · HQ · APAC & EMEA · Cost Sharing</div></div>
+    <div class="hcard g-green"><div class="hico">⚖️</div><div class="hval">100.00%</div><div class="hlab">Reconciliation Parity</div><div class="hsub">vs legacy Access engine</div></div>
+    <div class="hcard g-teal"><div class="hico">🛡️</div><div class="hval">100%</div><div class="hlab">Audit Coverage</div><div class="hsub">step-level lineage logged</div></div>
+  </div>
+
+  <div class="grid kpis" style="margin-bottom:16px">
+    ${kpiTile({ic:'📂',bg:'bg-blue',val:'11',lab:'Input Data Sources',sub:'all ingested & validated'})}
+    ${kpiTile({ic:'🎯',bg:'bg-purple',val:'10',lab:'Allocation Drivers',sub:'fully parameterised'})}
+    ${kpiTile({ic:'🪣',bg:'bg-amber',val:'16',lab:'Cost Pools',sub:'across 5 reporting layers'})}
+    ${kpiTile({ic:'🏷️',bg:'bg-green',val:'10% / 5%',lab:'Cost-Plus Markup',sub:'standard / LATAM direct'})}
+  </div>
+
+  <!-- agentic pipeline strip -->
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-h"><h3>🛰️ Agentic TP Close — Pipeline Status</h3><span class="pill ok"><span class="dotc" style="background:#16a34a"></span> Close on track</span></div>
+    <div class="row" id="pipeStrip" style="gap:0;align-items:stretch">${pipeStripHTML()}</div>
+  </div>
+
+  <div class="grid" style="grid-template-columns:1.1fr 1fr;margin-bottom:16px">
+    <div class="card"><div class="card-h"><h3>Allocation by Model</h3><span class="tag">cost-plus, ${STATE.period}</span></div>
+      <div class="chart-wrap" style="height:268px"><canvas id="cModel"></canvas></div></div>
+    <div class="card"><div class="card-h"><h3>Allocation by Recipient Region</h3><span class="tag">top recipients</span></div>
+      <div class="chart-wrap" style="height:268px"><canvas id="cRegion"></canvas></div></div>
+  </div>
+
+  <div class="grid" style="grid-template-columns:1.4fr 1fr">
+    <div class="card"><div class="card-h"><h3>Allocation Trend by Model</h3>${periodControl()}</div>
+      <div class="chart-wrap" style="height:260px"><canvas id="cTrend"></canvas></div></div>
+    <div class="card"><div class="card-h"><h3>Allocation by Driver</h3><span class="tag">10 drivers</span></div>
+      <div class="chart-wrap" style="height:260px"><canvas id="cDriver"></canvas></div></div>
+  </div>`;
+
+  // charts
+  charts.cModel=new Chart(cModel,{type:'doughnut',data:{labels:MODELS.map(m=>m.name),
+    datasets:[{data:MODELS.map(modelAllocated),backgroundColor:MODELS.map(m=>m.color),borderWidth:2,borderColor:'#fff'}]},
+    options:{cutout:'62%',plugins:{legend:{position:'right'},tooltip:{callbacks:{label:c=>c.label+': '+fmtM(c.raw)}}}}});
+  const rt=regionTotals(null);
+  charts.cRegion=new Chart(cRegion,{type:'bar',data:{labels:REGIONS.map(r=>r.k),
+    datasets:[{data:REGIONS.map(r=>rt[r.k]),backgroundColor:'#3b82f6',borderRadius:6}]},
+    options:{indexAxis:'y',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>fmtM(c.raw)}}},
+    scales:{x:{ticks:{callback:v=>'$'+(v/1e6)+'M'},grid:{color:GRIDC()}},y:{grid:{display:false}}}}});
+  charts.cTrend=new Chart(cTrend,{type:'line',data:{labels:PERIODS.map(p=>p.k),
+    datasets:MODELS.map(m=>({label:m.short,data:PERIODS.map(p=>m.base*(1+m.markup)*p.m),borderColor:m.color,backgroundColor:m.color+'22',fill:true,tension:.35,pointRadius:3,borderWidth:2}))},
+    options:{plugins:{legend:{position:'top'},tooltip:{callbacks:{label:c=>c.dataset.label+': '+fmtM(c.raw)}}},
+    scales:{y:{stacked:true,ticks:{callback:v=>'$'+(v/1e6)+'M'},grid:{color:GRIDC()}},x:{grid:{display:false}}}}});
+  const dt=driverTotals();
+  charts.cDriver=new Chart(cDriver,{type:'bar',data:{labels:DRIVERS.map(d=>d.n),
+    datasets:[{data:DRIVERS.map(d=>dt[d.k]),backgroundColor:'#14b8a6',borderRadius:5}]},
+    options:{indexAxis:'y',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>fmtM(c.raw)}}},
+    scales:{x:{ticks:{callback:v=>'$'+(v/1e6)+'M'},grid:{color:GRIDC()}},y:{grid:{display:false},ticks:{font:{size:10}}}}}});
+}
+const PIPE=[
+  {a:'Ingestion Agent',d:'11 source files validated',s:'done'},
+  {a:'Allocation Agent',d:'4 models · 10 drivers run',s:'done'},
+  {a:'Reconciliation Agent',d:'parity vs Access confirmed',s:'done'},
+  {a:'Controllership Agent',d:'JEs, invoices & commentary',s:'run'},
+];
+function pipeStripHTML(){
+  return PIPE.map((p,i)=>{
+    const col=p.s==='done'?'#16a34a':p.s==='run'?'#3b82f6':'#cbd5e1';
+    const lab=p.s==='done'?'Complete':p.s==='run'?'Running':'Queued';
+    return `<div style="flex:1;text-align:center;position:relative;padding:6px 8px">
+      <div style="width:40px;height:40px;border-radius:12px;margin:0 auto 8px;background:${col}1a;color:${col};display:flex;align-items:center;justify-content:center;font-weight:800">${i+1}</div>
+      <div style="font-weight:700;font-size:12.5px">${p.a}</div>
+      <div class="muted" style="font-size:11px;margin:2px 0 6px">${p.d}</div>
+      <span class="pill ${p.s==='done'?'ok':p.s==='run'?'info':'idle'}">${lab}</span>
+      ${i<3?`<div style="position:absolute;top:26px;right:-0px;color:#cbd5e1">→</div>`:''}
+    </div>`}).join('');
+}
+
+/* ============================================================
+   ALLOCATION EXPLORER
+   ============================================================ */
+function renderExplorer(el){
+  const rt=regionTotals(null);
+  el.innerHTML=`
+  <div class="card" style="margin-bottom:16px">
+    <div class="row" style="justify-content:space-between">
+      <div class="row">
+        <span class="muted" style="font-weight:600">Filter</span>
+        <select id="exModel" onchange="STATE.modelFilter=this.value;render('explorer')">
+          <option value="all">All models</option>
+          ${MODELS.map(m=>`<option value="${m.key}" ${STATE.modelFilter===m.key?'selected':''}>${m.name}</option>`).join('')}
+        </select>
+        ${periodControl()}
+      </div>
+      <span class="tag">Drill into the model × region × cost-pool matrix</span>
+    </div>
+  </div>
+  <div class="grid" style="grid-template-columns:1.3fr 1fr;margin-bottom:16px">
+    <div class="card"><div class="card-h"><h3>Model × Region Allocation</h3><span class="tag">stacked, ${STATE.period}</span></div>
+      <div class="chart-wrap" style="height:300px"><canvas id="cMatrix"></canvas></div></div>
+    <div class="card"><div class="card-h"><h3>Reporting Layers</h3><span class="tag">5 overlapping pools</span></div>
+      ${LAYERS.map(L=>`<div style="margin:11px 0">
+        <div class="row" style="justify-content:space-between"><span style="font-weight:600">${L.n}</span><span class="num">${fmtM(totalAllocated()*L.share)}</span></div>
+        <div class="bar-track" style="margin-top:5px"><div class="bar-fill" style="width:${L.share*100*2.2}%;background:${L.c}"></div></div>
+        <div class="muted" style="font-size:11px;margin-top:3px">${L.d}</div></div>`).join('')}
+    </div>
+  </div>
+  <div class="card"><div class="card-h"><h3>Cost Pool Breakdown ${STATE.modelFilter!=='all'?'· '+MODELS.find(m=>m.key===STATE.modelFilter).name:''}</h3><span class="tag">16 pools</span></div>
+    <table><thead><tr><th>Cost Pool</th><th>Model</th><th>Driver basis</th><th class="num">Allocated</th><th style="width:150px">Share</th></tr></thead>
+    <tbody>${poolRows()}</tbody></table>
+  </div>`;
+  // matrix stacked
+  const ms=STATE.modelFilter==='all'?MODELS:MODELS.filter(m=>m.key===STATE.modelFilter);
+  charts.cMatrix=new Chart(cMatrix,{type:'bar',data:{labels:REGIONS.map(r=>r.k),
+    datasets:ms.map((m,i)=>{const mi=MODELS.indexOf(m);return{label:m.short,data:REGIONS.map(r=>modelAllocated(m)*r.w[mi]),backgroundColor:m.color,borderRadius:4,stack:'s'}})},
+    options:{plugins:{legend:{position:'top'},tooltip:{callbacks:{label:c=>c.dataset.label+': '+fmtM(c.raw)}}},
+    scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,ticks:{callback:v=>'$'+(v/1e6)+'M'},grid:{color:GRIDC()}}}}});
+}
+const LAYERS=[
+  {n:'Technology & Operations Reporting',c:'#3b82f6',share:.34,d:'Cost center level'},
+  {n:'Cost Sharing Reporting',c:'#14b8a6',share:.16,d:'Account level'},
+  {n:'APAC & EMEA Reporting',c:'#f59e0b',share:.21,d:'Provider level'},
+  {n:'Europe Reporting',c:'#22c55e',share:.13,d:'Provider level'},
+  {n:'Corporate HQ Reporting',c:'#8b5cf6',share:.23,d:'All other OPEX'},
+];
+function poolRows(){
+  let pools=POOLS.filter(p=>STATE.modelFilter==='all'||p.model===STATE.modelFilter);
+  const max=Math.max(...POOLS.map(p=>p.v*pm()));
+  return pools.map(p=>{const m=MODELS.find(x=>x.key===p.model);const v=p.v*pm();
+    return `<tr><td style="font-weight:600">${p.n}${p.note?` <span class="muted" style="font-size:11px">· ${p.note}</span>`:''}</td>
+    <td><span class="pill" style="background:${m.color}1a;color:${m.color}">${m.short}</span></td>
+    <td class="muted">${p.model==='cs'?'RAB':p.model==='hq'?'Direct / INR':p.model==='ap'?'Direct / INR':'TP / PV / Blended'}</td>
+    <td class="num">${v>0?fmt$(v):'—'}</td>
+    <td><div class="bar-track"><div class="bar-fill" style="width:${v/max*100}%;background:${m.color}"></div></div></td></tr>`}).join('');
+}
+
+/* ============================================================
+   RECONCILIATION
+   ============================================================ */
+function renderRecon(el){
+  const rows=MODELS.map(m=>{const a=modelAllocated(m);
+    const r=STATE.drift?a*(1+(Math.random()*.012-.004)):a;
+    return {m,a,r,v:r-a}});
+  const totV=rows.reduce((s,x)=>s+Math.abs(x.v),0); const totA=totalAllocated();
+  const parity=STATE.drift?(100-totV/totA*100):100;
+  el.innerHTML=`
+  <div class="grid kpis" style="grid-template-columns:repeat(4,1fr);margin-bottom:16px">
+    ${kpiTile({ic:'⚖️',bg:STATE.drift?'bg-amber':'bg-green',val:parity.toFixed(2)+'%',lab:'Output Parity',sub:'rebuilt vs Access'})}
+    ${kpiTile({ic:'🧾',bg:'bg-blue',val:'4 / 4',lab:'Models Reconciled',sub:'side-by-side diff'})}
+    ${kpiTile({ic:'📐',bg:STATE.drift?'bg-red':'bg-green',val:fmt$(totV),lab:'Absolute Variance',sub:STATE.drift?'review required':'within tolerance'})}
+    ${kpiTile({ic:'🗂️',bg:'bg-purple',val:'5 / 5',lab:'Reporting Layers',sub:'tie-out confirmed'})}
+  </div>
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-h"><h3>Legacy Access vs Rebuilt Engine — Parity Check</h3>
+      <button class="btn ${STATE.drift?'btn-green':'btn-ghost'}" onclick="STATE.drift=!STATE.drift;render('recon')">${STATE.drift?'↺ Reset to parity':'⚠ Simulate drift'}</button></div>
+    <table><thead><tr><th>Allocation Model</th><th class="num">Access (legacy)</th><th class="num">Rebuilt engine</th><th class="num">Variance</th><th>Status</th></tr></thead>
+    <tbody>${rows.map(x=>{const ok=Math.abs(x.v)<1;return `<tr>
+      <td style="font-weight:600"><span class="dotc" style="background:${x.m.color};margin-right:7px"></span>${x.m.name}</td>
+      <td class="num">${fmt$(x.a)}</td><td class="num">${fmt$(x.r)}</td>
+      <td class="num" style="color:${ok?'#16a34a':'#dc2626'}">${x.v>=0?'+':''}${fmt$(x.v)}</td>
+      <td><span class="pill ${ok?'ok':'warn'}">${ok?'✓ Match':'△ Review'}</span></td></tr>`}).join('')}
+    <tr style="font-weight:800;background:var(--panel)"><td>Total</td><td class="num">${fmt$(totA)}</td><td class="num">${fmt$(rows.reduce((s,x)=>s+x.r,0))}</td>
+      <td class="num" style="color:${STATE.drift?'#dc2626':'#16a34a'}">${STATE.drift?fmt$(rows.reduce((s,x)=>s+x.v,0)):'$0'}</td>
+      <td><span class="pill ${STATE.drift?'warn':'ok'}">${parity.toFixed(2)}%</span></td></tr>
+    </tbody></table>
+    <div class="muted" style="font-size:12px;margin-top:12px">Reconciliation Agent diffs every number against the prior period and the legacy tool, with full step-level lineage — anomalies are surfaced before Controllership sees the pack.</div>
+  </div>`;
+}
+
+/* ============================================================
+   SCENARIO LAB
+   ============================================================ */
+function renderScenario(el){
+  const base=regionTotals(null);
+  const scen=regionTotals(STATE.scenario);
+  const baseTot=Object.values(base).reduce((a,b)=>a+b,0);
+  const scenTot=Object.values(scen).reduce((a,b)=>a+b,0);
+  el.innerHTML=`
+  <div class="grid" style="grid-template-columns:340px 1fr;align-items:start">
+    <div class="card">
+      <h3 style="margin-bottom:4px">🎚️ What-If Controls</h3>
+      <div class="muted" style="font-size:12px;margin-bottom:18px">Adjust assumptions and recompute allocations live.</div>
+      <label style="font-weight:600;font-size:13px">Europe RAB share adjustment</label>
+      <div class="row" style="justify-content:space-between"><span class="muted" style="font-size:11px">−20%</span><span style="font-weight:700;color:var(--teal)" id="rabVal">${STATE.scenario.rab>0?'+':''}${STATE.scenario.rab}%</span><span class="muted" style="font-size:11px">+20%</span></div>
+      <input type="range" min="-20" max="20" value="${STATE.scenario.rab}" style="width:100%" oninput="STATE.scenario.rab=+this.value;render('scenario')">
+      <label style="font-weight:600;font-size:13px;margin-top:16px;display:block">Cost-plus markup</label>
+      <div class="row" style="justify-content:space-between"><span class="muted" style="font-size:11px">5%</span><span style="font-weight:700;color:var(--blue-d)" id="mkVal">${STATE.scenario.markup}%</span><span class="muted" style="font-size:11px">15%</span></div>
+      <input type="range" min="5" max="15" value="${STATE.scenario.markup}" style="width:100%" oninput="STATE.scenario.markup=+this.value;render('scenario')">
+      <button class="btn btn-ghost" style="margin-top:18px;width:100%" onclick="STATE.scenario={rab:0,markup:10,driver:0};render('scenario')">↺ Reset to baseline</button>
+      <div style="margin-top:18px;padding:14px;background:var(--panel);border-radius:12px">
+        <div class="muted" style="font-size:11px;font-weight:700;letter-spacing:.4px">SCENARIO IMPACT</div>
+        <div style="font-size:22px;font-weight:800;margin-top:4px;color:${scenTot>=baseTot?'#dc2626':'#16a34a'}">${scenTot>=baseTot?'+':''}${fmtM(scenTot-baseTot)}</div>
+        <div class="muted" style="font-size:12px">total allocation vs baseline (${pct((scenTot-baseTot)/baseTot)})</div>
+      </div>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:16px"><div class="card-h"><h3>Baseline vs Scenario — by Region</h3><span class="tag">live recompute</span></div>
+        <div class="chart-wrap" style="height:300px"><canvas id="cScen"></canvas></div></div>
+      <div class="card"><div class="card-h"><h3>Per-Region Delta</h3></div>
+        <table><thead><tr><th>Region</th><th class="num">Baseline</th><th class="num">Scenario</th><th class="num">Δ</th></tr></thead>
+        <tbody>${REGIONS.map(r=>{const d=scen[r.k]-base[r.k];return `<tr><td style="font-weight:600">${r.k}</td>
+          <td class="num">${fmtM(base[r.k])}</td><td class="num">${fmtM(scen[r.k])}</td>
+          <td class="num" style="color:${Math.abs(d)<1e3?'#94a3b8':d>0?'#dc2626':'#16a34a'}">${Math.abs(d)<1e3?'—':(d>0?'+':'')+fmtM(d)}</td></tr>`}).join('')}</tbody></table>
+      </div>
+    </div>
+  </div>`;
+  charts.cScen=new Chart(cScen,{type:'bar',data:{labels:REGIONS.map(r=>r.k),
+    datasets:[{label:'Baseline',data:REGIONS.map(r=>base[r.k]),backgroundColor:'#cbd5e1',borderRadius:5},
+              {label:'Scenario',data:REGIONS.map(r=>scen[r.k]),backgroundColor:'#14b8a6',borderRadius:5}]},
+    options:{plugins:{legend:{position:'top'},tooltip:{callbacks:{label:c=>c.dataset.label+': '+fmtM(c.raw)}}},
+    scales:{x:{grid:{display:false}},y:{ticks:{callback:v=>'$'+(v/1e6)+'M'},grid:{color:GRIDC()}}}}});
+}
+
+/* AI Copilot view removed — replaced by the AI Agents / Orchestration section below. */
+
+/* ============================================================
+   AI AGENTS — MCP Agentic AI Flow (8 agents, strict sequence)
+   ============================================================ */
+const AGENTS=[
+ {k:'intake',n:'Intake Agent',role:'Understands and structures data',ic:'📥',color:'#7c3aed',status:'done',handoff:'Data Review Agent',
+  metrics:[['Sources','11'],['Confidence','99.2%'],['Latency','8.4s'],['Throughput','3.94M'],['Exceptions','0']],
+  inputs:['Intercompany Agreements','Financial Data (Revenue, Costs, Allocations)','Entity & Organizational Structure','Policies & Guidelines'],
+  outputs:['Structured period dataset (2018.02)','Source manifest + schema map'],
+  mcp:['Data Sources (Internal/External)','Document Services (OCR/Gen)','Ingestion Connectors'],
+  trace:[['ACT','Connected 11 MCP source connectors — Access .accdb, Azure Blob, SAP GL, Workday, SharePoint.'],
+   ['THINK','Classified each source against the TP Engine schema: 4 hierarchies, 6 transactional, 1 RAB file.'],
+   ['ACT','Parsed Source Cost Ledger (341,556 rows) and Transaction Volume Data (2.94M rows) into typed frames.'],
+   ['CHECK','All 11 sources structured · 0 unreadable files · period stamp 2018.02 confirmed.']],
+  conf:[97,98,98.5,99,99.1,99.2]},
+ {k:'datareview',n:'Data Review Agent',role:'Validates data quality and completeness',ic:'🔍',color:'#2563eb',status:'done',handoff:'Entity Mapping Agent',
+  metrics:[['Records','3.94M'],['Confidence','98.6%'],['Latency','12.1s'],['Null/Dupe','0.3%'],['Exceptions','0']],
+  inputs:['Structured period dataset','Cost Center Hierarchy','GL Account Hierarchy','Legal Entity Hierarchy'],
+  outputs:['Validated dataset','Data-quality report'],
+  mcp:['AI/ML Services (Models)','Knowledge Bases (Policies)'],
+  trace:[['ACT','Profiled 3.94M rows across 11 files for nulls, duplicates and orphan keys.'],
+   ['FLAG','1,204 cost-centre codes missing rollup — auto-mapped via Activity Code Hierarchy.'],
+   ['CHECK','Referential integrity passed: cost centre ↔ GL ↔ legal entity tie-out 100%.'],
+   ['THINK','Completeness 99.7% — within tolerance, no human escalation required.']],
+  conf:[96,97,98,98.2,98.5,98.6]},
+ {k:'entity',n:'Entity Mapping Agent',role:'Maps entities, services, and transactions',ic:'🗺️',color:'#0d9488',status:'done',handoff:'Pricing Method Agent',
+  metrics:[['Entities','12'],['Mappings','9,640'],['Confidence','97.4%'],['Latency','6.8s'],['Exceptions','0']],
+  inputs:['Validated dataset','Legal Entity Hierarchy','Cost Center Hierarchy'],
+  outputs:['Entity–service–transaction map','Recipient register (CAN, USA, Europe, ASIAPAC, CEMEA, LATAM, Brazil, Shared Services, HoldCo, FinCo)'],
+  mcp:['Enterprise Systems (ERP, GL, HFM, CRM)'],
+  trace:[['ACT','Mapped 9,640 cost centres to 12 recipient entities across 5 regions.'],
+   ['THINK','Resolved GL rollup codes (110 / 450 / 502 / 614 / 701 / 990) to model ownership.'],
+   ['CHECK','No-allocation carve-out (990) correctly isolated before allocation.']],
+  conf:[95,96,96.5,97,97.2,97.4]},
+ {k:'pricing',n:'Pricing Method Agent',role:'Recommends appropriate methods',ic:'⚖️',color:'#f59e0b',status:'done',handoff:'Benchmark Agent',
+  metrics:[['Models','4'],['Drivers','10'],['Confidence','96.1%'],['Latency','5.2s'],['Exceptions','0']],
+  inputs:['Entity map','Policies & Guidelines','Intercompany Agreements'],
+  outputs:['Method per cost pool (cost-plus 10%/5%, RAB, direct/indirect)','Driver assignment'],
+  mcp:['Knowledge Bases (Policies, Precedents)'],
+  trace:[['THINK','Selected method per pool: cost-plus for T&O, RAB for Cost Sharing, direct/INR for HQ & APAC & EMEA.'],
+   ['ACT','Assigned 10 drivers — TP, PV, MT, IT, Blended, RAB, Direct, INR, Personnel, Headcount.'],
+   ['CHECK','Markups applied: 10% standard, 5% on LATAM direct pool (entity 501).']],
+  conf:[94,95,95.5,96,96,96.1]},
+ {k:'benchmark',n:'Benchmark Agent',role:'Analyzes market data and historical benchmarks',ic:'📈',color:'#3b82f6',status:'done',handoff:'Risk Agent',
+  metrics:[['Benchmarks','38'],['Periods','6'],['Confidence','95.3%'],['Latency','9.7s'],['Exceptions','0']],
+  inputs:['Method assignment','Market & Benchmark Data','Prior Documentation & Reports'],
+  outputs:["Arm's-length range","Prior-period comparatives"],
+  mcp:['External Tools (Benchmarks, Research, Market Data)'],
+  trace:[['ACT','Compared period allocations vs trailing 6 periods and arm’s-length ranges.'],
+   ['THINK','Cost-plus markups sit within the interquartile benchmark band.'],
+   ['CHECK','4 of 4 models inside arm’s-length range.']],
+  conf:[93,94,94.5,95,95.2,95.3]},
+ {k:'risk',n:'Risk Agent',role:'Identifies risks, outliers and exceptions',ic:'⚠️',color:'#ef4444',status:'run',handoff:'Documentation Agent',
+  exception:{n:2,detail:'2 items scored below the 90% confidence gate and were routed to Human-in-the-Loop for review.'},
+  metrics:[['Pools','16'],['Confidence','88.7%'],['Latency','7.3s'],['Outliers','2'],['Exceptions','2']],
+  inputs:['Benchmarked allocations','Regulatory & Tax Requirements'],
+  outputs:['Exception list','Risk & Exception report'],
+  mcp:['AI/ML Services (Anomaly detection)','Knowledge Bases'],
+  trace:[['ACT','Scanned 16 cost pools for MoM drift, outliers and policy breaches.'],
+   ['FLAG','Subsidiary B pool +8.3% MoM — above the +2% portfolio average (merchant-volume driven).'],
+   ['FLAG','Canada blended-driver share shifted 21.8% → 22.6%.'],
+   ['THINK','Confidence 88.7% < 90% gate on 2 items → escalate to Human-in-the-Loop.']],
+  conf:[92,91,90,89,88.9,88.7]},
+ {k:'doc',n:'Documentation Agent',role:'Creates drafts, schedules and supporting docs',ic:'📄',color:'#8b5cf6',status:'queued',handoff:'Approval Agent',
+  metrics:[['Documents','—'],['Templates','7'],['Confidence','—'],['Latency','—'],['Exceptions','0']],
+  inputs:['Approved allocations','Prior Documentation & Reports'],
+  outputs:['Local Country Files','Master File support','Intercompany Charge Calculations','Management Fee Schedules','Controllership commentary'],
+  mcp:['Document Services (Storage, OCR, Generation)'],
+  trace:[['THINK','Holding — awaiting Risk Agent HITL clearance before drafting the close pack.'],
+   ['ACT','Queued: generate journal entries, intercompany invoices and plain-English commentary.']]},
+ {k:'approval',n:'Approval Agent',role:'Routes for review and tracks approvals',ic:'✅',color:'#16a34a',status:'queued',handoff:'— (final step)',
+  metrics:[['Approvals','0 / 4'],['Confidence','—'],['SLA','—'],['Routed','0'],['Exceptions','0']],
+  inputs:['Documentation pack'],
+  outputs:['Approval audit trail','Executive Summaries','Audit Defense Packages'],
+  mcp:['Collaboration Tools (Workflows, Chat, Notifications)'],
+  trace:[['THINK','Queued — will route the Controllership pack for review once documentation completes.'],
+   ['ACT','Tracks approvals and logs every decision for audit.']]}
+];
+const RTAG={THINK:['#e8f1ff','#2563eb'],ACT:['#f0eafe','#7c3aed'],CHECK:['#e3f7ec','#15803d'],FLAG:['#fef3df','#b7791f']};
+const stPill=s=>s==='done'?'ok':s==='run'?'info':'idle';
+const stLab=s=>s==='done'?'Complete':s==='run'?'Running':'Queued';
+const stCol=s=>s==='done'?'#16a34a':s==='run'?'#3b82f6':'#94a3b8';
+
+function renderOrchestration(el){
+ const exc=AGENTS.filter(a=>a.exception); const escCount=exc.reduce((s,a)=>s+a.exception.n,0);
+ el.innerHTML=`
+ <div class="grid kpis" style="margin-bottom:16px">
+  ${kpiTile({ic:'🤖',bg:'bg-purple',val:'8',lab:'Specialised Agents',sub:'MCP-orchestrated'})}
+  ${kpiTile({ic:'🎯',bg:'bg-green',val:'94.9%',lab:'Mean Confidence',sub:'across the crew'})}
+  ${kpiTile({ic:'⚠️',bg:'bg-amber',val:escCount,lab:'Open Exceptions',sub:'flagged by Risk Agent'})}
+  ${kpiTile({ic:'🧑‍⚖️',bg:'bg-blue',val:escCount,lab:'HITL Reviews Pending',sub:'human-in-the-loop'})}
+ </div>
+ <div class="card" style="margin-bottom:16px">
+  <div class="card-h"><h3>🔗 Agentic AI Flow (Powered by MCP)</h3><button class="btn btn-primary" onclick="runOrchestration()">▶ Run orchestration</button></div>
+  <div class="agflow" id="agflow">${agFlowHTML()}</div>
+  <div class="hitl-wrap">
+   <div class="hitl-conn"></div>
+   <div class="hitl-card">
+    <div style="font-weight:800">🧑‍⚖️ Human-in-the-Loop — Review &amp; Collaboration</div>
+    <div class="muted" style="font-size:12.5px;margin-top:4px">Conditional escalation — triggers <b>only on exception</b> or sub-threshold confidence. ${escCount} item(s) currently awaiting human review from the <b>Risk Agent</b>.</div>
+    <div class="row" style="justify-content:center;margin-top:10px">${['Review in plain language','Ask questions','Request changes','Add business context','Approve & resume'].map(x=>`<span class="pill info">${x}</span>`).join('')}</div>
+   </div>
+  </div>
+  <div class="muted" style="font-size:12px;margin-top:14px;text-align:center">Supervised autonomy — agents hand off automatically and escalate to humans on exception; every decision is logged for audit via the MCP framework.</div>
+ </div>
+ <div class="card"><div class="card-h"><h3>Agent Telemetry Summary</h3><span class="tag">click any row for the full reasoning trace</span></div>
+  <table><thead><tr><th>#</th><th>Agent</th><th>Role</th><th>Status</th><th class="num">Confidence</th><th class="num">Exceptions</th><th></th></tr></thead>
+  <tbody>${AGENTS.map((a,i)=>{const c=a.metrics.find(m=>m[0]==='Confidence');return `<tr style="cursor:pointer" onclick="render('ag-${a.k}')">
+   <td>${i+1}</td><td style="font-weight:600"><span class="dotc" style="background:${a.color};margin-right:7px"></span>${a.n}</td>
+   <td class="muted">${a.role}</td><td><span class="pill ${stPill(a.status)}">${stLab(a.status)}</span></td>
+   <td class="num">${c?c[1]:'—'}</td><td class="num" style="color:${a.exception?'#dc2626':'#16a34a'}">${a.exception?a.exception.n:0}</td>
+   <td style="text-align:right;color:#94a3b8">→</td></tr>`}).join('')}</tbody></table>
+ </div>`;
+}
+function agFlowHTML(){
+ return AGENTS.map((a,i)=>`<div class="agnode" onclick="render('ag-${a.k}')">
+   <div class="agn" style="background:${a.color}">${i+1}</div>
+   <div class="agt">${a.n}</div><div class="agr">${a.role}</div>
+   <span class="pill ${stPill(a.status)}">${stLab(a.status)}</span>
+   ${a.exception?`<div style="margin-top:6px;color:#b7791f;font-size:10.5px;font-weight:700">⚠ ${a.exception.n} → HITL</div>`:''}
+  </div>${i<AGENTS.length-1?'<div class="agarrow">→</div>':''}`).join('');
+}
+function runOrchestration(){
+ AGENTS.forEach(a=>{a._s=a.status;a.status='queued'});
+ const fl=()=>document.getElementById('agflow').innerHTML=agFlowHTML(); fl();
+ AGENTS.forEach((a,i)=>setTimeout(()=>{a.status='run';if(i>0)AGENTS[i-1].status='done';fl();},i*480+300));
+ setTimeout(()=>{AGENTS.forEach(a=>{a.status=a._s});fl();},AGENTS.length*480+700);
+}
+function renderAgent(el,key){
+ const a=AGENTS.find(x=>x.k===key); const idx=AGENTS.indexOf(a);
+ el.innerHTML=`
+ <div class="crumb">AI Agents · Step ${idx+1} of 8 · MCP Agentic AI Flow</div>
+ <div class="card" style="margin:8px 0 16px">
+  <div class="row" style="justify-content:space-between">
+   <div class="row" style="gap:14px">
+    <div style="width:54px;height:54px;border-radius:15px;background:${a.color};color:#fff;display:flex;align-items:center;justify-content:center;font-size:24px">${a.ic}</div>
+    <div><div style="font-size:19px;font-weight:800">${a.n}</div><div class="muted">${a.role}</div></div>
+   </div>
+   <div style="text-align:right">
+    <span class="pill ${stPill(a.status)}"><span class="dotc" style="background:${stCol(a.status)}"></span>${stLab(a.status)}</span>
+    <div class="muted" style="font-size:11.5px;margin-top:6px">Hands off to <b>${a.handoff}</b></div>
+   </div>
+  </div>
+ </div>
+ ${a.exception?`<div class="hitl-card" style="max-width:none;text-align:left;margin-bottom:16px"><div class="row" style="justify-content:space-between;align-items:flex-start"><div><b>⚠ Escalated to Human-in-the-Loop</b> <span class="muted">· on exception</span><div class="muted" style="font-size:12.5px;margin-top:3px">${a.exception.detail}</div></div><button class="btn btn-ghost">Open HITL review</button></div></div>`:''}
+ <div class="grid kpis" style="grid-template-columns:repeat(5,1fr);margin-bottom:16px">
+  ${a.metrics.map((m,i)=>kpiTile({ic:['📦','🎯','⏱️','🚀','⚠️'][i],bg:['bg-blue','bg-green','bg-amber','bg-purple',(a.exception&&i===4)?'bg-red':'bg-teal'][i],val:m[1],lab:m[0]})).join('')}
+ </div>
+ <div class="grid" style="grid-template-columns:1.4fr 1fr;align-items:start">
+  <div class="card"><div class="card-h"><h3>🧠 Reasoning Trace</h3><span class="tag">step-level lineage · logged for audit</span></div>
+   <div class="rtrace">${a.trace.map(t=>{const cls=t[0]==='FLAG'?'flag':t[0]==='CHECK'?'check':'';const c=RTAG[t[0]];
+     return `<div class="rt ${cls}"><span class="rttag" style="background:${c[0]};color:${c[1]}">${t[0]}</span><span style="font-size:13px">${t[1]}</span></div>`}).join('')}</div>
+   ${a.conf?`<div style="margin-top:10px"><div class="muted" style="font-size:11px;font-weight:700;letter-spacing:.4px;margin-bottom:6px">CONFIDENCE — LAST 6 RUNS</div><div class="chart-wrap" style="height:120px"><canvas id="agSpark"></canvas></div></div>`:''}
+  </div>
+  <div>
+   <div class="card" style="margin-bottom:14px"><div class="card-h"><h3>Inputs Consumed</h3></div>${a.inputs.map(x=>`<div class="row" style="gap:8px;padding:5px 0"><span class="dotc" style="background:${a.color}"></span><span style="font-size:13px">${x}</span></div>`).join('')}</div>
+   <div class="card" style="margin-bottom:14px"><div class="card-h"><h3>Outputs Produced</h3></div>${a.outputs.map(x=>`<div class="row" style="gap:8px;padding:5px 0"><span style="color:#16a34a;font-weight:700">✓</span><span style="font-size:13px">${x}</span></div>`).join('')}</div>
+   <div class="card"><div class="card-h"><h3>MCP Resources</h3></div><div class="row">${a.mcp.map(x=>`<span class="pill idle">🔗 ${x}</span>`).join('')}</div></div>
+  </div>
+ </div>
+ ${key==='risk'?riskExceptions():''}${key==='doc'?docDraft():''}`;
+ if(a.conf){charts.agSpark=new Chart(agSpark,{type:'line',data:{labels:['t-5','t-4','t-3','t-2','t-1','now'],
+   datasets:[{data:a.conf,borderColor:a.color,backgroundColor:a.color+'22',fill:true,tension:.4,pointRadius:2,borderWidth:2}]},
+   options:{plugins:{legend:{display:false}},scales:{y:{min:80,max:100,ticks:{callback:v=>v+'%'},grid:{color:GRIDC()}},x:{grid:{display:false}}}}});}
+}
+const ANOM=[
+ {t:'Subsidiary B pool +8.3% MoM',d:'Above +2% portfolio average — merchant-volume driven',s:'Medium',p:'warn',c:'#f59e0b',hitl:true},
+ {t:'Canada blended-driver shift',d:'Processed-transaction share 21.8% → 22.6%',s:'Low',p:'info',c:'#3b82f6',hitl:true},
+ {t:'APAC & EMEA Pool 614 flat',d:'No variance vs prior 3 periods — expected',s:'OK',p:'ok',c:'#16a34a'},
+ {t:'No-allocation carve-out intact',d:'GL rollup 990 correctly excluded',s:'OK',p:'ok',c:'#16a34a'}
+];
+function riskExceptions(){return `<div class="card" style="margin-top:16px"><div class="card-h"><h3>⚠️ Exceptions &amp; Outliers</h3><span class="tag">vs prior periods · sub-gate items routed to HITL</span></div>
+ ${ANOM.map(a=>`<div class="row" style="align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--line-2)"><span class="dotc" style="background:${a.c};margin-top:5px"></span><div style="flex:1"><div style="font-weight:600;font-size:13px">${a.t}</div><div class="muted" style="font-size:12px">${a.d}</div></div><span class="pill ${a.p}">${a.s}</span>${a.hitl?'<span class="pill warn">→ HITL</span>':''}</div>`).join('')}</div>`;}
+function docDraft(){return `<div class="card" style="margin-top:16px"><div class="card-h"><h3>📝 Controllership Commentary (auto-draft)</h3><span class="pill warn">pending HITL clearance</span></div>
+ <div style="font-size:13.5px;line-height:1.7;color:var(--ink-soft)">For <b>${STATE.period}</b>, total intercompany allocations settle at <b>${fmtM(totalAllocated())}</b> on a cost-plus basis. <b>Technology & Operations</b> remains the largest model; the period increase concentrates in Canada on a higher blended processing share. The rebuilt engine reconciles to the legacy Access tool at <b>100.00% parity</b>. Journal entries and intercompany invoices are staged for Controllership handoff once the 2 Risk Agent exceptions clear human review.</div>
+ <div class="row" style="margin-top:14px"><button class="btn btn-green">⬇ Export to Controllership pack</button><button class="btn btn-ghost">✎ Edit narrative</button></div></div>`;}
+
+/* ============================================================
+   DATA MIGRATOR
+   ============================================================ */
+const SOURCES=[
+  {n:'Access .accdb (TP Engine v4.0)',ic:'🗄️',sub:'Legacy chargeout database · 1.4 MB',st:'connected'},
+  {n:'Azure Blob Storage',ic:'☁️',sub:'chat-history/ · raw transaction files',st:'connected'},
+  {n:'SAP General Ledger',ic:'📒',sub:'GL, cost centre & entity hierarchies',st:'connected'},
+  {n:'Workday',ic:'👥',sub:'Headcount allocation key (API)',st:'idle'},
+  {n:'SharePoint',ic:'📁',sub:'Run-rate masters, RAB & O&I files',st:'connected'},
+  {n:'Snowflake (read replica)',ic:'❄️',sub:'Downstream analytics replica',st:'idle'},
+];
+function renderMigrator(el){
+  const connected=SOURCES.filter(s=>s.st==='connected').length;
+  el.innerHTML=`
+  <div class="grid kpis" style="margin-bottom:16px">
+    ${kpiTile({ic:'🔌',bg:'bg-blue',val:connected+' / '+SOURCES.length,lab:'Sources Connected'})}
+    ${kpiTile({ic:'📥',bg:'bg-green',val:'3.94M',lab:'Rows Ingested',sub:'this period'})}
+    ${kpiTile({ic:'💾',bg:'bg-amber',val:'171 MB',lab:'Volume Staged'})}
+    ${kpiTile({ic:'🕑',bg:'bg-purple',val:'02:14',lab:'Last Full Sync',sub:'min · auto-refresh'})}
+  </div>
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-h"><h3>🔌 Source Connectors</h3><span class="tag">click Test to validate a connection</span></div>
+    <div class="grid" style="grid-template-columns:repeat(3,1fr)">
+    ${SOURCES.map((s,i)=>`<div class="card" id="src${i}" style="box-shadow:none;border:1px solid var(--line)">
+      <div class="row" style="justify-content:space-between"><div style="font-size:22px">${s.ic}</div>
+      <span class="pill ${s.st==='connected'?'ok':'idle'}" id="srcst${i}"><span class="dotc" style="background:${s.st==='connected'?'#16a34a':'#94a3b8'}"></span>${s.st==='connected'?'Connected':'Idle'}</span></div>
+      <div style="font-weight:700;font-size:13.5px;margin-top:10px">${s.n}</div>
+      <div class="muted" style="font-size:12px;margin:3px 0 12px">${s.sub}</div>
+      <button class="btn btn-ghost" style="width:100%" onclick="testConn(${i})">⚡ Test connection</button>
+    </div>`).join('')}
+    </div>
+  </div>
+  <div class="card"><div class="card-h"><h3>📂 Input Files — 11 client-provided sources</h3><button class="btn btn-green" onclick="syncAll()">↻ Sync all</button></div>
+    <table><thead><tr><th>File</th><th>Source</th><th>Format</th><th class="num">Rows</th><th class="num">Size</th><th>Status</th></tr></thead>
+    <tbody id="fileBody">${FILES.map((f,i)=>`<tr><td style="font-weight:600">${f.n}</td><td class="muted">${f.src}</td>
+      <td><span class="pill idle">${f.fmt}</span></td><td class="num">${f.rows}</td><td class="num">${f.mb} MB</td>
+      <td id="fst${i}"><span class="pill ok"><span class="dotc" style="background:#16a34a"></span>Ingested</span></td></tr>`).join('')}</tbody></table>
+  </div>`;
+}
+function testConn(i){
+  const st=document.getElementById('srcst'+i);
+  st.innerHTML='<span class="dotc" style="background:#f59e0b"></span>Testing…';st.className='pill warn';
+  setTimeout(()=>{st.innerHTML='<span class="dotc" style="background:#16a34a"></span>Connected';st.className='pill ok';SOURCES[i].st='connected';},900);
+}
+function syncAll(){
+  FILES.forEach((f,i)=>{const c=document.getElementById('fst'+i);
+    c.innerHTML='<span class="dotc" style="background:#3b82f6"></span><span class="pill info">Syncing…</span>';
+    setTimeout(()=>{c.innerHTML='<span class="pill ok"><span class="dotc" style="background:#16a34a"></span>Ingested</span>';},400+i*180);});
+}
+
+/* ============================================================
+   TRANSFORMER
+   ============================================================ */
+function renderTransformer(el){
+  el.innerHTML=`
+  <div class="grid" style="grid-template-columns:360px 1fr;align-items:start">
+    <div class="card">
+      <h3 style="margin-bottom:14px">🔄 Build a Transformation</h3>
+      <label style="font-weight:600;font-size:12.5px">Source dataset</label>
+      <select id="tSrc" style="width:100%;margin:6px 0 14px">${FILES.map(f=>`<option>${f.n}</option>`).join('')}</select>
+      <label style="font-weight:600;font-size:12.5px">Transformation steps</label>
+      <div style="margin:8px 0 14px">
+        ${['Clean & de-duplicate','Standardise cost-centre codes','Map to GL / entity hierarchy','Apply allocation driver keys','Harmonise currency (USD)'].map((s,i)=>`<label class="row" style="gap:8px;padding:5px 0;font-size:13px"><input type="checkbox" ${i<3?'checked':''}> ${s}</label>`).join('')}
+      </div>
+      <label style="font-weight:600;font-size:12.5px">Target format</label>
+      <select id="tFmt" style="width:100%;margin:6px 0 16px"><option>Parquet (Delta Lake)</option><option>CSV</option><option>JSON</option><option>Power Query (M)</option><option>SQL table</option></select>
+      <button class="btn btn-primary" style="width:100%" onclick="runTransform()">▶ Run transformation</button>
+      <div id="tProg" style="margin-top:14px"></div>
+    </div>
+    <div class="card"><div class="card-h"><h3>Output Preview</h3><span class="tag" id="tFmtTag">Parquet</span></div>
+      <div id="tPreview"><div class="muted" style="padding:40px;text-align:center">Configure a transformation and run it to preview the harmonised output.</div></div>
+      <div style="margin-top:16px"><div class="muted" style="font-size:11px;font-weight:700;letter-spacing:.4px;margin-bottom:8px">RECENT TRANSFORMS</div>
+      ${[['Transaction Volume Data','→ Parquet','2 min ago'],['GL Account Hierarchy','→ SQL table','1 hr ago'],['Cost Sharing Data (RAB)','→ Power Query','3 hr ago']].map(r=>`<div class="row" style="justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--line-2)"><span style="font-weight:600;font-size:13px">${r[0]} <span class="muted" style="font-weight:400">${r[1]}</span></span><span class="muted" style="font-size:12px">${r[2]}</span></div>`).join('')}</div>
+    </div>
+  </div>`;
+}
+function runTransform(){
+  const p=document.getElementById('tProg');const fmt=document.getElementById('tFmt').value;
+  document.getElementById('tFmtTag').textContent=fmt.split(' ')[0];
+  p.innerHTML=`<div class="bar-track"><div class="bar-fill" id="tbar" style="width:0%;background:var(--blue)"></div></div><div class="muted" style="font-size:12px;margin-top:6px" id="tmsg">Starting…</div>`;
+  let w=0;const steps=['Reading source…','Cleaning & de-duplicating…','Mapping hierarchies…','Applying driver keys…','Writing '+fmt+'…','Done ✓'];
+  const iv=setInterval(()=>{w+=20;document.getElementById('tbar').style.width=Math.min(w,100)+'%';
+    document.getElementById('tmsg').textContent=steps[Math.min(w/20,5)|0];
+    if(w>=100){clearInterval(iv);showPreview();}},420);
+}
+function showPreview(){
+  document.getElementById('tPreview').innerHTML=`<table><thead><tr><th>cost_centre</th><th>entity</th><th>driver</th><th class="num">amount_usd</th><th>period</th></tr></thead><tbody>
+  ${[['40021','CAN','blended',842113],['40022','USA','sales',1290447],['51002','Europe','inr',733908],['614xx','CEMEA','direct',498220],['400xx','ASIAPAC','inr',611540]].map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td><span class="pill idle">${r[2]}</span></td><td class="num">${fmt$(r[3])}</td><td>${STATE.period}</td></tr>`).join('')}
+  </tbody></table><div class="pill ok" style="margin-top:12px">✓ 612,300 rows transformed · schema validated</div>`;
+}
+
+/* ============================================================
+   INTEGRATION & PIPELINE
+   ============================================================ */
+const TARGETS=[
+  {n:'Azure Data Lake (ADLS Gen2)',ic:'🌊',sub:'Curated zone · Delta tables',on:true},
+  {n:'Read Replica — Snowflake',ic:'❄️',sub:'Analytics & BI consumers',on:true},
+  {n:'Power BI Dataset',ic:'📊',sub:'Controllership dashboards',on:true},
+  {n:'Controllership Handoff',ic:'🧾',sub:'JEs & invoices via Power Automate',on:false},
+];
+function renderPipeline(el){
+  el.innerHTML=`
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-h"><h3>🛰️ Agentic Integration Pipeline (MCP-orchestrated)</h3>
+      <button class="btn btn-primary" onclick="runPipeline()">▶ Run pipeline</button></div>
+    <div class="row" id="agStrip" style="gap:0;align-items:stretch;margin:6px 0 4px">${pipeStripHTML()}</div>
+    <div class="muted" style="font-size:12px;margin-top:8px">Agents hand off, escalate to humans on exception, and log every decision for audit — supervised autonomy via the MCP framework.</div>
+  </div>
+  <div class="grid" style="grid-template-columns:1fr 1fr">
+    <div class="card"><div class="card-h"><h3>📤 Publish Targets</h3><span class="tag">push curated outputs</span></div>
+      ${TARGETS.map((t,i)=>`<div class="row" style="justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--line-2)">
+        <div class="row" style="gap:10px"><span style="font-size:19px">${t.ic}</span><div><div style="font-weight:600;font-size:13.5px">${t.n}</div><div class="muted" style="font-size:11.5px">${t.sub}</div></div></div>
+        <span class="pill ${t.on?'ok':'idle'}" id="tg${i}" style="cursor:pointer" onclick="toggleTarget(${i})">${t.on?'● Streaming':'○ Paused'}</span></div>`).join('')}
+    </div>
+    <div class="card"><div class="card-h"><h3>🔗 MCP Connectors</h3><span class="tag">connected resources</span></div>
+      <div class="grid" style="grid-template-columns:1fr 1fr;gap:10px">
+      ${['Data Sources (Internal/External)','Enterprise Systems (ERP, GL, HFM, CRM)','External Tools (Benchmarks)','Knowledge Bases (Policies)','AI/ML Services (Models)','Document Services (OCR/Gen)'].map(c=>`<div style="border:1px solid var(--line);border-radius:11px;padding:11px"><div style="font-weight:600;font-size:12.5px">${c}</div><span class="pill ok" style="margin-top:7px"><span class="dotc" style="background:#16a34a"></span>Connected</span></div>`).join('')}
+      </div>
+    </div>
+  </div>`;
+}
+function toggleTarget(i){TARGETS[i].on=!TARGETS[i].on;const e=document.getElementById('tg'+i);
+  e.className='pill '+(TARGETS[i].on?'ok':'idle');e.textContent=TARGETS[i].on?'● Streaming':'○ Paused';}
+function runPipeline(){
+  const orig=PIPE.map(p=>p.s);PIPE.forEach(p=>p.s='wait');
+  document.getElementById('agStrip').innerHTML=pipeStripHTML();
+  PIPE.forEach((p,i)=>{setTimeout(()=>{p.s='run';if(i>0)PIPE[i-1].s='done';
+    document.getElementById('agStrip').innerHTML=pipeStripHTML();},i*700+300);});
+  setTimeout(()=>{PIPE.forEach(p=>p.s='done');PIPE[3].s='run';document.getElementById('agStrip').innerHTML=pipeStripHTML();},PIPE.length*700+500);
+}
+
+/* ============================================================
+   SCHEDULER
+   ============================================================ */
+const JOBS=[
+  {n:'Nightly source ingestion',cron:'0 2 * * *',desc:'Pull all 11 input files',last:'Today 02:00',next:'Tomorrow 02:00',on:true},
+  {n:'Period allocation run',cron:'0 4 1 * *',desc:'Run 4 models on period close',last:'01 Jun 04:00',next:'01 Jul 04:00',on:true},
+  {n:'Reconciliation diff',cron:'30 4 1 * *',desc:'Parity vs legacy + prior period',last:'01 Jun 04:30',next:'01 Jul 04:30',on:true},
+  {n:'Data lake refresh',cron:'0 */6 * * *',desc:'Push curated Delta tables',last:'Today 00:00',next:'Today 18:00',on:true},
+  {n:'Controllership pack',cron:'0 6 2 * *',desc:'JEs, invoices, commentary',last:'02 Jun 06:00',next:'02 Jul 06:00',on:false},
+  {n:'Anomaly scan',cron:'0 5 * * 1',desc:'Weekly drift detection',last:'Mon 05:00',next:'Mon 05:00',on:true},
+];
+function renderScheduler(el){
+  const active=JOBS.filter(j=>j.on).length;
+  el.innerHTML=`
+  <div class="grid kpis" style="margin-bottom:16px">
+    ${kpiTile({ic:'⏱️',bg:'bg-blue',val:active+' / '+JOBS.length,lab:'Active Jobs'})}
+    ${kpiTile({ic:'✅',bg:'bg-green',val:'99.6%',lab:'Run Success (30d)'})}
+    ${kpiTile({ic:'⚙️',bg:'bg-purple',val:'cron',lab:'Orchestration',sub:'Power Automate + ADF'})}
+    ${kpiTile({ic:'🔔',bg:'bg-amber',val:'02:00',lab:'Next Run',sub:'Nightly ingestion'})}
+  </div>
+  <div class="card"><div class="card-h"><h3>⏱️ Scheduled Jobs</h3><button class="btn btn-green">＋ New job</button></div>
+  <table><thead><tr><th>Job</th><th>Schedule (cron)</th><th>Last run</th><th>Next run</th><th>Status</th></tr></thead>
+  <tbody>${JOBS.map((j,i)=>`<tr>
+    <td><div style="font-weight:600">${j.n}</div><div class="muted" style="font-size:11.5px">${j.desc}</div></td>
+    <td><span class="kbd">${j.cron}</span></td><td class="muted">${j.last}</td><td class="muted">${j.next}</td>
+    <td><span class="pill ${j.on?'ok':'idle'}" id="job${i}" style="cursor:pointer" onclick="toggleJob(${i})">${j.on?'● Enabled':'○ Paused'}</span></td></tr>`).join('')}
+  </tbody></table></div>`;
+}
+function toggleJob(i){JOBS[i].on=!JOBS[i].on;const e=document.getElementById('job'+i);
+  e.className='pill '+(JOBS[i].on?'ok':'idle');e.textContent=JOBS[i].on?'● Enabled':'○ Paused';}
+
+/* ============================================================
+   ROUTER
+   ============================================================ */
+/* ============================================================
+   RBAC + AUTH  (added)
+   ============================================================ */
+const ROLES={
+  superadmin:{label:'Super Admin',color:'#8b5cf6',views:'*'},
+  admin:{label:'Admin',color:'#3b82f6',views:['migrator','transformer','pipeline','scheduler','overview','explorer','recon','orchestration','compliance','nlp-understanding','nlp-retrieval','nlp-langgen','cs-channels','cs-agentassist']},
+  manager:{label:'Manager',color:'#14b8a6',views:['overview','explorer','recon','compliance','nlp-understanding','nlp-retrieval','nlp-langgen','cs-channels','cs-agentassist']},
+  dataadmin:{label:'Data Admin',color:'#f59e0b',views:['migrator','transformer','pipeline','scheduler','overview','nlp-understanding','nlp-retrieval','nlp-langgen','cs-channels','cs-agentassist']}
+};
+const USERS={
+  'superadmin@sbs.com':{pw:'demo123',name:'Sarah Chen',role:'superadmin'},
+  'admin@sbs.com':{pw:'demo123',name:'Michael Torres',role:'admin'},
+  'manager@sbs.com':{pw:'demo123',name:'Priya Nair',role:'manager'},
+  'dataadmin@sbs.com':{pw:'demo123',name:'David Kim',role:'dataadmin'}
+};
+var CURRENT_USER=null;
+function initials(n){return n.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();}
+function canView(v){ if(!CURRENT_USER)return false; const r=ROLES[CURRENT_USER.role]; return r.views==='*'||r.views.indexOf(v)>-1; }
+function firstAllowedView(){ return ['overview','migrator','transformer','pipeline','scheduler','explorer','recon','scenario','orchestration'].find(canView)||'overview'; }
+function applyRBAC(){
+  document.querySelectorAll('.nav-item[data-view]').forEach(it=>{ it.style.display=canView(it.dataset.view)?'':'none'; });
+  document.querySelectorAll('.side-group').forEach(g=>{
+    let any=false,n=g.nextElementSibling;
+    while(n && !n.classList.contains('side-group')){ if(n.classList.contains('nav-item') && n.style.display!=='none') any=true; n=n.nextElementSibling; }
+    g.style.display=any?'':'none';
+  });
+}
+function fillLogin(email){document.getElementById('loginEmail').value=email;document.getElementById('loginPw').value='demo123';}
+function doLogin(){
+  const email=document.getElementById('loginEmail').value.trim().toLowerCase();
+  const pw=document.getElementById('loginPw').value;
+  const u=USERS[email]; const err=document.getElementById('loginErr');
+  if(!u||u.pw!==pw){err.style.display='block';return;}
+  err.style.display='none'; CURRENT_USER={name:u.name,role:u.role,email:email};
+  const r=ROLES[u.role];
+  document.getElementById('userBox').style.display='flex';
+  const av=document.getElementById('userAvatar'); av.textContent=initials(u.name); av.style.background=r.color;
+  document.getElementById('userName').textContent=u.name;
+  const badge=document.getElementById('userRole'); badge.textContent=r.label; badge.style.background=r.color+'22'; badge.style.color=r.color;
+  applyRBAC();
+  document.getElementById('loginScreen').style.display='none';
+  render(firstAllowedView());
+}
+function signOut(){
+  CURRENT_USER=null; closeFoundationModal();
+  document.getElementById('userBox').style.display='none';
+  document.getElementById('loginEmail').value=''; document.getElementById('loginPw').value='';
+  document.getElementById('loginScreen').style.display='flex';
+}
+
+/* ============================================================
+   MCP FOUNDATION LAYER  (added) — strip + modals
+   ============================================================ */
+function FOUNDATION_HTML(){return `
+  <div class="card" style="margin-top:16px">
+    <div class="card-h"><h3>&#129521; MCP Foundation Layer</h3><span class="tag">observability &middot; protocol &middot; discovery &mdash; click a capability</span></div>
+    <div class="grid" style="grid-template-columns:repeat(3,1fr);gap:14px">
+      <div class="fcard" onclick="openFoundationModal('observability')">
+        <div class="fic bg-blue">&#127919;</div><h4>Observability</h4>
+        <p>Live BI dashboard &mdash; throughput, error rate, latency, connector health, logs &amp; traces.</p>
+        <div class="fgo">Open BI dashboard &rarr;</div></div>
+      <div class="fcard" onclick="openFoundationModal('protocol')">
+        <div class="fic bg-purple">&#128451;</div><h4>Protocol &amp; Standards</h4>
+        <p>Select MCP tools to connect, or call a raw API with custom headers &amp; JSON payload.</p>
+        <div class="fgo">MCP Tools &middot; API &rarr;</div></div>
+      <div class="fcard" onclick="openFoundationModal('metadata')">
+        <div class="fic bg-teal">&#128270;</div><h4>Metadata &amp; Discovery</h4>
+        <p>Inspect tool metadata &amp; JSON schemas, and run discovery to surface new MCP tools.</p>
+        <div class="fgo">Registry &middot; Discover &rarr;</div></div>
+    </div>
+  </div>`;}
+
+const MCP_TOOLS=[
+ {n:'sap_gl_query',cat:'Enterprise',st:'connected'},
+ {n:'azure_blob_read',cat:'Data Source',st:'connected'},
+ {n:'workday_headcount',cat:'Enterprise',st:'idle'},
+ {n:'sharepoint_fetch',cat:'Data Source',st:'connected'},
+ {n:'snowflake_read',cat:'Data Source',st:'idle'},
+ {n:'benchmark_lookup',cat:'External Tool',st:'connected'},
+ {n:'policy_kb_search',cat:'Knowledge Base',st:'connected'},
+ {n:'anomaly_detect',cat:'AI/ML',st:'connected'},
+ {n:'ocr_extract',cat:'Document',st:'connected'},
+ {n:'invoice_generate',cat:'Document',st:'idle'},
+ {n:'je_post',cat:'Enterprise',st:'idle'},
+ {n:'fx_rate_fetch',cat:'External Tool',st:'connected'}
+];
+var foundCharts={};
+function destroyFoundCharts(){Object.keys(foundCharts).forEach(k=>{if(foundCharts[k]){foundCharts[k].destroy();delete foundCharts[k];}});}
+const FMETA={
+ observability:{t:'&#127919; Observability &mdash; MCP BI Dashboard',build:obsBody,after:obsAfter},
+ protocol:{t:'&#128451; Protocol &amp; Standards',build:protocolBody,after:null},
+ metadata:{t:'&#128270; Metadata &amp; Discovery',build:metaBody,after:null}
+};
+function openFoundationModal(type){
+ const m=FMETA[type]; if(!m)return;
+ document.getElementById('fmodalTitle').innerHTML=m.t;
+ document.getElementById('fmodalBody').innerHTML=m.build();
+ document.getElementById('fmodal').classList.add('show');
+ if(m.after) m.after();
+}
+function closeFoundationModal(){destroyFoundCharts();document.getElementById('fmodal').classList.remove('show');}
+function fShow(btn,id){
+ const b=document.getElementById('fmodalBody');
+ b.querySelectorAll('.ftab').forEach(t=>t.classList.remove('active')); btn.classList.add('active');
+ b.querySelectorAll('.fpanel').forEach(p=>p.classList.remove('show'));
+ document.getElementById(id).classList.add('show');
+}
+
+/* ---- Protocol & Standards ---- */
+function toolRow(t,i){return `<label class="tool-row"><input type="checkbox" data-tool="${i}"><div style="flex:1"><div style="font-weight:700;font-size:13px">${t.n}</div><div class="muted" style="font-size:11.5px">${t.cat}</div></div><span class="pill ${t.st==='connected'?'ok':'idle'}">${t.st==='connected'?'Connected':'Available'}</span></label>`;}
+function protocolBody(){return `
+ <div class="ftabs">
+   <div class="ftab active" onclick="fShow(this,'pp-tools')">&#128295; MCP Tools</div>
+   <div class="ftab" onclick="fShow(this,'pp-api')">&#127760; API</div>
+ </div>
+ <div class="fpanel show" id="pp-tools">
+   <div class="row" style="justify-content:space-between;margin-bottom:12px">
+     <input type="text" id="toolSearch" placeholder="Search tools&hellip;" style="flex:1" oninput="filterTools()">
+     <button class="btn btn-primary" onclick="connectSelected()">Connect selected</button>
+   </div>
+   <div id="toolList">${MCP_TOOLS.map((t,i)=>toolRow(t,i)).join('')}</div>
+   <div class="muted" id="toolMsg" style="font-size:12.5px;margin-top:10px"></div>
+ </div>
+ <div class="fpanel" id="pp-api">
+   <div class="row" style="gap:10px;align-items:flex-end">
+     <div class="api-field" style="width:130px"><label>Method</label><select id="apiMethod"><option>GET</option><option selected>POST</option><option>PUT</option><option>DELETE</option></select></div>
+     <div class="api-field" style="flex:1"><label>Endpoint</label><input id="apiUrl" value="https://api.sbs.com/v1/mcp/invoke"></div>
+   </div>
+   <div class="api-field"><label>Headers (one per line &mdash; Key: Value)</label><textarea id="apiHeaders" style="min-height:64px">Authorization: Bearer &bull;&bull;&bull;&bull;&bull;&bull;
+Content-Type: application/json</textarea></div>
+   <div class="api-field"><label>Payload (JSON)</label><textarea id="apiBody">{
+  "tool": "sap_gl_query",
+  "params": { "period": "2018.02", "entity": "T&O" }
+}</textarea></div>
+   <button class="btn btn-green" onclick="sendApi()">&#9654; Send request</button>
+   <div class="api-field" style="margin-top:16px"><label>Response</label><div class="resp-box" id="apiResp">// response will appear here</div></div>
+ </div>`;}
+function filterTools(){const q=document.getElementById('toolSearch').value.toLowerCase();
+ document.getElementById('toolList').innerHTML=MCP_TOOLS.map((t,i)=>({t,i})).filter(o=>(o.t.n+o.t.cat).toLowerCase().indexOf(q)>-1).map(o=>toolRow(o.t,o.i)).join('');}
+function connectSelected(){const n=document.querySelectorAll('#toolList input:checked').length;
+ document.getElementById('toolMsg').textContent=n?('✓ '+n+' tool(s) queued for connection.'):'Select at least one tool to connect.';}
+function sendApi(){const r=document.getElementById('apiResp');r.textContent='Sending…';
+ setTimeout(()=>{let body;try{body=JSON.parse(document.getElementById('apiBody').value);}catch(e){body={};}
+  r.textContent=JSON.stringify({status:200,latency_ms:142,method:document.getElementById('apiMethod').value,tool:body.tool||'unknown',result:{rows:1284,period:(body.params&&body.params.period)||'—',allocated_usd:108240000,parity:'100.00%'},trace_id:'mcp-'+Math.random().toString(16).slice(2,10)},null,2);},600);}
+
+/* ---- Metadata & Discovery ---- */
+function metaBody(){return `
+ <div class="ftabs">
+   <div class="ftab active" onclick="fShow(this,'mm-reg')">&#128218; Tool Registry</div>
+   <div class="ftab" onclick="fShow(this,'mm-disc')">&#128225; Discover Tools</div>
+   <div class="ftab" onclick="fShow(this,'mm-schema')">&#129516; Schema Explorer</div>
+ </div>
+ <div class="fpanel show" id="mm-reg">
+   ${MCP_TOOLS.map((t,i)=>`<div class="reg-card" onclick="toggleReg(${i})">
+     <div class="row" style="justify-content:space-between"><div style="font-weight:700;font-size:13.5px">${t.n}</div><span class="pill ${t.st==='connected'?'ok':'idle'}">v${1+i%3}.${i%5}.0</span></div>
+     <div id="reg${i}" class="muted" style="display:none;margin-top:9px;font-size:12px;line-height:1.7">
+       <div>Category: <b>${t.cat}</b></div><div>Schema version: <b>2024-11</b></div><div>Last updated: <b>2018-02-${10+i}</b></div>
+       <div style="margin-top:5px">Capabilities: ${['read','query','stream','batch'].slice(0,2+i%3).map(c=>`<span class="pill idle">${c}</span>`).join(' ')}</div>
+     </div></div>`).join('')}
+ </div>
+ <div class="fpanel" id="mm-disc">
+   <button class="btn btn-primary" onclick="runDiscovery()">&#128225; Scan for new tools</button>
+   <div id="discProg" style="margin-top:14px"></div>
+   <div id="discResult" style="margin-top:14px"></div>
+ </div>
+ <div class="fpanel" id="mm-schema">
+   <div class="grid" style="grid-template-columns:210px 1fr;gap:14px">
+     <div>${MCP_TOOLS.slice(0,8).map((t,i)=>`<div class="reg-card" id="sch${i}" onclick="showSchema(${i})">${t.n}</div>`).join('')}</div>
+     <div class="schema-json" id="schemaView">// select a tool to view its JSON schema</div>
+   </div>
+ </div>`;}
+function toggleReg(i){const e=document.getElementById('reg'+i);e.style.display=e.style.display==='none'?'block':'none';}
+function runDiscovery(){const p=document.getElementById('discProg');const res=document.getElementById('discResult');res.innerHTML='';let n=0;
+ p.innerHTML='<div class="bar-track"><div class="bar-fill" id="dbar" style="width:0%;background:var(--blue)"></div></div><div class="muted" style="font-size:12px;margin-top:6px" id="dmsg">Scanning endpoints…</div>';
+ const iv=setInterval(()=>{n+=20;document.getElementById('dbar').style.width=n+'%';document.getElementById('dmsg').textContent='Scanned '+(n*3)+' endpoints…';
+  if(n>=100){clearInterval(iv);document.getElementById('dmsg').textContent='✓ Scan complete — 3 new tools found.';
+   res.innerHTML=[['hfm_consolidate','Enterprise'],['tax_rate_lookup','External Tool'],['contract_parse','Document']].map(t=>`<div class="tool-row"><div style="flex:1"><div style="font-weight:700;font-size:13px">${t[0]}</div><div class="muted" style="font-size:11.5px">${t[1]} &middot; newly discovered</div></div><button class="btn btn-green" onclick="this.textContent='✓ Registered';this.disabled=true">Register</button></div>`).join('');}},420);}
+function showSchema(i){document.querySelectorAll('[id^=sch]').forEach(e=>e.style.background='');document.getElementById('sch'+i).style.background='#eaf3ff';
+ const t=MCP_TOOLS[i];document.getElementById('schemaView').textContent=JSON.stringify({name:t.n,category:t.cat,version:'1.0',status:t.st,input_schema:{type:'object',properties:{period:{type:'string'},entity:{type:'string'},limit:{type:'integer',default:1000}},required:['period']},output_schema:{type:'object',properties:{rows:{type:'integer'},data:{type:'array'}}},auth:'bearer'},null,2);}
+
+/* ---- Observability ---- */
+function obsBody(){return `
+ <div class="ftabs">
+   <div class="ftab active" onclick="fShow(this,'obs-overview')">&#128202; Overview</div>
+   <div class="ftab" onclick="fShow(this,'obs-logs')">&#128220; Live Logs</div>
+   <div class="ftab" onclick="fShow(this,'obs-traces')">&#129525; Traces</div>
+   <div class="ftab" onclick="fShow(this,'obs-audit')">&#128221; Audit Trail &amp; Traceability</div>
+ </div>
+ <div class="fpanel show" id="obs-overview">
+   <div class="grid kpis" style="margin-bottom:16px">
+     ${kpiTile({ic:'⚡',bg:'bg-blue',val:'1,284',lab:'Requests / min',sub:'across 12 tools'})}
+     ${kpiTile({ic:'⚠️',bg:'bg-amber',val:'0.4%',lab:'Error Rate',sub:'last 60 min'})}
+     ${kpiTile({ic:'⏱️',bg:'bg-purple',val:'142 ms',lab:'P95 Latency'})}
+     ${kpiTile({ic:'✅',bg:'bg-green',val:'99.98%',lab:'Uptime',sub:'30-day'})}
+   </div>
+   <div class="grid" style="grid-template-columns:1.4fr 1fr;margin-bottom:16px">
+     <div class="card"><div class="card-h"><h3>Throughput (req/min)</h3><span class="tag">last 12 intervals</span></div><div class="chart-wrap" style="height:220px"><canvas id="obsThru"></canvas></div></div>
+     <div class="card"><div class="card-h"><h3>Errors by Connector</h3></div><div class="chart-wrap" style="height:220px"><canvas id="obsErr"></canvas></div></div>
+   </div>
+   <div class="card"><div class="card-h"><h3>Connector Health</h3></div>
+     <table><thead><tr><th>Connector</th><th class="num">Req/min</th><th class="num">Err %</th><th class="num">P95</th><th style="width:140px">Load</th><th>Status</th></tr></thead><tbody>
+     ${[['SAP General Ledger',312,0.1,98],['Azure Blob',421,0.2,76],['SharePoint',188,0.0,54],['Workday',96,1.1,67],['Benchmarks API',141,0.3,40],['Snowflake',126,0.0,33]].map(r=>`<tr><td style="font-weight:600">${r[0]}</td><td class="num">${r[1]}</td><td class="num" style="color:${r[2]>1?'#dc2626':'#16a34a'}">${r[2].toFixed(1)}%</td><td class="num">${80+Math.round(r[3]*0.7)}ms</td><td><div class="bar-track"><div class="bar-fill" style="width:${r[3]}%;background:${r[3]>70?'#f59e0b':'#3b82f6'}"></div></div></td><td><span class="pill ${r[2]>1?'warn':'ok'}">${r[2]>1?'Degraded':'Healthy'}</span></td></tr>`).join('')}
+     </tbody></table>
+   </div>
+ </div>
+ <div class="fpanel" id="obs-logs">
+   <div class="row" style="margin-bottom:12px"><input type="text" id="logSearch" placeholder="Filter logs&hellip;" style="flex:1" oninput="renderLogs()"><select id="logLevel" onchange="renderLogs()"><option value="all">All levels</option><option>INFO</option><option>WARN</option><option>ERROR</option></select></div>
+   <div id="logBox"></div>
+ </div>
+ <div class="fpanel" id="obs-traces">
+   ${TRACES.map((t,i)=>`<div class="reg-card" onclick="toggleTrace(${i})"><div class="row" style="justify-content:space-between"><div style="font-weight:700;font-size:13px">${t.name}</div><span class="muted" style="font-size:12px">${t.dur}ms &middot; ${t.spans.length} spans</span></div>
+     <div id="trace${i}" style="display:none;margin-top:10px">${t.spans.map(s=>`<div style="margin:5px 0"><div class="row" style="justify-content:space-between"><span style="font-size:12px;font-weight:600">${s[0]}</span><span class="muted" style="font-size:11px">${s[1]}ms</span></div><div class="bar-track"><div class="bar-fill" style="width:${Math.round(s[1]/t.dur*100)}%;background:#3b82f6"></div></div></div>`).join('')}</div></div>`).join('')}
+ </div>
+ <div class="fpanel" id="obs-audit">
+   <div class="row" style="margin-bottom:12px"><input type="text" id="auditSearch" placeholder="Filter by agent, step or reason&hellip;" style="flex:1" oninput="renderAudit()"><select id="auditFilter" onchange="renderAudit()"><option value="all">All outcomes</option><option>Failed</option><option>Escalated</option><option>Blocked</option><option>Passed</option></select></div>
+   <div id="auditSummary"></div>
+   <div id="auditBox"></div>
+   <div class="muted" style="font-size:11.5px;margin-top:12px">Immutable, step-level audit log &mdash; every agent action is recorded with the exact step reached, failure reason, severity, actor, input snapshot, trace ID and remediation for audit defence.</div>
+ </div>`;}
+/* ---- Audit Trail & Traceability (Observability) ---- */
+const AUDIT=[
+ {agent:'Intake Agent',ts:'2018-02-27 02:14:07',outcome:'Passed',step:'parse.damien_file',reason:'All 11 sources structured; 0 unreadable files; period stamp 2018.02 confirmed.',sev:'-',actor:'system',trace:'mcp-a1f09c22',input:'11 MCP source connectors',remediation:'None required.'},
+ {agent:'Data Review Agent',ts:'2018-02-27 02:14:21',outcome:'Passed',step:'validate.referential_integrity',reason:'Cost centre to GL to legal-entity tie-out 100%; completeness 99.7% within tolerance.',sev:'-',actor:'system',trace:'mcp-b7720e15',input:'3.94M rows across 11 files',remediation:'None required.'},
+ {agent:'Entity Mapping Agent',ts:'2018-02-27 02:14:33',outcome:'Passed',step:'map.costcentre_to_entity',reason:'9,640 cost centres mapped to 12 recipient entities; carve-out (990) isolated.',sev:'-',actor:'system',trace:'mcp-c3391aa8',input:'Validated dataset',remediation:'None required.'},
+ {agent:'Pricing Method Agent',ts:'2018-02-27 02:14:39',outcome:'Passed',step:'assign.method_and_drivers',reason:'Method + 10 drivers assigned across 16 pools; markups 10% / 5% applied.',sev:'-',actor:'system',trace:'mcp-d90e1f74',input:'Entity-service map',remediation:'None required.'},
+ {agent:'Benchmark Agent',ts:'2018-02-27 02:14:48',outcome:'Failed',step:'benchmark.fetch_market_data',reason:'External Tools connector "benchmark_lookup" returned HTTP 429 (rate-limited) after 3 retries; arm-length range for 1 of 4 models could not be refreshed.',sev:'High',actor:'system -> HITL',trace:'mcp-e1224b0a',input:'Method assignment, period 2018.02',remediation:'Fell back to cached trailing-period range; Subsidiary B model flagged for analyst confirmation; live retry scheduled 02:30.'},
+ {agent:'Risk Agent',ts:'2018-02-27 02:14:55',outcome:'Escalated',step:'risk.confidence_gate',reason:'2 items scored 88.7% below the 90% confidence gate - Subsidiary B pool +8.3% MoM and Canada blended-driver shift 21.8% to 22.6%.',sev:'Medium',actor:'Human-in-the-Loop',trace:'mcp-f0563d91',input:'16 cost pools',remediation:'Routed to HITL review queue; awaiting analyst sign-off before documentation proceeds.'},
+ {agent:'Documentation Agent',ts:'2018-02-27 02:15:02',outcome:'Blocked',step:'doc.generate_close_pack',reason:'Upstream Risk Agent HITL clearance pending - cannot draft journal entries / invoices.',sev:'Low',actor:'system',trace:'mcp-09ab77c2',input:'Approved allocations (pending)',remediation:'Auto-resumes the moment HITL approval is recorded.'},
+ {agent:'Approval Agent',ts:'-',outcome:'Queued',step:'approval.route_for_review',reason:'Not started - awaiting the documentation pack from the Documentation Agent.',sev:'-',actor:'system',trace:'-',input:'-',remediation:'-'}
+];
+function auditPill(o){return o==='Passed'?'ok':o==='Failed'?'bad':o==='Escalated'?'warn':'idle';}
+function toggleAudit(i){const e=document.getElementById('audit'+i);e.style.display=e.style.display==='none'?'block':'none';}
+function renderAudit(){
+ if(!document.getElementById('auditBox'))return;
+ const q=(document.getElementById('auditSearch').value||'').toLowerCase();
+ const f=document.getElementById('auditFilter').value;
+ const c=o=>AUDIT.filter(a=>a.outcome===o).length;
+ document.getElementById('auditSummary').innerHTML=`<div class="grid kpis" style="margin-bottom:14px">
+   ${kpiTile({ic:'&#129534;',bg:'bg-blue',val:AUDIT.length,lab:'Audited Steps',sub:'this close run'})}
+   ${kpiTile({ic:'&#9989;',bg:'bg-green',val:c('Passed'),lab:'Passed'})}
+   ${kpiTile({ic:'&#9940;',bg:'bg-red',val:c('Failed'),lab:'Failed'})}
+   ${kpiTile({ic:'&#9878;',bg:'bg-amber',val:c('Escalated'),lab:'Escalated to HITL'})}
+ </div>`;
+ const rows=AUDIT.filter(a=>(f==='all'||a.outcome===f)&&(a.agent+' '+a.step+' '+a.reason).toLowerCase().indexOf(q)>-1);
+ document.getElementById('auditBox').innerHTML=rows.length?rows.map(a=>{const i=AUDIT.indexOf(a);return `
+   <div class="reg-card" onclick="toggleAudit(${i})">
+     <div class="row" style="justify-content:space-between;align-items:flex-start">
+       <div><div style="font-weight:700;font-size:13px">${a.agent}</div><div class="muted" style="font-size:11.5px">step: <b>${a.step}</b> &middot; ${a.ts}</div></div>
+       <span class="pill ${auditPill(a.outcome)}">${a.outcome}</span>
+     </div>
+     <div id="audit${i}" style="display:none;margin-top:11px;border-top:1px solid var(--line-2);padding-top:11px;font-size:12.5px;line-height:1.8">
+       <div><b>Step reached / failed at:</b> <span class="kbd">${a.step}</span></div>
+       <div><b>Reason:</b> ${a.reason}</div>
+       <div><b>Severity:</b> ${a.sev} &nbsp;&middot;&nbsp; <b>Actor:</b> ${a.actor}</div>
+       <div><b>Input snapshot:</b> ${a.input}</div>
+       <div><b>Trace ID:</b> <span class="kbd">${a.trace}</span></div>
+       <div><b>Remediation:</b> ${a.remediation}</div>
+     </div>
+   </div>`;}).join(''):'<div class="muted" style="padding:22px;text-align:center">No audit events match the filter.</div>';
+}
+const LOGS=[
+ ['INFO','sap_gl_query','Fetched 312 GL rows for 2018.02'],
+ ['INFO','azure_blob_read','Streamed merchant_txn.csv (88.4MB)'],
+ ['WARN','workday_headcount','Retry 1/3 — API latency 1.8s'],
+ ['INFO','sharepoint_fetch','Loaded run-rate master'],
+ ['ERROR','workday_headcount','429 rate-limited — backing off'],
+ ['INFO','anomaly_detect','Scored 16 pools, 2 outliers'],
+ ['INFO','policy_kb_search','Matched 4 precedent docs'],
+ ['WARN','benchmark_lookup','Stale cache, refreshed range'],
+ ['INFO','ocr_extract','Parsed 3 intercompany agreements'],
+ ['INFO','fx_rate_fetch','USD rates updated']
+];
+function renderLogs(){const q=(document.getElementById('logSearch').value||'').toLowerCase();const lv=document.getElementById('logLevel').value;
+ document.getElementById('logBox').innerHTML=LOGS.filter(l=>(lv==='all'||l[0]===lv)&&(l[1]+l[2]).toLowerCase().indexOf(q)>-1).map((l,i)=>`<div class="log-line"><span class="muted">12:${(10+i).toString().padStart(2,'0')}:0${i%9}</span><span class="log-lv lv-${l[0]}">${l[0]}</span><span style="color:#7c3aed">${l[1]}</span><span>${l[2]}</span></div>`).join('');}
+const TRACES=[
+ {name:'POST /mcp/invoke · sap_gl_query',dur:142,spans:[['auth.validate',8],['route.resolve',5],['sap.connect',34],['sap.query',71],['serialize',24]]},
+ {name:'Pipeline · allocation run',dur:480,spans:[['ingest.load',120],['transform.map',96],['allocate.compute',180],['reconcile.diff',84]]},
+ {name:'GET /mcp/tools · discovery',dur:96,spans:[['scan.endpoints',60],['schema.fetch',22],['register',14]]}
+];
+function toggleTrace(i){const e=document.getElementById('trace'+i);e.style.display=e.style.display==='none'?'block':'none';}
+function obsAfter(){
+ const thru=[820,910,1040,980,1120,1210,1180,1260,1190,1284,1240,1284];
+ foundCharts.thru=new Chart(document.getElementById('obsThru'),{type:'line',data:{labels:thru.map((_,i)=>'t-'+(11-i)),datasets:[{data:thru,borderColor:'#3b82f6',backgroundColor:'#3b82f622',fill:true,tension:.35,pointRadius:2,borderWidth:2}]},options:{plugins:{legend:{display:false}},scales:{y:{grid:{color:GRIDC()}},x:{grid:{display:false}}}}});
+ foundCharts.err=new Chart(document.getElementById('obsErr'),{type:'bar',data:{labels:['SAP','Blob','SP','Workday','Bench','Snow'],datasets:[{data:[1,2,0,5,2,0],backgroundColor:'#ef4444',borderRadius:5}]},options:{plugins:{legend:{display:false}},scales:{y:{grid:{color:GRIDC()}},x:{grid:{display:false}}}}});
+ renderLogs();
+ renderAudit();
+}
+
+/* ============================================================
+   ROUTER  (original, extended for RBAC + foundation strip)
+   ============================================================ */
+/* ============================================================
+   REGULATORY COMPLIANCE — OECD Transfer Pricing (added)
+   Source: OECD, "Transfer pricing" — oecd.org/en/topics/transfer-pricing.html
+   ============================================================ */
+const TP_METHODS=[
+ ['Comparable Uncontrolled Price (CUP)','Benchmarks the intra-group price against the price in comparable independent transactions.'],
+ ['Resale Price Method','Starts from the resale price to an independent party, less an arm’s-length gross margin.'],
+ ['Cost Plus Method','Adds an arm’s-length mark-up to the costs of the supplier of goods/services.'],
+ ['Transactional Net Margin Method (TNMM)','Examines the net profit margin relative to an appropriate base (costs, sales, assets).'],
+ ['Transactional Profit Split','Splits the combined profit of the related parties on an economically valid basis.']
+];
+const TP_CHECK=[
+ ['Arm’s-length pricing on intra-group services','Art. 9 OECD Model / TP Guidelines','Cost-plus 10% / 5% mark-ups set & benchmarked (Benchmark Agent)','Compliant','ok'],
+ ['Most appropriate method selected per pool','TP Guidelines Ch. II','Pricing Method Agent: cost-plus, RAB, direct/INR across 16 pools','Compliant','ok'],
+ ['Comparability within arm’s-length range','TP Guidelines Ch. III','4 of 4 models inside the interquartile benchmark band','Compliant','ok'],
+ ['Master File (group-level TP blueprint)','BEPS Action 13','Documentation Agent — draft staged','Pending HITL','warn'],
+ ['Local File (entity-level documentation)','BEPS Action 13','Documentation Agent — Local Country Files staged','Pending HITL','warn'],
+ ['Country-by-Country Report (CbCR)','BEPS Action 13 (≥ €750m group)','Aggregate jurisdiction data prepared for filing','Ready','info'],
+ ['Intercompany agreements on file','TP Guidelines Ch. I','Ingested & structured by Intake Agent','Compliant','ok'],
+ ['Audit-ready lineage & defence pack','Tax administration practice','100% step-level audit coverage logged','Compliant','ok'],
+ ['Dispute prevention / resolution readiness','MAP (Art. 25) & APAs / BEPS Action 14','Audit Defense Packages via Approval Agent','Available','ok']
+];
+function renderCompliance(el){
+ const compliant=TP_CHECK.filter(r=>r[4]==='ok').length;
+ el.innerHTML=`
+ <div class="grid hero-cards" style="grid-template-columns:1.7fr 1fr 1fr;margin-bottom:16px">
+   <div class="hcard g-navy" style="min-height:auto">
+     <div class="hico">⚖️</div>
+     <div class="hlab" style="font-size:15px;margin-top:8px">The Arm’s Length Principle</div>
+     <div class="hsub" style="font-size:11.5px;line-height:1.55;margin-top:6px">Related-party cross-border transactions are priced as independent enterprises would — the global standard set out in the OECD Transfer Pricing Guidelines (Art. 9, OECD Model Tax Convention). It eliminates double taxation and promotes a level playing field for tax administrations and business.</div>
+   </div>
+   <div class="hcard g-green"><div class="hico">📘</div><div class="hval" style="font-size:21px">Jan 2022</div><div class="hlab">OECD TP Guidelines</div><div class="hsub">consolidated edition in force</div></div>
+   <div class="hcard g-blue"><div class="hico">🎯</div><div class="hval">4 / 4</div><div class="hlab">Models in Arm’s-Length Range</div><div class="hsub">benchmarked, period ${STATE.period}</div></div>
+ </div>
+
+ <div class="grid kpis" style="margin-bottom:16px">
+   ${kpiTile({ic:'🛡️',bg:'bg-green',val:'Compliant',lab:'Compliance Posture',sub:compliant+' / '+TP_CHECK.length+' controls met'})}
+   ${kpiTile({ic:'🗂️',bg:'bg-blue',val:'3-tier',lab:'BEPS Action 13 Docs',sub:'Master · Local · CbCR'})}
+   ${kpiTile({ic:'⚠️',bg:'bg-amber',val:'2',lab:'Open Items → HITL',sub:'Master & Local File drafts'})}
+   ${kpiTile({ic:'🌐',bg:'bg-purple',val:'€750m',lab:'CbCR Threshold',sub:'group revenue trigger'})}
+ </div>
+
+ <div class="grid" style="grid-template-columns:1fr 1fr;margin-bottom:16px">
+   <div class="card">
+     <div class="card-h"><h3>📘 OECD Transfer Pricing Guidelines</h3><span class="tag">global standard</span></div>
+     <div class="muted" style="font-size:13px;line-height:1.7">The Guidelines provide the global standard for pricing related-party transactions, help prevent and resolve tax disputes, and underpin the engine’s method selection, benchmarking and documentation.</div>
+     <div style="margin-top:12px">
+       ${[['Chapter I','Arm’s length principle'],['Chapter II','Transfer pricing methods'],['Chapter III','Comparability analysis'],['Chapter V','Documentation (BEPS Action 13)'],['Chapter IV','Dispute avoidance & resolution']].map(c=>`<div class="row" style="justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--line-2)"><span style="font-weight:600;font-size:13px">${c[1]}</span><span class="pill idle">${c[0]}</span></div>`).join('')}
+     </div>
+   </div>
+   <div class="card">
+     <div class="card-h"><h3>⚖️ The Five OECD TP Methods</h3><span class="tag">Chapter II</span></div>
+     ${TP_METHODS.map((m,i)=>`<div style="padding:9px 0;border-bottom:1px solid var(--line-2)"><div class="row" style="gap:8px"><span class="pill ${i<3?'info':'ok'}">${i<3?'Traditional':'Profit-based'}</span><span style="font-weight:700;font-size:13px">${m[0]}</span></div><div class="muted" style="font-size:12px;margin-top:3px">${m[1]}</div></div>`).join('')}
+   </div>
+ </div>
+
+ <div class="grid" style="grid-template-columns:1.1fr 1fr 1fr;margin-bottom:16px">
+   <div class="card"><div class="card-h"><h3>🗂️ BEPS Action 13 — Three-Tier Documentation</h3></div>
+     ${[['Master File','High-level blueprint of the MNE group’s global business & TP policies.','📚'],['Local File','Detailed entity-level data on material related-party transactions.','📄'],['Country-by-Country Report','Aggregate revenue, profit, tax & activity by jurisdiction (group ≥ €750m).','🌍']].map(t=>`<div class="row" style="gap:10px;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--line-2)"><span style="font-size:18px">${t[2]}</span><div><div style="font-weight:700;font-size:13px">${t[0]}</div><div class="muted" style="font-size:12px">${t[1]}</div></div></div>`).join('')}
+   </div>
+   <div class="card"><div class="card-h"><h3>🤝 Dispute Prevention & Resolution</h3></div>
+     <div class="muted" style="font-size:12.5px;line-height:1.7">
+       <div style="margin-bottom:8px"><b>MAP</b> — Mutual Agreement Procedure (Art. 25) resolves double-taxation disputes between tax authorities.</div>
+       <div style="margin-bottom:8px"><b>APAs</b> — Advance Pricing Arrangements agree a method up-front to give certainty.</div>
+       <div><b>BEPS Action 14</b> — minimum standard making dispute resolution more timely and effective.</div>
+     </div>
+   </div>
+   <div class="card"><div class="card-h"><h3>🎯 Engine Method Alignment</h3></div>
+     ${[['Technology & Operations','Cost Plus / TNMM','#3b82f6'],['Corporate HQ','Direct / Indirect Net Rev.','#8b5cf6'],['APAC & EMEA','Direct / Indirect','#f59e0b'],['Cost Sharing (RAB)','Profit/Cost contribution','#14b8a6']].map(m=>`<div class="row" style="justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line-2)"><span style="font-weight:600;font-size:13px"><span class="dotc" style="background:${m[2]};margin-right:7px"></span>${m[0]}</span><span class="muted" style="font-size:12px">${m[1]}</span></div>`).join('')}
+     <div class="pill ok" style="margin-top:12px"><span class="dotc" style="background:#16a34a"></span>All methods OECD-aligned</div>
+   </div>
+ </div>
+
+ <div class="card" style="margin-bottom:16px"><div class="card-h"><h3>✅ OECD Compliance Checklist</h3><span class="tag">engine evidence mapped to OECD requirements</span></div>
+   <table><thead><tr><th>Requirement</th><th>OECD basis</th><th>Evidence in this engine</th><th>Status</th></tr></thead>
+   <tbody>${TP_CHECK.map(r=>`<tr><td style="font-weight:600">${r[0]}</td><td class="muted">${r[1]}</td><td class="muted">${r[2]}</td><td><span class="pill ${r[4]}">${r[3]}</span></td></tr>`).join('')}</tbody></table>
+ </div>
+
+ <div class="card"><div class="card-h"><h3>🔗 Authoritative Sources</h3><span class="tag">OECD</span></div>
+   <div class="row" style="gap:10px;flex-wrap:wrap">
+     <a class="pill info" style="text-decoration:none" href="https://www.oecd.org/en/topics/transfer-pricing.html" target="_blank" rel="noopener">OECD · Transfer Pricing ↗</a>
+     <a class="pill info" style="text-decoration:none" href="https://www.oecd.org/en/topics/base-erosion-and-profit-shifting-beps.html" target="_blank" rel="noopener">OECD · BEPS (Action 13) ↗</a>
+   </div>
+   <div class="muted" style="font-size:11.5px;margin-top:10px">Reference content summarised from the OECD Transfer Pricing topic page. Guideline citations are illustrative of the framework the engine implements; confirm current obligations with your tax advisors.</div>
+ </div>`;
+}
+/* ============================================================
+   NATURAL LANGUAGE PROCESSING  (added)
+   ============================================================ */
+function renderNlpUnderstanding(el){
+  el.innerHTML=`
+  <div class="grid hero-cards" style="margin-bottom:16px">
+    <div class="hcard g-blue"><div class="hico">🏷️</div><div class="hval">14,820</div><div class="hlab">Intents Classified</div><div class="hsub">this month</div></div>
+    <div class="hcard g-purple"><div class="hico">🔖</div><div class="hval">61,440</div><div class="hlab">Entities Extracted</div><div class="hsub">NER pipeline</div></div>
+    <div class="hcard g-green"><div class="hico">🎯</div><div class="hval">96.4%</div><div class="hlab">Avg Confidence</div><div class="hsub">intent model</div></div>
+    <div class="hcard g-teal"><div class="hico">🌐</div><div class="hval">11</div><div class="hlab">Languages</div><div class="hsub">auto-detected</div></div>
+  </div>
+  <div class="grid" style="grid-template-columns:1.2fr 1fr;align-items:start">
+    <div class="card">
+      <div class="card-h"><h3>🧠 Analyze Text</h3><span class="tag">intent · entities · sentiment</span></div>
+      <textarea id="nluInput" style="width:100%;min-height:120px;border:1px solid var(--line);border-radius:11px;padding:12px;font-family:inherit;font-size:13.5px;resize:vertical">Please reconcile the Q2 intercompany allocations for the EMEA entities and flag any cost pool variance above 5% before the Controllership close.</textarea>
+      <div class="row" style="margin-top:12px"><button class="btn btn-primary" onclick="runNLU()">⚡ Analyze</button>
+        <select id="nluModel"><option>Intent + NER (fine-tuned)</option><option>Zero-shot classifier</option><option>Multilingual BERT</option></select></div>
+      <div id="nluOut" style="margin-top:16px"></div>
+    </div>
+    <div class="card"><div class="card-h"><h3>Intent Distribution</h3><span class="tag">last 30 days</span></div>
+      <div class="chart-wrap" style="height:250px"><canvas id="cNlu"></canvas></div></div>
+  </div>`;
+  charts.cNlu=new Chart(cNlu,{type:'doughnut',data:{labels:['Reconciliation','Allocation query','Compliance check','Reporting','Data request','Other'],
+    datasets:[{data:[34,24,15,12,9,6],backgroundColor:['#3b82f6','#14b8a6','#8b5cf6','#f59e0b','#22c55e','#cbd5e1'],borderWidth:2,borderColor:'#fff'}]},
+    options:{cutout:'60%',plugins:{legend:{position:'right'}}}});
+}
+function runNLU(){
+  document.getElementById('nluOut').innerHTML=`
+  <div style="background:var(--panel);border-radius:12px;padding:14px 16px">
+    <div class="row" style="justify-content:space-between"><span style="font-weight:700;font-size:13px">Detected intent</span><span class="pill ok">Reconciliation · 97.2%</span></div>
+    <div style="margin:12px 0 6px;font-weight:700;font-size:12px;color:var(--muted)">Entities</div>
+    <div class="row">${[['Period','Q2','#e8f1ff','#2563eb'],['Region','EMEA','#f0eafe','#7c3aed'],['Metric','cost pool variance','#dcf7f3','#0d9488'],['Threshold','5%','#fef3df','#b7791f'],['Process','Controllership close','#e3f7ec','#15803d']].map(e=>`<span class="pill" style="background:${e[2]};color:${e[3]}">${e[0]}: ${e[1]}</span>`).join('')}</div>
+    <div class="row" style="margin-top:12px;gap:18px"><span style="font-size:12.5px"><b>Sentiment:</b> Neutral (0.61)</span><span style="font-size:12.5px"><b>Language:</b> English</span><span style="font-size:12.5px"><b>Urgency:</b> Medium</span></div>
+  </div>`;
+}
+
+function renderNlpRetrieval(el){
+  el.innerHTML=`
+  <div class="grid hero-cards" style="margin-bottom:16px">
+    <div class="hcard g-blue"><div class="hico">📚</div><div class="hval">2,341</div><div class="hlab">Documents Indexed</div><div class="hsub">policies · precedents · filings</div></div>
+    <div class="hcard g-green"><div class="hico">🔎</div><div class="hval">18,902</div><div class="hlab">Queries Served</div><div class="hsub">this month</div></div>
+    <div class="hcard g-amber"><div class="hico">🎯</div><div class="hval">94.7%</div><div class="hlab">Avg Relevance</div><div class="hsub">top-3 hit rate</div></div>
+    <div class="hcard g-purple"><div class="hico">⚡</div><div class="hval">0.5s</div><div class="hlab">Avg Latency</div><div class="hsub">semantic search</div></div>
+  </div>
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-h"><h3>💬 Knowledge Retrieval</h3><span class="tag">semantic search over the indexed knowledge base</span></div>
+    <div class="row" style="gap:8px"><input type="text" id="krq" placeholder="e.g. What markup applies to LATAM direct cost pools?" style="flex:1" onkeydown="if(event.key==='Enter')runKR()">
+      <button class="btn btn-primary" onclick="runKR()">Search</button></div>
+    <div style="margin-top:12px" class="row">${['What markup applies to LATAM direct pools?','Which drivers feed Cost Sharing?','Carve-out rules for no-allocation pools'].map(q=>`<span class="pill info" style="cursor:pointer" onclick="document.getElementById('krq').value='${q}';runKR()">${q}</span>`).join('')}</div>
+    <div id="krOut" style="margin-top:16px"></div>
+  </div>
+  <div class="card"><div class="card-h"><h3>Indexed Sources</h3><span class="tag">by type</span></div>
+    <div class="chart-wrap" style="height:240px"><canvas id="cKr"></canvas></div></div>`;
+  charts.cKr=new Chart(cKr,{type:'bar',data:{labels:['TP Policies','Intercompany Agreements','Prior Filings','Benchmark Studies','GL Documentation','Regulatory Guidance'],
+    datasets:[{data:[612,338,470,290,388,243],backgroundColor:'#3b82f6',borderRadius:6}]},
+    options:{indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{grid:{color:GRIDC()}},y:{grid:{display:false}}}}});
+  runKR();
+}
+function runKR(){
+  const q=(document.getElementById('krq').value||'What markup applies to LATAM direct cost pools?');
+  const res=[
+   {t:'TP Policy Manual §4.2 — Cost-Plus Markups',s:96,d:'Direct cost pools allocated to LATAM (entity 501) carry a 5% markup; all other direct and indirect pools carry the standard 10% cost-plus markup.'},
+   {t:'Intercompany Agreement — Schedule B',s:91,d:'Markup rates are applied on a cost-plus basis consistent with the transactional net margin method (TNMM) and reviewed annually.'},
+   {t:'Prior Period Filing — 2017 Local File',s:84,d:'Historical markup treatment for LATAM direct pools confirmed at 5%, accepted by local tax authority with no adjustment.'}
+  ];
+  document.getElementById('krOut').innerHTML=`<div class="muted" style="font-size:12px;margin-bottom:8px">Top matches for: <b>"${q}"</b></div>`+
+   res.map(r=>`<div style="border:1px solid var(--line);border-radius:11px;padding:12px 14px;margin-bottom:9px">
+     <div class="row" style="justify-content:space-between"><span style="font-weight:700;font-size:13.5px">${r.t}</span><span class="pill ${r.s>90?'ok':'info'}">${r.s}% match</span></div>
+     <div class="muted" style="font-size:12.5px;margin-top:5px;line-height:1.6">${r.d}</div></div>`).join('');
+}
+
+const LANGGEN={
+ 'Text Generation':{ph:'Draft an intercompany charge memo for the Q2 management fee allocation...',btn:'Generate',out:'<b>Intercompany Charge Memo — Q2</b><br>This memo documents the Q2 management fee charged from the central service entity to recipient affiliates on a cost-plus basis (10% markup). Allocations follow the approved driver keys; supporting calculations are retained for audit. Recipient entities: Corporate HQ, APAC & EMEA, Cost Sharing pool participants.'},
+ 'Text2Text Generation':{ph:'Rewrite this clause in plain English: "Allocable indirect costs shall be apportioned pro-rata to net revenue..."',btn:'Transform',out:'<b>Plain-English rewrite:</b><br>Shared indirect costs are split across entities in proportion to each entity\'s share of net revenue for the period.'},
+ 'Summarization':{ph:'Paste a long allocation report or policy document to summarise...',btn:'Generate Summary',out:'<b>Summary:</b><br>Total intercompany allocations settled on a cost-plus basis, led by the Technology & Operations model. Markups applied at 10% standard and 5% on LATAM direct pools. The rebuilt engine reconciled to the legacy tool at 100% parity; no items breached audit tolerance.'},
+ 'Translation':{ph:'Enter text to translate (auto-detect source language)...',btn:'Translate',out:'<b>Translation (EN → ES):</b><br>Las asignaciones intercompañía del periodo se liquidaron sobre una base de costo más margen, con un recargo del 10% estándar y 5% para los grupos directos de LATAM.'}
+};
+function renderNlpLangGen(el){
+  if(!STATE.langGen) STATE.langGen='Summarization';
+  const tools=Object.keys(LANGGEN); const cur=LANGGEN[STATE.langGen];
+  el.innerHTML=`
+  <div class="grid hero-cards" style="margin-bottom:16px">
+    <div class="hcard g-blue"><div class="hico">📄</div><div class="hval">8,542</div><div class="hlab">Documents</div><div class="hsub">processed</div></div>
+    <div class="hcard g-green"><div class="hico">🗜️</div><div class="hval">75%</div><div class="hlab">Avg Compression</div><div class="hsub">summarization</div></div>
+    <div class="hcard g-amber"><div class="hico">⏱️</div><div class="hval">12,450</div><div class="hlab">Hours Saved</div><div class="hsub">YTD</div></div>
+    <div class="hcard g-purple"><div class="hico">📈</div><div class="hval">91.2%</div><div class="hlab">Quality Score</div><div class="hsub">coherence</div></div>
+  </div>
+  <div class="card">
+    <div class="card-h"><h3>📝 Language Generation &amp; Transformation</h3><span class="tag">text generation · text2text · summarization · translation</span></div>
+    <div class="seg" style="margin-bottom:16px">${tools.map(t=>`<button class="${t===STATE.langGen?'active':''}" onclick="STATE.langGen='${t}';render('nlp-langgen')">${t}</button>`).join('')}</div>
+    <label style="font-weight:700;font-size:12.5px;display:block;margin-bottom:6px">Input Text</label>
+    <textarea id="lgInput" style="width:100%;min-height:130px;border:1px solid var(--line);border-radius:11px;padding:12px;font-family:inherit;font-size:13.5px;resize:vertical" placeholder="${cur.ph}"></textarea>
+    <div class="row" style="margin-top:12px;gap:14px">
+      <div><div class="muted" style="font-size:11px;font-weight:700;margin-bottom:4px">TYPE</div><select><option>Abstractive</option><option>Extractive</option></select></div>
+      <div><div class="muted" style="font-size:11px;font-weight:700;margin-bottom:4px">LENGTH</div><select><option>Short (1-2 sentences)</option><option selected>Medium (3-5 sentences)</option><option>Long (paragraph)</option></select></div>
+      <div><div class="muted" style="font-size:11px;font-weight:700;margin-bottom:4px">MODEL</div><select><option>BART</option><option>T5</option><option>GPT-4 class</option></select></div>
+    </div>
+    <div class="row" style="margin-top:14px"><button class="btn btn-primary" onclick="runLangGen()">📄 ${cur.btn}</button><button class="btn btn-ghost">⬆ Upload Document</button></div>
+    <div id="lgOut" style="margin-top:16px"></div>
+  </div>`;
+}
+function runLangGen(){
+  const cur=LANGGEN[STATE.langGen];
+  document.getElementById('lgOut').innerHTML=`<div style="background:#eaf3ff;border-radius:12px;padding:14px 16px">
+    <div style="font-weight:700;color:var(--blue-d);font-size:13px;margin-bottom:6px">📄 Output</div>
+    <div style="font-size:13.5px;line-height:1.7;color:var(--ink-soft)">${cur.out}</div></div>`;
+}
+
+/* ============================================================
+   CUSTOMER SUPPORT AI  (added)
+   ============================================================ */
+const CHANNELS=[
+ {n:'WhatsApp',ic:'🟢',col:'#22c55e',st:'connected'},
+ {n:'Facebook',ic:'🔵',col:'#1877f2',st:'connected'},
+ {n:'Telegram',ic:'✈️',col:'#2563eb',st:'connected'},
+ {n:'Twilio SMS',ic:'📱',col:'#ef4444',st:'disconnected'}
+];
+function renderCsChannels(el){
+  el.innerHTML=`
+  <div class="grid hero-cards" style="margin-bottom:18px">
+    ${CHANNELS.map(c=>`<div class="card" style="text-align:center;padding:20px 14px">
+      <div style="font-size:26px">${c.ic}</div>
+      <div style="font-weight:800;font-size:15px;margin-top:8px;color:${c.col}">${c.n}</div>
+      <span class="pill ${c.st==='connected'?'ok':'bad'}" style="margin-top:8px"><span class="dotc" style="background:${c.st==='connected'?'#16a34a':'#dc2626'}"></span>${c.st==='connected'?'Connected':'Disconnected'}</span>
+    </div>`).join('')}
+  </div>
+  <div class="card" style="margin-bottom:16px">
+    <h3 style="margin-bottom:4px">WhatsApp Business Connector</h3>
+    <div class="row" style="margin:6px 0 16px"><span class="pill ok"><span class="dotc" style="background:#16a34a"></span>Status: Connected</span></div>
+    <div class="grid" style="grid-template-columns:1fr 1fr 1fr;gap:18px;align-items:start">
+      <div style="text-align:center">
+        <div style="font-weight:700;font-size:13px;margin-bottom:10px">Scan the QR code on your mobile device</div>
+        <div style="width:170px;height:170px;margin:0 auto;border-radius:12px;background:
+          repeating-conic-gradient(#0f2540 0% 25%, #fff 0% 50%) 50%/18px 18px;border:6px solid #fff;box-shadow:0 0 0 1px var(--line)"></div>
+      </div>
+      <div style="text-align:center">
+        <div style="font-weight:700;font-size:13px;margin-bottom:14px">Connect to WhatsApp</div>
+        <div style="font-size:34px">🟢</div>
+        <div class="pill idle" style="margin:12px auto">Join Sample Client</div>
+        <button class="btn btn-primary" style="margin-top:8px">Say Hi on WhatsApp Web</button>
+      </div>
+      <div>
+        <div style="font-weight:700;font-size:13px;margin-bottom:12px;text-align:center">Start a conversation</div>
+        <div style="background:var(--hover);border-radius:12px;padding:9px 12px;font-size:12.5px;margin-bottom:8px">Ask me about the platform. How can I help you?</div>
+        <div style="background:#dcf7ec;border-radius:12px;padding:9px 12px;font-size:12.5px;text-align:right">What allocation models are supported?</div>
+      </div>
+    </div>
+  </div>
+  <div class="card"><div class="row" style="justify-content:space-between"><h3>Facebook Messenger Connector</h3>
+    <div class="row"><button class="btn btn-ghost">Connect on Messenger</button><span class="pill bad"><span class="dotc" style="background:#dc2626"></span>Disconnected</span></div></div></div>`;
+}
+
+const NBA=[
+ {t:'Follow up with allocation queries',d:'Contact stakeholders who raised period-end allocation questions.',ic:'📞'},
+ {t:'Send reconciliation report',d:'Share the latest parity summary with the finance team.',ic:'✉️'},
+ {t:'Prepare monthly close pack',d:'Summarise this period\'s allocations and key outcomes.',ic:'📈'},
+ {t:'Review exception queue',d:'Clear the 2 Risk Agent items awaiting human review.',ic:'⚠️'}
+];
+const CHIST=[['Period Close Review','12.03.2026'],['Allocation Setup','08.02.2026'],['Reconciliation Audit','15.01.2026'],['Driver Update','22.11.2025'],['Policy Workshop','10.10.2025']];
+function renderCsAgentAssist(el){
+  el.innerHTML=`
+  <div class="grid" style="grid-template-columns:300px 1fr 230px;align-items:start">
+    <div>
+      <div class="card" style="margin-bottom:14px"><div class="card-h"><h3>Conversations</h3></div>
+        <div style="border:1px solid var(--line);border-radius:11px;padding:12px"><div style="font-weight:700;font-size:13px">Allocation Inquiry · Finance</div><div class="muted" style="font-size:12px">Sample Client Support Queue</div></div></div>
+      <div class="card"><div class="card-h"><h3>Next Best Actions</h3></div>
+        ${NBA.map(a=>`<div style="border:1px solid var(--line);border-radius:11px;padding:11px;margin-bottom:8px"><div class="row" style="gap:9px"><span style="font-size:16px">${a.ic}</span><div><div style="font-weight:600;font-size:13px">${a.t}</div><div class="muted" style="font-size:11.5px">${a.d}</div></div></div></div>`).join('')}</div>
+    </div>
+    <div class="card">
+      <div class="row" style="justify-content:space-between;margin-bottom:14px"><h3>Customer Info</h3>
+        <div class="row"><span class="pill ok">Incidents 0</span><span class="pill info">Cases 3</span></div></div>
+      <div class="row" style="gap:12px;margin-bottom:14px"><div class="uava" style="width:42px;height:42px;background:#3b82f6">SM</div>
+        <div><div style="font-weight:800;font-size:15px">Ms. Sarah Mitchell</div><div class="muted" style="font-size:12px">Finance Controller · +1-415-882-3901</div></div></div>
+      <div style="background:var(--panel);border-radius:12px;padding:14px;margin-bottom:14px">
+        <div style="font-weight:700;font-size:13px;margin-bottom:5px">📄 Possible Answer</div>
+        <div style="font-size:13px;line-height:1.6;color:var(--ink-soft)">The platform's cost-plus engine automatically applies the approved markup (10% standard, 5% LATAM direct) and reconciles every number against the legacy tool before close. <a href="#" style="color:var(--blue-d)">Learn more</a></div>
+      </div>
+      <div style="background:#eaf3ff;border-radius:12px;padding:14px">
+        <div style="font-size:13px;margin-bottom:8px">"I'd like to confirm the markup applied to our LATAM direct pools this period. Is there anything new?"</div>
+        <div style="font-size:12.5px;line-height:1.8"><b>Topic:</b> Cost-plus markup confirmation<br><b>Probability:</b> 88%<br><b>Sentiment:</b> Positive (91%)</div>
+      </div>
+    </div>
+    <div class="card"><div class="card-h"><h3>Customer History</h3></div>
+      ${CHIST.map(h=>`<div class="row" style="gap:9px;padding:9px 0;border-bottom:1px solid var(--line-2)"><span style="font-size:15px">🗓️</span><div><div style="font-weight:600;font-size:12.5px">${h[0]}</div><div class="muted" style="font-size:11px">${h[1]}</div></div></div>`).join('')}</div>
+  </div>`;
+}
+
+const RENDER={overview:renderOverview,explorer:renderExplorer,recon:renderRecon,scenario:renderScenario,orchestration:renderOrchestration,migrator:renderMigrator,transformer:renderTransformer,pipeline:renderPipeline,scheduler:renderScheduler,compliance:renderCompliance,'nlp-understanding':renderNlpUnderstanding,'nlp-retrieval':renderNlpRetrieval,'nlp-langgen':renderNlpLangGen,'cs-channels':renderCsChannels,'cs-agentassist':renderCsAgentAssist};
+var current='overview';
+function render(v){
+  if(CURRENT_USER && !canView(v)) v=firstAllowedView();
+  current=v;destroyCharts();
+  document.querySelectorAll('.view').forEach(s=>s.classList.remove('show'));
+  document.querySelectorAll('.nav-item[data-view]').forEach(t=>t.classList.toggle('active',t.dataset.view===v));
+  const isAgent=v.indexOf('ag-')===0;
+  const el=document.getElementById(isAgent?'view-agents':'view-'+v);el.classList.add('show');
+  if(isAgent) renderAgent(el, v.slice(3)); else RENDER[v](el);
+  if(v==='pipeline') el.insertAdjacentHTML('beforeend',FOUNDATION_HTML());
+}
+document.querySelectorAll('.nav-item[data-view]').forEach(t=>t.addEventListener('click',()=>render(t.dataset.view)));
+document.getElementById('loginEmail').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+document.getElementById('loginPw').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+/* No auto-render: the login screen is shown until a user signs in. */
+(function(){var t='light';try{t=localStorage.getItem('tp_theme')||'light';}catch(e){}applyTheme(t);})();
+</script>
+</body>
+</html>
+
