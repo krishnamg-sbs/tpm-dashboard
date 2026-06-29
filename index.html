@@ -249,6 +249,13 @@ html[data-theme="dark"] input[type=text],
 html[data-theme="dark"] input[type=password],
 html[data-theme="dark"] textarea,
 html[data-theme="dark"] .login-form input{background:var(--panel);color:var(--ink);border-color:var(--line)}
+.logo-chip{display:inline-flex;align-items:center;justify-content:center}
+.brand-logo{height:40px;width:40px;border-radius:50%;object-fit:cover;display:block;background:#fff}
+.ll-logo{height:58px;width:58px;border-radius:50%;object-fit:cover;display:block;background:#fff}
+.brand-logo-svg svg{height:34px;width:auto;display:block}
+.ll-logo-svg svg{height:46px;width:auto;display:block}
+.brand-logo-svg,.ll-logo-svg{background:#fff;border-radius:8px;padding:3px 8px}
+html[data-theme="dark"] .brand-logo,html[data-theme="dark"] .ll-logo{box-shadow:0 0 0 2px var(--line)}
 </style>
 </head>
 <body>
@@ -257,11 +264,13 @@ html[data-theme="dark"] .login-form input{background:var(--panel);color:var(--in
   <button class="theme-toggle login-toggle" onclick="toggleTheme()" title="Toggle dark / light">🌙</button>
   <div class="login-left">
     <div>
-      <div class="ll-brand"><b>S</b><b>b</b><b>S</b></div>
-      <div class="ll-tag">BEYOND IT &middot; TP ENGINE v4.0</div>
+      <span class="logo-chip">
+        <img src="https://pbs.twimg.com/profile_images/1194956981770997760/iMY5oUqL_400x400.png" alt="SBS Corp - Beyond IT" class="ll-logo" onerror="this.style.display='none';this.nextElementSibling.style.display='inline-block'">
+        <span class="ll-logo-svg" style="display:none"><svg viewBox="0 0 300 152" xmlns="http://www.w3.org/2000/svg" aria-label="SBS Corp - Beyond IT"><text x="20" y="112" font-family="'Arial Rounded MT Bold',Arial,Helvetica,sans-serif" font-weight="800" font-size="120" fill="#161616">S</text><rect x="116" y="22" width="20" height="96" rx="10" fill="#63b63d"/><circle cx="140" cy="94" r="24" fill="none" stroke="#63b63d" stroke-width="18"/><polygon points="126,4 145,32 107,32" fill="#2f7d33"/><text x="176" y="112" font-family="'Arial Rounded MT Bold',Arial,Helvetica,sans-serif" font-weight="800" font-size="120" fill="#161616">S</text><text x="140" y="144" text-anchor="middle" font-family="'Arial Rounded MT Bold',Arial,Helvetica,sans-serif" font-weight="700" font-size="24" letter-spacing="3" fill="#161616">Beyond IT</text></svg></span>
+      </span>
     </div>
     <div>
-      <h1>Finance Automation &amp; Transfer Pricing Platform</h1>
+      <h1>Finance Automation &amp; Intelligence Platform</h1>
       <p class="sub">Consolidated allocation, reconciliation and agentic close &mdash; secured by role-based access control.</p>
       <div class="ll-stats">
         <div class="ll-stat"><div class="v">$300M+</div><div class="l">Allocated / period</div></div>
@@ -273,7 +282,7 @@ html[data-theme="dark"] .login-form input{background:var(--panel);color:var(--in
   <div class="login-right">
     <div class="login-form">
       <h2>Sign in</h2>
-      <div class="lf-sub">Access the TP Engine console</div>
+      <div class="lf-sub">Access the SBS ConvokeAI console</div>
       <label>Email</label>
       <input id="loginEmail" type="text" placeholder="you@sbs.com" autocomplete="username">
       <label>Password</label>
@@ -287,8 +296,21 @@ html[data-theme="dark"] .login-form input{background:var(--panel);color:var(--in
   <!-- ===== SIDEBAR ===== -->
   <aside class="sidebar">
     <div class="brand">
-      <div><div class="logo"><b>S</b><b>b</b><b>S</b></div><small>BEYOND IT</small></div>
+      <span class="logo-chip">
+        <img src="https://pbs.twimg.com/profile_images/1194956981770997760/iMY5oUqL_400x400.png" alt="SBS Corp - Beyond IT" class="brand-logo" onerror="this.style.display='none';this.nextElementSibling.style.display='inline-block'">
+        <span class="brand-logo-svg" style="display:none"><svg viewBox="0 0 300 152" xmlns="http://www.w3.org/2000/svg" aria-label="SBS Corp - Beyond IT"><text x="20" y="112" font-family="'Arial Rounded MT Bold',Arial,Helvetica,sans-serif" font-weight="800" font-size="120" fill="#161616">S</text><rect x="116" y="22" width="20" height="96" rx="10" fill="#63b63d"/><circle cx="140" cy="94" r="24" fill="none" stroke="#63b63d" stroke-width="18"/><polygon points="126,4 145,32 107,32" fill="#2f7d33"/><text x="176" y="112" font-family="'Arial Rounded MT Bold',Arial,Helvetica,sans-serif" font-weight="800" font-size="120" fill="#161616">S</text><text x="140" y="144" text-anchor="middle" font-family="'Arial Rounded MT Bold',Arial,Helvetica,sans-serif" font-weight="700" font-size="24" letter-spacing="3" fill="#161616">Beyond IT</text></svg></span>
+      </span>
     </div>
+
+        <div class="side-group"><span class="gic">📈</span> Finance</div>
+    <div class="nav-item" data-view="exec"><span class="ic">🏠</span> Dashboard</div>
+    <div class="nav-item" data-view="finops"><span class="ic">🧾</span> Operations</div>
+
+    <div class="side-group"><span class="gic">⚖️</span> Transfer Pricing</div>
+    <div class="nav-item" data-view="overview"><span class="ic">▦</span> Overview</div>
+    <div class="nav-item" data-view="explorer"><span class="ic">🔎</span> Allocation Explorer</div>
+    <div class="nav-item" data-view="recon"><span class="ic">⚖️</span> Reconciliation</div>
+    <div class="nav-item" data-view="scenario"><span class="ic">🎚️</span> Scenario Lab</div>
 
     <div class="side-group"><span class="gic">🗄️</span> Data Platform</div>
     <div class="nav-item" data-view="migrator"><span class="ic">🔌</span> Data Migrator</div>
@@ -296,11 +318,8 @@ html[data-theme="dark"] .login-form input{background:var(--panel);color:var(--in
     <div class="nav-item" data-view="pipeline"><span class="ic">🛰️</span> Integration</div>
     <div class="nav-item" data-view="scheduler"><span class="ic">⏱️</span> Scheduler</div>
 
-    <div class="side-group"><span class="gic">📊</span> Analytics</div>
-    <div class="nav-item" data-view="overview"><span class="ic">▦</span> Overview</div>
-    <div class="nav-item" data-view="explorer"><span class="ic">🔎</span> Allocation Explorer</div>
-    <div class="nav-item" data-view="recon"><span class="ic">⚖️</span> Reconciliation</div>
-    <div class="nav-item" data-view="scenario"><span class="ic">🎚️</span> Scenario Lab</div>
+    <div class="side-group"><span class="gic">⚙️</span> Automation</div>
+    <div class="nav-item" data-view="workflow"><span class="ic">🧩</span> Workflow Builder</div>
 
     <div class="side-group"><span class="gic">🤖</span> AI Agents</div>
     <div class="nav-item" data-view="orchestration"><span class="ic">🔗</span> Orchestration Flow</div>
@@ -319,8 +338,12 @@ html[data-theme="dark"] .login-form input{background:var(--panel);color:var(--in
     <div class="nav-item" data-view="nlp-langgen"><span class="ic">📝</span> Language Generation &amp; Transformation</div>
 
     <div class="side-group"><span class="gic">🎧</span> Customer Support AI</div>
-    <div class="nav-item" data-view="cs-channels"><span class="ic">🗂️</span> Channel Management</div>
+    <div class="nav-item" data-view="cs-copilot"><span class="ic">🧭</span> Copilot Dashboard</div>
     <div class="nav-item" data-view="cs-agentassist"><span class="ic">🧑‍💼</span> Agent Assist</div>
+    <div class="nav-item" data-view="cs-journey"><span class="ic">🛤️</span> Customer Journey</div>
+    <div class="nav-item" data-view="cs-360"><span class="ic">👤</span> Customer 360</div>
+    <div class="nav-item" data-view="cs-channels"><span class="ic">🗂️</span> Channel Management</div>
+    <div class="nav-item" data-view="cs-chatbot"><span class="ic">💬</span> Chatbot &amp; Voice</div>
 
     <!-- Governance menu hidden per request -->
   </aside>
@@ -340,7 +363,7 @@ html[data-theme="dark"] .login-form input{background:var(--panel);color:var(--in
       <div class="page-head">
         <div>
           <div class="page-title">Finance Automation</div>
-          <div class="page-sub">TP Engine v4.0 — Consolidated Transfer Pricing &amp; Data Platform · <span id="periodLabel">Period 2018.02</span></div>
+          <div class="page-sub" id="pageSub">Finance Automation &amp; Intelligence Platform · <span id="periodLabel">Period 2018.02</span></div>
         </div>
         <div class="row">
           <span class="client-chip"><span class="dot"></span> Sample Client · Consolidated Group</span>
@@ -376,6 +399,13 @@ html[data-theme="dark"] .login-form input{background:var(--panel);color:var(--in
       <section class="view" id="view-nlp-langgen"></section>
       <section class="view" id="view-cs-channels"></section>
       <section class="view" id="view-cs-agentassist"></section>
+      <section class="view" id="view-exec"></section>
+      <section class="view" id="view-finops"></section>
+      <section class="view" id="view-workflow"></section>
+      <section class="view" id="view-cs-copilot"></section>
+      <section class="view" id="view-cs-journey"></section>
+      <section class="view" id="view-cs-360"></section>
+      <section class="view" id="view-cs-chatbot"></section>
       <section class="view" id="view-compliance"></section>
 
       <div style="text-align:center;color:var(--faint);font-size:11px;margin-top:34px">2026 © SbS Corp. All Rights Reserved. · TP Engine modernisation POC — illustrative data</div>
@@ -938,7 +968,7 @@ function renderMigrator(el){
       <span class="pill ${s.st==='connected'?'ok':'idle'}" id="srcst${i}"><span class="dotc" style="background:${s.st==='connected'?'#16a34a':'#94a3b8'}"></span>${s.st==='connected'?'Connected':'Idle'}</span></div>
       <div style="font-weight:700;font-size:13.5px;margin-top:10px">${s.n}</div>
       <div class="muted" style="font-size:12px;margin:3px 0 12px">${s.sub}</div>
-      <button class="btn btn-ghost" style="width:100%" onclick="testConn(${i})">⚡ Test connection</button>
+      <button class="btn btn-ghost" style="width:100%" onclick="openConnectorWizard(${i})">⚙ Configure &amp; Test</button>
     </div>`).join('')}
     </div>
   </div>
@@ -1080,9 +1110,9 @@ function toggleJob(i){JOBS[i].on=!JOBS[i].on;const e=document.getElementById('jo
    ============================================================ */
 const ROLES={
   superadmin:{label:'Super Admin',color:'#8b5cf6',views:'*'},
-  admin:{label:'Admin',color:'#3b82f6',views:['migrator','transformer','pipeline','scheduler','overview','explorer','recon','orchestration','compliance','nlp-understanding','nlp-retrieval','nlp-langgen','cs-channels','cs-agentassist']},
-  manager:{label:'Manager',color:'#14b8a6',views:['overview','explorer','recon','compliance','nlp-understanding','nlp-retrieval','nlp-langgen','cs-channels','cs-agentassist']},
-  dataadmin:{label:'Data Admin',color:'#f59e0b',views:['migrator','transformer','pipeline','scheduler','overview','nlp-understanding','nlp-retrieval','nlp-langgen','cs-channels','cs-agentassist']}
+  admin:{label:'Admin',color:'#3b82f6',views:['migrator','transformer','pipeline','scheduler','overview','explorer','recon','orchestration','compliance','nlp-understanding','nlp-retrieval','nlp-langgen','cs-channels','cs-agentassist','exec','finops','workflow','cs-copilot','cs-journey','cs-360','cs-chatbot']},
+  manager:{label:'Manager',color:'#14b8a6',views:['overview','explorer','recon','compliance','nlp-understanding','nlp-retrieval','nlp-langgen','cs-channels','cs-agentassist','exec','finops','workflow','cs-copilot','cs-journey','cs-360','cs-chatbot']},
+  dataadmin:{label:'Data Admin',color:'#f59e0b',views:['migrator','transformer','pipeline','scheduler','overview','nlp-understanding','nlp-retrieval','nlp-langgen','cs-channels','cs-agentassist','exec','finops','workflow','cs-copilot','cs-journey','cs-360','cs-chatbot']}
 };
 const USERS={
   'superadmin@sbs.com':{pw:'demo123',name:'Sarah Chen',role:'superadmin'},
@@ -1093,7 +1123,7 @@ const USERS={
 var CURRENT_USER=null;
 function initials(n){return n.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();}
 function canView(v){ if(!CURRENT_USER)return false; const r=ROLES[CURRENT_USER.role]; return r.views==='*'||r.views.indexOf(v)>-1; }
-function firstAllowedView(){ return ['overview','migrator','transformer','pipeline','scheduler','explorer','recon','scenario','orchestration'].find(canView)||'overview'; }
+function firstAllowedView(){ return ['exec','finops','overview','migrator','transformer','pipeline','scheduler','explorer','recon','scenario','orchestration','workflow'].find(canView)||'exec'; }
 function applyRBAC(){
   document.querySelectorAll('.nav-item[data-view]').forEach(it=>{ it.style.display=canView(it.dataset.view)?'':'none'; });
   document.querySelectorAll('.side-group').forEach(g=>{
@@ -1175,7 +1205,7 @@ function openFoundationModal(type){
  document.getElementById('fmodal').classList.add('show');
  if(m.after) m.after();
 }
-function closeFoundationModal(){destroyFoundCharts();document.getElementById('fmodal').classList.remove('show');}
+function closeFoundationModal(){destroyFoundCharts();var m=document.getElementById('fmodal');m.classList.remove('show');m.style.display='';}
 function fShow(btn,id){
  const b=document.getElementById('fmodalBody');
  b.querySelectorAll('.ftab').forEach(t=>t.classList.remove('active')); btn.classList.add('active');
@@ -1639,11 +1669,363 @@ function renderCsAgentAssist(el){
   </div>`;
 }
 
-const RENDER={overview:renderOverview,explorer:renderExplorer,recon:renderRecon,scenario:renderScenario,orchestration:renderOrchestration,migrator:renderMigrator,transformer:renderTransformer,pipeline:renderPipeline,scheduler:renderScheduler,compliance:renderCompliance,'nlp-understanding':renderNlpUnderstanding,'nlp-retrieval':renderNlpRetrieval,'nlp-langgen':renderNlpLangGen,'cs-channels':renderCsChannels,'cs-agentassist':renderCsAgentAssist};
+/* ============================================================
+   FINANCE — Executive Dashboard + Finance Operations  (added)
+   ============================================================ */
+function nbaRow(g,ic,t,d){return `<div style="background:linear-gradient(90deg,${g});border-radius:13px;padding:13px 16px;margin-bottom:10px;color:#fff;display:flex;align-items:center;gap:13px">
+  <div style="font-size:18px">${ic}</div><div><div style="font-weight:700;font-size:13.5px">${t}</div><div style="font-size:12px;opacity:.9">${d}</div></div></div>`;}
+function drillCard(icon,bg,title,sub,view){return `<div class="card" style="cursor:pointer" onclick="render('${view}')">
+  <div class="row" style="justify-content:space-between"><div class="ico ${bg}" style="width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:18px">${icon}</div><span class="muted" style="font-size:18px">→</span></div>
+  <div style="font-weight:700;font-size:14px;margin-top:10px">${title}</div><div class="muted" style="font-size:12px">${sub}</div></div>`;}
+
+function renderExec(el){
+  el.innerHTML=`
+  <div class="grid" style="grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:16px">
+    ${kpiTile({ic:'💰',bg:'bg-green',val:'$48.6M',lab:'Revenue (QTD)',delta:'+12%',sub:'vs prior quarter'})}
+    ${kpiTile({ic:'📊',bg:'bg-blue',val:'31.4%',lab:'EBITDA Margin',delta:'+1.8pt',sub:'vs prior quarter'})}
+    ${kpiTile({ic:'💵',bg:'bg-teal',val:'$12.3M',lab:'Operating Cash',delta:'+6%',sub:'net inflow'})}
+    ${kpiTile({ic:'⚖️',bg:'bg-purple',val:'1.000',lab:'TP Reconciliation',sub:'parity vs legacy'})}
+  </div>
+  <div class="grid" style="grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:16px">
+    ${kpiTile({ic:'📥',bg:'bg-amber',val:'$8.4M',lab:'Accounts Payable',delta:'-3%',sub:'DPO 42 days'})}
+    ${kpiTile({ic:'📤',bg:'bg-blue',val:'$11.2M',lab:'Accounts Receivable',delta:'+4%',sub:'DSO 38 days'})}
+    ${kpiTile({ic:'📒',bg:'bg-green',val:'92%',lab:'GL Close Progress',sub:'period 2018.02'})}
+    ${kpiTile({ic:'🏦',bg:'bg-teal',val:'$300.6M',lab:'Intercompany Allocated',sub:'cost-plus, period'})}
+  </div>
+  <div class="grid" style="grid-template-columns:1.5fr 1fr;margin-bottom:16px">
+    <div class="card"><div class="card-h"><h3>Revenue & Spend — FY Trend</h3><span class="tag">$M</span></div>
+      <div class="chart-wrap" style="height:280px"><canvas id="cExecRev"></canvas></div></div>
+    <div class="card"><div class="card-h"><h3>Spend by Category</h3><span class="tag">QTD</span></div>
+      <div class="chart-wrap" style="height:280px"><canvas id="cExecSpend"></canvas></div></div>
+  </div>
+  <div class="grid" style="grid-template-columns:1.5fr 1fr">
+    <div class="card"><div class="card-h"><h3>Operating Cash Flow</h3><span class="tag">last 8 weeks</span></div>
+      <div class="chart-wrap" style="height:240px"><canvas id="cExecCash"></canvas></div></div>
+    <div class="card"><div class="card-h"><h3>Next Best Actions</h3><span class="tag">CFO priorities</span></div>
+      ${nbaRow('#8b5cf6,#6d28d9','📝','Approve Q2 intercompany charges','2 cost pools awaiting CFO sign-off')}
+      ${nbaRow('#3b82f6,#2563eb','📈','Review margin variance — APAC','-1.8pt vs plan, drill into drivers')}
+      ${nbaRow('#ef4444,#be123c','⏰','Clear AR > 90 days','$1.1M overdue across 3 entities')}
+      ${nbaRow('#16a34a,#15803d','✅','Sign off GL close','92% complete — 4 entities pending')}
+    </div>
+  </div>
+  <div style="margin:18px 0 10px;font-weight:800;font-size:13px;color:var(--muted);letter-spacing:.4px">DRILL INTO</div>
+  <div class="grid" style="grid-template-columns:repeat(4,1fr);gap:14px">
+    ${drillCard('🧾','bg-amber','Operations','AP · AR · GL · Treasury','finops')}
+    ${drillCard('⚖️','bg-purple','Transfer Pricing','Allocations & reconciliation','overview')}
+    ${drillCard('🛰️','bg-blue','Data Platform','Ingestion & pipelines','migrator')}
+    ${drillCard('🤖','bg-teal','AI Agents','Agentic TP close','orchestration')}
+  </div>`;
+  charts.cExecRev=new Chart(cExecRev,{type:'bar',data:{labels:['Jan','Feb','Mar','Apr','May','Jun','Jul'],
+    datasets:[{type:'bar',label:'Revenue',data:[38,41,46,43,45,44,49],backgroundColor:'#3b82f6',borderRadius:6},
+      {type:'line',label:'Spend',data:[28,30,33,31,32,31,34],borderColor:'#ef4444',backgroundColor:'#ef444422',tension:.35,borderWidth:2,pointRadius:3}]},
+    options:{plugins:{legend:{position:'top'}},scales:{y:{grid:{color:GRIDC()},ticks:{callback:v=>'$'+v+'M'}},x:{grid:{display:false}}}}});
+  charts.cExecSpend=new Chart(cExecSpend,{type:'doughnut',data:{labels:['Personnel','Technology','Facilities','Professional Fees','Marketing'],
+    datasets:[{data:[42,24,12,14,8],backgroundColor:['#3b82f6','#8b5cf6','#14b8a6','#f59e0b','#ec4899'],borderWidth:2,borderColor:'#fff'}]},
+    options:{cutout:'60%',plugins:{legend:{position:'right'}}}});
+  charts.cExecCash=new Chart(cExecCash,{type:'line',data:{labels:['W1','W2','W3','W4','W5','W6','W7','W8'],
+    datasets:[{label:'Net cash',data:[1.2,1.6,1.1,1.9,2.2,1.7,2.4,2.6],borderColor:'#14b8a6',backgroundColor:'#14b8a622',fill:true,tension:.4,borderWidth:2,pointRadius:2}]},
+    options:{plugins:{legend:{display:false}},scales:{y:{grid:{color:GRIDC()},ticks:{callback:v=>'$'+v+'M'}},x:{grid:{display:false}}}}});
+}
+
+function renderFinOps(el){
+  el.innerHTML=`
+  <div class="grid" style="grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:16px">
+    ${kpiTile({ic:'📤',bg:'bg-blue',val:'$11.2M',lab:'AR Outstanding',sub:'DSO 38 days'})}
+    ${kpiTile({ic:'📥',bg:'bg-amber',val:'$8.4M',lab:'AP Outstanding',sub:'DPO 42 days'})}
+    ${kpiTile({ic:'💧',bg:'bg-teal',val:'$2.8M',lab:'Net Working Capital',delta:'+5%'})}
+    ${kpiTile({ic:'📐',bg:'bg-green',val:'1.34',lab:'Current Ratio',sub:'healthy'})}
+  </div>
+  <div class="grid" style="grid-template-columns:1fr 1fr;margin-bottom:16px">
+    <div class="card"><div class="card-h"><h3>Accounts Receivable — Aging</h3><span class="tag">$K</span></div>
+      <div class="chart-wrap" style="height:250px"><canvas id="cAR"></canvas></div></div>
+    <div class="card"><div class="card-h"><h3>Accounts Payable — Aging</h3><span class="tag">$K</span></div>
+      <div class="chart-wrap" style="height:250px"><canvas id="cAP"></canvas></div></div>
+  </div>
+  <div class="grid" style="grid-template-columns:1.3fr 1fr;margin-bottom:16px">
+    <div class="card"><div class="card-h"><h3>Cash Flow — Operating / Investing / Financing</h3><span class="tag">6 months</span></div>
+      <div class="chart-wrap" style="height:250px"><canvas id="cCash"></canvas></div></div>
+    <div class="card"><div class="card-h"><h3>GL Close Progress</h3><span class="tag">period 2018.02</span></div>
+      ${[['Sub-ledgers reconciled',100,'#16a34a'],['Intercompany eliminations',92,'#3b82f6'],['Accruals & provisions',78,'#f59e0b'],['FX revaluation',64,'#8b5cf6'],['Management review',40,'#ef4444']].map(r=>`<div style="margin:12px 0"><div class="row" style="justify-content:space-between"><span style="font-weight:600;font-size:13px">${r[0]}</span><span class="num">${r[1]}%</span></div><div class="bar-track" style="margin-top:5px"><div class="bar-fill" style="width:${r[1]}%;background:${r[2]}"></div></div></div>`).join('')}
+    </div>
+  </div>
+  <div class="card"><div class="card-h"><h3>General Ledger — Journal Activity</h3><span class="tag">latest postings</span></div>
+    <table><thead><tr><th>JE #</th><th>Description</th><th>Account</th><th>Entity</th><th class="num">Amount</th><th>Status</th></tr></thead>
+    <tbody>${[['JE-20455','Intercompany cost-plus charge','61200 · Allocated Cost','Corporate HQ',842113,'Posted'],
+      ['JE-20456','AR invoice — management fee','12100 · Receivables','APAC & EMEA',1290447,'Posted'],
+      ['JE-20457','Accrual — professional fees','51030 · Prof Fees','Shared Services',-188200,'Pending'],
+      ['JE-20458','FX revaluation','78010 · FX Gain/Loss','LATAM',43980,'Pending'],
+      ['JE-20459','AP settlement — vendor','20100 · Payables','Holdings Co',-512300,'Posted']].map(r=>`<tr><td style="font-weight:600">${r[0]}</td><td>${r[1]}</td><td class="muted">${r[2]}</td><td>${r[3]}</td><td class="num" style="color:${r[4]<0?'#dc2626':'#16a34a'}">${r[4]<0?'-$'+Math.abs(r[4]).toLocaleString():'$'+r[4].toLocaleString()}</td><td><span class="pill ${r[5]==='Posted'?'ok':'warn'}">${r[5]}</span></td></tr>`).join('')}</tbody></table>
+  </div>`;
+  charts.cAR=new Chart(cAR,{type:'bar',data:{labels:['Current','1-30','31-60','61-90','90+'],
+    datasets:[{data:[6200,2800,1100,600,500],backgroundColor:['#22c55e','#3b82f6','#f59e0b','#f97316','#ef4444'],borderRadius:6}]},
+    options:{plugins:{legend:{display:false}},scales:{y:{grid:{color:GRIDC()},ticks:{callback:v=>'$'+v/1000+'k'}},x:{grid:{display:false}}}}});
+  charts.cAP=new Chart(cAP,{type:'bar',data:{labels:['Current','1-30','31-60','61-90','90+'],
+    datasets:[{data:[5100,1900,800,400,200],backgroundColor:['#22c55e','#3b82f6','#f59e0b','#f97316','#ef4444'],borderRadius:6}]},
+    options:{plugins:{legend:{display:false}},scales:{y:{grid:{color:GRIDC()},ticks:{callback:v=>'$'+v/1000+'k'}},x:{grid:{display:false}}}}});
+  charts.cCash=new Chart(cCash,{type:'bar',data:{labels:['Sep','Oct','Nov','Dec','Jan','Feb'],
+    datasets:[{label:'Operating',data:[2.1,2.4,1.9,2.6,2.2,2.8],backgroundColor:'#14b8a6',borderRadius:4,stack:'s'},
+      {label:'Investing',data:[-1.1,-0.8,-1.4,-0.6,-0.9,-0.7],backgroundColor:'#f59e0b',borderRadius:4,stack:'s'},
+      {label:'Financing',data:[-0.4,0.3,-0.2,-0.5,0.2,-0.3],backgroundColor:'#8b5cf6',borderRadius:4,stack:'s'}]},
+    options:{plugins:{legend:{position:'top'}},scales:{y:{stacked:true,grid:{color:GRIDC()},ticks:{callback:v=>'$'+v+'M'}},x:{stacked:true,grid:{display:false}}}}});
+}
+
+/* ============================================================
+   CONNECTOR CONFIGURATION WIZARD  (added) — reuses #fmodal
+   ============================================================ */
+const CONN_TYPES={
+ access:{label:'Microsoft Access (.accdb)',icon:'🗄️',fields:[
+   ['Database file','C:\\\\TP\\\\TPEngine_v4.accdb','text'],['Database password','••••••••','password'],
+   ['ODBC driver','Microsoft Access Driver (*.mdb, *.accdb)','select|Microsoft Access Driver (*.mdb, *.accdb)|JDBC-ODBC Bridge'],
+   ['Read mode','Read-only (recommended)','select|Read-only (recommended)|Read-write']],
+   tables:['tbl_Map_Costcenters','qsel_Rollup_3','tbl_Drivers','tbl_Periods','tbl_Entities','tbl_GL_Accounts']},
+ cloud:{label:'Cloud Data Warehouse',icon:'❄️',fields:[
+   ['Provider','Snowflake','select|Snowflake|Azure SQL Database|Google BigQuery|Amazon Redshift'],
+   ['Account / Server','xy12345.eu-west-1.snowflakecomputing.com','text'],['Database','FINANCE_DW','text'],
+   ['Warehouse / Pool','COMPUTE_WH','text'],['Username','svc_tp_loader','text'],['Password','••••••••','password'],
+   ['Role','TP_LOADER','text']],
+   tables:['DIM_ENTITY','DIM_COST_CENTRE','DIM_DRIVER','FACT_ALLOCATION','FACT_GL','FACT_AR_AP']},
+ db:{label:'Relational Database',icon:'📒',fields:[
+   ['Host','sap-gl.internal','text'],['Port','1433','text'],['Database','SAPGL','text'],
+   ['Username','svc_gl_read','text'],['Password','••••••••','password']],
+   tables:['GL_ACCOUNTS','COST_CENTRES','LEGAL_ENTITIES','ACTIVITY_CODES']},
+ blob:{label:'Object Storage',icon:'☁️',fields:[
+   ['Account URL','https://tpstore.blob.core.windows.net','text'],['Container','chat-history','text'],
+   ['Auth','SAS Token','select|SAS Token|Managed Identity|Access Key'],['Secret','••••••••••••','password']],
+   tables:['raw/transactions','raw/runrate','raw/headcount']},
+ api:{label:'SaaS API',icon:'👥',fields:[
+   ['Base URL','https://api.workday.com/v2','text'],['Auth','OAuth 2.0','select|OAuth 2.0|API Key|Basic'],
+   ['Client ID','tp-loader','text'],['Client secret','••••••••','password']],
+   tables:['/workers','/headcount','/org-units']},
+ sharepoint:{label:'SharePoint',icon:'📁',fields:[
+   ['Site URL','https://corp.sharepoint.com/sites/Finance','text'],['Library','TP Source Files','text'],
+   ['Auth','Azure AD App','select|Azure AD App|Service Account'],['Secret','••••••••','password']],
+   tables:['Run-Rate Master','RAB Shares','O&I Allocations']}
+};
+const CONN_MAP=['access','blob','db','api','sharepoint','cloud'];
+var CW={i:0,step:1};
+function openConnectorWizard(i){CW={i:i,step:1};document.getElementById('fmodal').classList.add('show');drawCW();}
+function cwType(){return CONN_TYPES[CONN_MAP[CW.i]];}
+function cwStepper(){const steps=['Type','Connection','Test','Mapping','Schedule'];
+  return `<div class="row" style="gap:0;margin-bottom:20px">${steps.map((s,i)=>{const n=i+1;const on=n<=CW.step;
+   return `<div style="flex:1;text-align:center;position:relative">
+     <div style="width:30px;height:30px;border-radius:50%;margin:0 auto 6px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;background:${on?'var(--navy)':'var(--line-2)'};color:${on?'#fff':'var(--muted)'}">${CW.step>n?'✓':n}</div>
+     <div style="font-size:11px;font-weight:600;color:${on?'var(--ink)':'var(--muted)'}">${s}</div>
+     ${i<4?`<div style="position:absolute;top:15px;left:60%;right:-40%;height:2px;background:${CW.step>n?'var(--navy)':'var(--line-2)'}"></div>`:''}</div>`}).join('')}</div>`;}
+function field(f){const [lab,val,type]=f;
+  if(type&&type.indexOf('select')===0){const opts=type.split('|').slice(1);
+   return `<div class="api-field"><label>${lab}</label><select>${opts.map(o=>`<option ${o===val?'selected':''}>${o}</option>`).join('')}</select></div>`;}
+  return `<div class="api-field"><label>${lab}</label><input type="${type||'text'}" value="${val}"></div>`;}
+function drawCW(){
+  const t=cwType(); const b=document.getElementById('fmodalBody');
+  document.getElementById('fmodalTitle').innerHTML=t.icon+' Configure Connector — '+t.label;
+  let body='';
+  if(CW.step===1){body=`<p class="muted" style="margin-bottom:14px">Select the connector type. Pre-filled for this source — adjust if needed.</p>
+    <div class="grid" style="grid-template-columns:1fr 1fr;gap:10px">${Object.keys(CONN_TYPES).map(k=>`<div class="reg-card" onclick="CW.i=${CONN_MAP.indexOf(k)>-1?CONN_MAP.indexOf(k):CW.i};CONN_MAP[CW.i]='${k}';drawCW()" style="border-color:${CONN_MAP[CW.i]===k?'var(--blue-d)':'var(--line)'};${CONN_MAP[CW.i]===k?'background:var(--hover)':''}">
+      <div style="font-size:20px">${CONN_TYPES[k].icon}</div><div style="font-weight:700;font-size:13px;margin-top:6px">${CONN_TYPES[k].label}</div></div>`).join('')}</div>`;}
+  else if(CW.step===2){body=`<p class="muted" style="margin-bottom:14px">Enter connection details.</p>${t.fields.map(field).join('')}`;}
+  else if(CW.step===3){body=`<p class="muted" style="margin-bottom:14px">Validate the connection before mapping.</p>
+    <button class="btn btn-primary" onclick="cwTest()">⚡ Run connection test</button>
+    <div id="cwTestOut" style="margin-top:14px"></div>`;}
+  else if(CW.step===4){body=`<p class="muted" style="margin-bottom:14px">Select objects to ingest.</p>
+    ${t.tables.map((tb,i)=>`<label class="tool-row"><input type="checkbox" ${i<4?'checked':''}><div><div style="font-weight:600;font-size:13px">${tb}</div><div class="muted" style="font-size:11px">~${(Math.random()*900+50|0).toLocaleString()}k rows</div></div></label>`).join('')}`;}
+  else if(CW.step===5){body=`<p class="muted" style="margin-bottom:14px">Choose sync mode and schedule.</p>
+    ${field(['Load mode','Incremental (CDC)','select|Incremental (CDC)|Full refresh'])}
+    ${field(['Schedule (cron)','0 2 * * *','text'])}
+    ${field(['Target','Azure Data Lake (curated)','select|Azure Data Lake (curated)|Snowflake replica|Power BI dataset'])}
+    <div class="pill ok" style="margin-top:6px">✓ Ready to save · pipeline will appear under Scheduler</div>`;}
+  const back=CW.step>1?`<button class="btn btn-ghost" onclick="CW.step--;drawCW()">← Back</button>`:`<span></span>`;
+  const next=CW.step<5?`<button class="btn btn-primary" onclick="CW.step++;drawCW()">Next →</button>`:`<button class="btn btn-green" onclick="cwSave()">✓ Save & activate</button>`;
+  b.innerHTML=cwStepper()+body+`<div class="row" style="justify-content:space-between;margin-top:22px">${back}${next}</div>`;
+}
+function cwTest(){const o=document.getElementById('cwTestOut');o.innerHTML='<span class="muted">Connecting…</span>';
+  setTimeout(()=>{o.innerHTML=`<div class="resp-box">✓ Connection established
+host: reachable · auth: success
+driver/version: ${cwType().label}
+latency: 38 ms · objects discovered: ${cwType().tables.length}
+permissions: READ granted</div>`;},900);}
+function cwSave(){const i=CW.i;closeFoundationModal();
+  if(typeof SOURCES!=='undefined'&&SOURCES[i]){SOURCES[i].st='connected';}
+  if(current==='migrator')render('migrator');}
+
+/* ============================================================
+   CUSTOMER SUPPORT AI — Copilot, Journey, 360, Chatbot+Voice
+   ============================================================ */
+function renderCsCopilot(el){
+  const feats=[['💡','Intent','#16a34a'],['👤','Customer Profile','#ef4444'],['⏱️','AHT','#3b82f6'],['✅','Next Best Actions','#16a34a'],['🌐','Translation','#ec4899'],['📋','Similar Cases','#f59e0b'],['🙂','Sentiment','#22c55e'],['🔎','Knowledge Search','#8b5cf6']];
+  el.innerHTML=`
+  <div class="grid" style="grid-template-columns:repeat(8,1fr);gap:10px;margin-bottom:18px">
+    ${feats.map(f=>`<div class="card" style="text-align:center;padding:14px 8px"><div style="font-size:20px">${f[0]}</div><div style="font-size:11px;font-weight:700;color:${f[2]};margin-top:6px">${f[1]}</div></div>`).join('')}
+  </div>
+  <div class="grid" style="grid-template-columns:1fr 1fr 1.2fr 1.3fr;gap:14px;margin-bottom:16px">
+    <div class="card"><div class="card-h"><h3>User Intent</h3></div><div class="chart-wrap" style="height:150px"><canvas id="cCopIntent"></canvas></div></div>
+    <div class="card"><div class="card-h"><h3>Customer</h3></div><div style="text-align:center"><div class="uava" style="width:54px;height:54px;margin:0 auto;background:#3b82f6">FM</div><div style="font-weight:700;margin-top:8px">Francis Mitcham</div><div class="muted" style="font-size:12px">f.mitcham@acme.com</div><div class="muted" style="font-size:12px">+1-789-123-6345</div></div></div>
+    <div class="card" style="background:linear-gradient(135deg,#f43f5e,#be123c);color:#fff"><div style="font-weight:700">⏱️ AHT SLA Countdown</div><div style="background:rgba(255,255,255,.18);border-radius:10px;padding:14px;text-align:center;margin-top:14px;font-size:20px;font-weight:800">Time Left: 2:53</div></div>
+    <div class="card"><div class="card-h"><h3>Next Best Actions</h3></div>${['Greet & confirm identity','Pull account & entitlements','Suggest resolution from KB','Offer live escalation','Summarise & close'].map((s,i)=>`<div class="row" style="gap:9px;padding:5px 0"><span style="width:18px;height:18px;border-radius:50%;background:var(--blue);color:#fff;font-size:10px;display:flex;align-items:center;justify-content:center;font-weight:800">${i+1}</span><span style="font-size:12.5px">${s}</span></div>`).join('')}</div>
+  </div>
+  <div class="grid" style="grid-template-columns:1.2fr 1fr 1fr;gap:14px">
+    <div class="card" style="background:#e3f7ec"><div class="card-h"><h3>🌐 Language Translation</h3></div>
+      <div class="row" style="gap:10px"><div style="flex:1;background:var(--card);border-radius:10px;padding:12px"><div style="font-weight:700;font-size:13px">Hello, how can I help?</div><span class="pill info" style="margin-top:6px">EN</span></div>
+      <div style="flex:1;background:var(--card);border-radius:10px;padding:12px"><div style="font-weight:700;font-size:13px">¿Cómo puedo ayudar?</div><span class="pill ok" style="margin-top:6px">ES</span></div></div></div>
+    <div class="card"><div class="card-h"><h3>Similar Cases</h3></div>
+      ${[['Billing needs update','Solved','ok'],['Help with download','In progress','warn'],['Cannot see attachment','Open','bad']].map(c=>`<div class="row" style="justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line-2)"><span style="font-size:12.5px;font-weight:600">${c[0]}</span><span class="pill ${c[2]}">${c[1]}</span></div>`).join('')}</div>
+    <div class="card"><div class="card-h"><h3>Sentiment Trend</h3></div><div class="chart-wrap" style="height:150px"><canvas id="cCopSent"></canvas></div></div>
+  </div>`;
+  charts.cCopIntent=new Chart(cCopIntent,{type:'doughnut',data:{labels:['Liked','Dissatisfied','Refused'],datasets:[{data:[79,12,9],backgroundColor:['#22c55e','#f59e0b','#94a3b8'],borderWidth:2,borderColor:'#fff'}]},options:{cutout:'62%',plugins:{legend:{position:'bottom'}}}});
+  charts.cCopSent=new Chart(cCopSent,{type:'line',data:{labels:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],datasets:[
+    {label:'Positive',data:[55,58,60,59,61,60,62],borderColor:'#22c55e',tension:.4,pointRadius:0,borderWidth:2},
+    {label:'Negative',data:[22,18,15,17,14,16,13],borderColor:'#ef4444',tension:.4,pointRadius:0,borderWidth:2}]},
+    options:{plugins:{legend:{display:false}},scales:{y:{grid:{color:GRIDC()}},x:{grid:{display:false}}}}});
+}
+
+function renderCsJourney(el){
+  el.innerHTML=`
+  <div class="grid hero-cards" style="margin-bottom:16px">
+    <div class="hcard g-blue"><div class="hico">🛒</div><div class="hval">1,428</div><div class="hlab">Conversations</div><div class="hsub">this month</div></div>
+    <div class="hcard g-green"><div class="hico">✅</div><div class="hval">84%</div><div class="hlab">Auto-Resolved</div><div class="hsub">touch-free</div></div>
+    <div class="hcard g-amber"><div class="hico">⚡</div><div class="hval">1.2s</div><div class="hlab">Avg Response</div><div class="hsub">AI assist</div></div>
+    <div class="hcard g-purple"><div class="hico">😊</div><div class="hval">4.9/5</div><div class="hlab">CSAT</div><div class="hsub">rolling 30d</div></div>
+  </div>
+  <div class="grid" style="grid-template-columns:1.4fr 1fr;margin-bottom:16px">
+    <div class="card"><div class="card-h"><h3>Engagement by Month</h3><span class="tag">interactions</span></div><div class="chart-wrap" style="height:260px"><canvas id="cJSales"></canvas></div></div>
+    <div class="card"><div class="card-h"><h3>Channel Mix</h3></div><div class="chart-wrap" style="height:260px"><canvas id="cJMix"></canvas></div></div>
+  </div>
+  <div class="grid" style="grid-template-columns:1fr 1fr">
+    <div class="card g-blue" style="background:linear-gradient(135deg,#3b82f6,#2563eb);color:#fff"><div style="font-weight:700">Total Triggered</div><div style="font-size:30px;font-weight:800;margin-top:8px">1,047</div><div style="opacity:.85;font-size:12px">Today: 69</div></div>
+    <div class="card" style="background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff"><div style="font-weight:700">Total Reactions</div><div style="font-size:30px;font-weight:800;margin-top:8px">834</div><div style="opacity:.85;font-size:12px">Today: 29</div></div>
+  </div>`;
+  charts.cJSales=new Chart(cJSales,{type:'bar',data:{labels:['Feb','Mar','Apr','May','Jun','Jul','Aug','Sep'],datasets:[{data:[48,60,66,74,58,52,68,60],backgroundColor:'#8b5cf6',borderRadius:6}]},options:{plugins:{legend:{display:false}},scales:{y:{grid:{color:GRIDC()}},x:{grid:{display:false}}}}});
+  charts.cJMix=new Chart(cJMix,{type:'doughnut',data:{labels:['Chatbot','Email','Phone / IVR','Live chat'],datasets:[{data:[46,22,18,14],backgroundColor:['#3b82f6','#14b8a6','#f59e0b','#8b5cf6'],borderWidth:2,borderColor:'#fff'}]},options:{cutout:'58%',plugins:{legend:{position:'right'}}}});
+}
+
+function renderCs360(el){
+  el.innerHTML=`
+  <div class="grid" style="grid-template-columns:300px 1fr;align-items:start">
+    <div class="card">
+      <div style="text-align:center"><div class="uava" style="width:64px;height:64px;margin:0 auto;background:#8b5cf6;font-size:22px">SM</div>
+      <div style="font-weight:800;font-size:16px;margin-top:10px">Ms. Sarah Mitchell</div><div class="muted" style="font-size:12px">Finance Controller · Acme Corp</div></div>
+      <div style="margin-top:16px;font-size:13px;line-height:2"><div>📧 s.mitchell@acme.com</div><div>📞 +1-415-882-3901</div><div>📍 San Francisco, CA</div><div>🗓️ Customer since 2019</div></div>
+      <div class="grid" style="grid-template-columns:1fr 1fr;gap:10px;margin-top:16px">
+        ${kpiTile({ic:'💎',bg:'bg-purple',val:'$248k',lab:'Lifetime Value'})}
+        ${kpiTile({ic:'🎟️',bg:'bg-blue',val:'3',lab:'Open Cases'})}
+        ${kpiTile({ic:'😊',bg:'bg-green',val:'93%',lab:'Sentiment'})}
+        ${kpiTile({ic:'⭐',bg:'bg-amber',val:'4.8',lab:'CSAT'})}
+      </div>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:14px"><div class="card-h"><h3>Omnichannel Interaction Timeline</h3><span class="tag">email · phone · chat</span></div>
+        ${[['📧','Email','Q2 allocation query — resolved','2 days ago','ok'],['💬','Chatbot','Markup confirmation — auto-answered from KB','5 days ago','ok'],['📞','Phone / IVR','Escalation to specialist — 6m call','2 weeks ago','warn'],['📧','Email','Onboarding follow-up','1 month ago','ok']].map(r=>`<div class="row" style="gap:12px;padding:11px 0;border-bottom:1px solid var(--line-2)"><span style="font-size:18px">${r[0]}</span><div style="flex:1"><div style="font-weight:600;font-size:13px">${r[1]} · ${r[2]}</div><div class="muted" style="font-size:11.5px">${r[3]}</div></div><span class="pill ${r[4]}">${r[4]==='ok'?'Resolved':'Follow-up'}</span></div>`).join('')}</div>
+      <div class="grid" style="grid-template-columns:1fr 1fr">
+        <div class="card"><div class="card-h"><h3>Products & Entitlements</h3></div>${['Finance Automation — Enterprise','Transfer Pricing Module','Customer Support AI','Knowledge Base — 2,341 docs'].map(p=>`<div class="row" style="gap:8px;padding:6px 0"><span style="color:#16a34a">✓</span><span style="font-size:13px">${p}</span></div>`).join('')}</div>
+        <div class="card"><div class="card-h"><h3>Open Cases</h3></div>${[['Billing reconciliation','High','bad'],['KB access request','Low','info'],['Report scheduling','Medium','warn']].map(c=>`<div class="row" style="justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line-2)"><span style="font-size:12.5px;font-weight:600">${c[0]}</span><span class="pill ${c[2]}">${c[1]}</span></div>`).join('')}</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+const KB_DOCS=[['TP Policy Manual.pdf','§4.2 Cost-plus markups'],['Intercompany Agreement.pdf','Schedule B — rates'],['2017 Local File.pdf','LATAM markup precedent'],['Onboarding Guide.pdf','Platform setup']];
+function renderCsChatbot(el){
+  el.innerHTML=`
+  <div class="grid" style="grid-template-columns:1.3fr 1fr;align-items:start">
+    <div class="card" style="display:flex;flex-direction:column;min-height:430px">
+      <div class="card-h"><h3>💬 Document-Grounded Chatbot</h3><span class="pill ok">KB connected</span></div>
+      <div id="cbThread" style="flex:1;overflow:auto;padding:4px">
+        <div style="background:var(--panel);border-radius:12px;padding:11px 14px;margin-bottom:10px;font-size:13px">Hi! I can answer from your knowledge base. Ask about policies, allocations or onboarding.</div>
+        <div style="background:#eaf3ff;border-radius:12px;padding:11px 14px;margin-bottom:10px;font-size:13px;margin-left:40px">What markup applies to LATAM direct pools?</div>
+        <div style="background:var(--panel);border-radius:12px;padding:11px 14px;margin-bottom:10px;font-size:13px">LATAM direct cost pools (entity 501) carry a <b>5%</b> markup; all other pools use the standard 10% cost-plus. <span class="pill idle" style="margin-left:4px">🔗 TP Policy Manual §4.2</span></div>
+      </div>
+      <div class="row" style="gap:8px;margin-top:10px"><input type="text" id="cbIn" placeholder="Ask the knowledge base…" style="flex:1" onkeydown="if(event.key==='Enter')cbSend()"><button class="btn btn-primary" onclick="cbSend()">Send</button></div>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:14px"><div class="card-h"><h3>📞 Interactive Voice (IVR)</h3><span class="pill ok"><span class="dotc" style="background:#16a34a"></span>Live</span></div>
+        <div class="muted" style="font-size:12px;margin-bottom:10px">Active call · caller authenticated</div>
+        ${['Caller: "I need this period\'s allocation summary"','IVR → intent: Allocation report (96%)','IVR → fetched from KB + TP engine','IVR → spoken summary + emailed PDF'].map((s,i)=>`<div class="row" style="gap:9px;padding:6px 0"><span class="dotc" style="background:${i===3?'#16a34a':'#3b82f6'}"></span><span style="font-size:12.5px">${s}</span></div>`).join('')}
+        <div class="bar-track" style="margin-top:10px"><div class="bar-fill" style="width:80%;background:#16a34a"></div></div>
+        <div class="muted" style="font-size:11px;margin-top:5px">Containment 80% · avg handle 1:54</div>
+      </div>
+      <div class="card"><div class="card-h"><h3>📚 Knowledge Base Sources</h3><span class="tag">indexed</span></div>
+        ${KB_DOCS.map(d=>`<div class="row" style="justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line-2)"><span style="font-size:12.5px;font-weight:600">📄 ${d[0]}</span><span class="muted" style="font-size:11px">${d[1]}</span></div>`).join('')}
+        <div class="pill ok" style="margin-top:10px">✓ 2,341 chunks · semantic + keyword retrieval</div></div>
+    </div>
+  </div>`;
+}
+function cbSend(){const inp=document.getElementById('cbIn');const q=(inp.value||'').trim();if(!q)return;
+  const th=document.getElementById('cbThread');
+  th.insertAdjacentHTML('beforeend',`<div style="background:#eaf3ff;border-radius:12px;padding:11px 14px;margin:10px 0 10px 40px;font-size:13px">${q}</div>`);
+  inp.value='';
+  setTimeout(()=>{th.insertAdjacentHTML('beforeend',`<div style="background:var(--panel);border-radius:12px;padding:11px 14px;margin-bottom:10px;font-size:13px">Based on the indexed policy documents, allocations follow the approved cost-plus method with full audit lineage. <span class="pill idle">🔗 TP Policy Manual</span> <span class="pill idle">🔗 Intercompany Agreement</span></div>`);th.scrollTop=th.scrollHeight;},700);
+  th.scrollTop=th.scrollHeight;}
+
+/* ============================================================
+   AUTOMATION — Workflow Builder (drag & drop)  (added)
+   ============================================================ */
+const WF_PALETTE=[
+ {n:'Data Ingestion',acc:'Power Query',ic:'📥',c:'#3b82f6'},
+ {n:'Cost Pool Build',acc:'Python / pandas',ic:'🪣',c:'#14b8a6'},
+ {n:'Driver Allocation',acc:'Allocation Engine',ic:'🎯',c:'#8b5cf6'},
+ {n:'Cost-Plus Markup',acc:'Rules Engine',ic:'🏷️',c:'#f59e0b'},
+ {n:'Reconciliation',acc:'Anomaly AI',ic:'⚖️',c:'#ef4444'},
+ {n:'JE & Invoice',acc:'Power Automate',ic:'🧾',c:'#22c55e'},
+ {n:'Commentary',acc:'GenAI',ic:'📝',c:'#ec4899'},
+ {n:'Publish / BI',acc:'Power BI',ic:'📊',c:'#0ea5e9'}
+];
+var WF_FLOW=[0,1,2,3,4,5,7]; // indices into palette — default TP close flow
+function renderWorkflow(el){
+  el.innerHTML=`
+  <div class="grid" style="grid-template-columns:240px 1fr;align-items:start">
+    <div class="card"><div class="card-h"><h3>🧩 Accelerators</h3></div>
+      <div class="muted" style="font-size:11.5px;margin-bottom:10px">Drag a step onto the canvas →</div>
+      ${WF_PALETTE.map((p,i)=>`<div draggable="true" ondragstart="event.dataTransfer.setData('t','${i}')" style="border:1px solid var(--line);border-left:4px solid ${p.c};border-radius:10px;padding:9px 11px;margin-bottom:8px;cursor:grab">
+        <div style="font-weight:700;font-size:12.5px">${p.ic} ${p.n}</div><div class="muted" style="font-size:10.5px">⚡ ${p.acc}</div></div>`).join('')}
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:14px"><div class="row" style="justify-content:space-between"><h3>Transfer Pricing Close — Process Flow</h3>
+        <div class="row"><button class="btn btn-ghost" onclick="WF_FLOW=[0,1,2,3,4,5,7];renderWorkflow(document.getElementById('view-workflow'))">↺ Reset</button><button class="btn btn-green" onclick="wfRun()">▶ Run flow</button></div></div>
+        <div id="wfCanvas" ondragover="event.preventDefault()" ondrop="wfDrop(event)" style="display:flex;flex-wrap:wrap;align-items:center;gap:0;min-height:160px;border:2px dashed var(--line);border-radius:14px;padding:18px;margin-top:12px">
+          ${wfNodes()}
+        </div>
+        <div class="muted" style="font-size:11.5px;margin-top:10px" id="wfMsg">Each node is powered by an accelerator. Drag steps from the left, or drop to extend the flow.</div>
+      </div>
+      <div class="card"><div class="card-h"><h3>Flow Summary</h3><span class="tag">${WF_FLOW.length} steps</span></div>
+        <table><thead><tr><th>#</th><th>Step</th><th>Accelerator</th><th>Est. runtime</th></tr></thead>
+        <tbody>${WF_FLOW.map((idx,i)=>{const p=WF_PALETTE[idx];return `<tr><td>${i+1}</td><td style="font-weight:600">${p.ic} ${p.n}</td><td><span class="pill" style="background:${p.c}1a;color:${p.c}">⚡ ${p.acc}</span></td><td class="muted">${(Math.random()*40+5|0)}s</td></tr>`}).join('')}</tbody></table>
+      </div>
+    </div>
+  </div>`;
+}
+function wfNodes(){
+  return WF_FLOW.map((idx,i)=>{const p=WF_PALETTE[idx];
+   return `<div id="wfn${i}" style="text-align:center;min-width:120px;border:1px solid var(--line);border-top:3px solid ${p.c};border-radius:12px;padding:12px 10px;position:relative;background:var(--card)">
+     <div style="font-size:20px">${p.ic}</div><div style="font-weight:700;font-size:12px;margin-top:5px">${p.n}</div>
+     <div class="muted" style="font-size:10px;margin-top:3px">⚡ ${p.acc}</div>
+     <span onclick="WF_FLOW.splice(${i},1);renderWorkflow(document.getElementById('view-workflow'))" style="position:absolute;top:4px;right:6px;cursor:pointer;color:var(--faint);font-size:12px">✕</span>
+   </div>${i<WF_FLOW.length-1?'<div style="color:var(--faint);font-size:18px;padding:0 6px">→</div>':''}`}).join('');
+}
+function wfDrop(e){e.preventDefault();const t=e.dataTransfer.getData('t');if(t!=='')WF_FLOW.push(+t);renderWorkflow(document.getElementById('view-workflow'));}
+function wfRun(){const msg=document.getElementById('wfMsg');let i=0;
+  const tick=()=>{if(i>=WF_FLOW.length){msg.textContent='✓ Flow completed — outputs published to BI & Controllership.';return;}
+    const n=document.getElementById('wfn'+i);if(n){n.style.boxShadow='0 0 0 3px '+WF_PALETTE[WF_FLOW[i]].c+'55';setTimeout(()=>{if(n)n.style.boxShadow='';},650);}
+    msg.textContent='Running: '+WF_PALETTE[WF_FLOW[i]].n+' ('+WF_PALETTE[WF_FLOW[i]].acc+')…';i++;setTimeout(tick,650);};tick();}
+
+const TITLES={exec:['Finance','Dashboard'],finops:['Finance','Operations'],
+ overview:['Transfer Pricing','Overview'],explorer:['Transfer Pricing','Allocation Explorer'],recon:['Transfer Pricing','Reconciliation'],scenario:['Transfer Pricing','Scenario Lab'],
+ migrator:['Data Platform','Data Migrator'],transformer:['Data Platform','Transformer'],pipeline:['Data Platform','Integration'],scheduler:['Data Platform','Scheduler'],
+ workflow:['Automation','Workflow Builder'],orchestration:['AI Agents','Orchestration Flow'],
+ 'nlp-understanding':['Natural Language Processing','Language Understanding'],'nlp-retrieval':['Natural Language Processing','Knowledge Retrieval'],'nlp-langgen':['Natural Language Processing','Language Generation & Transformation'],
+ 'cs-copilot':['Customer Support AI','Copilot Dashboard'],'cs-agentassist':['Customer Support AI','Agent Assist'],'cs-journey':['Customer Support AI','Customer Journey'],'cs-360':['Customer Support AI','Customer 360'],'cs-channels':['Customer Support AI','Channel Management'],'cs-chatbot':['Customer Support AI','Chatbot & Voice'],
+ compliance:['Governance','Regulatory Compliance']};
+function pageSub(v){var tp=['overview','explorer','recon','scenario'];
+ if(tp.indexOf(v)>-1)return 'Consolidated allocation & reconciliation · <span id="periodLabel">Period '+STATE.period+'</span>';
+ return 'Finance Automation &amp; Intelligence Platform';}
+function setTitles(v){var t;if(v.indexOf('ag-')===0){var a=AGENTS.find(x=>x.k===v.slice(3));t=['AI Agents',a?a.n:'Agent'];}else t=TITLES[v]||['',''];
+ var cb=document.querySelector('.crumb');if(cb)cb.textContent=t[0];
+ var pt=document.querySelector('.page-title');if(pt)pt.textContent=t[1];
+ var ps=document.getElementById('pageSub');if(ps)ps.innerHTML=pageSub(v);}
+
+const RENDER={overview:renderOverview,explorer:renderExplorer,recon:renderRecon,scenario:renderScenario,orchestration:renderOrchestration,migrator:renderMigrator,transformer:renderTransformer,pipeline:renderPipeline,scheduler:renderScheduler,compliance:renderCompliance,exec:renderExec,finops:renderFinOps,workflow:renderWorkflow,'cs-copilot':renderCsCopilot,'cs-journey':renderCsJourney,'cs-360':renderCs360,'cs-chatbot':renderCsChatbot,'nlp-understanding':renderNlpUnderstanding,'nlp-retrieval':renderNlpRetrieval,'nlp-langgen':renderNlpLangGen,'cs-channels':renderCsChannels,'cs-agentassist':renderCsAgentAssist};
 var current='overview';
 function render(v){
   if(CURRENT_USER && !canView(v)) v=firstAllowedView();
-  current=v;destroyCharts();
+  current=v;destroyCharts();setTitles(v);
   document.querySelectorAll('.view').forEach(s=>s.classList.remove('show'));
   document.querySelectorAll('.nav-item[data-view]').forEach(t=>t.classList.toggle('active',t.dataset.view===v));
   const isAgent=v.indexOf('ag-')===0;
@@ -1654,9 +2036,10 @@ function render(v){
 document.querySelectorAll('.nav-item[data-view]').forEach(t=>t.addEventListener('click',()=>render(t.dataset.view)));
 document.getElementById('loginEmail').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
 document.getElementById('loginPw').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeFoundationModal();});
+(function(){var __fm=document.getElementById('fmodal');if(__fm)__fm.addEventListener('click',function(e){if(e.target===this)closeFoundationModal();});})();
 /* No auto-render: the login screen is shown until a user signs in. */
 (function(){var t='light';try{t=localStorage.getItem('tp_theme')||'light';}catch(e){}applyTheme(t);})();
 </script>
 </body>
 </html>
-
