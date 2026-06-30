@@ -831,6 +831,9 @@ const AGENTS=[
   outputs:['Local Country Files','Master File support','Intercompany Charge Calculations','Management Fee Schedules','Controllership commentary'],
   mcp:['Document Services (Storage, OCR, Generation)'],
   trace:[['THINK','Holding — awaiting Risk Agent HITL clearance before drafting the close pack.'],
+   ['ACT','Loaded 7 Controllership templates (Local File, Master File, JE batch, invoices, fee schedule, exec summary, audit pack).'],
+   ['ACT','Pre-bound period 2025.02 figures: $300.6M allocated · 4 models · 10 drivers · 16 cost pools.'],
+   ['CHECK','Mapping completeness verified — 12 recipient entities, 0 unmapped cost centres.'],
    ['ACT','Queued: generate journal entries, intercompany invoices and plain-English commentary.']]},
  {k:'approval',n:'Approval Agent',role:'Routes for review and tracks approvals',ic:'✅',color:'#16a34a',status:'queued',handoff:'— (final step)',
   metrics:[['Approvals','0 / 4'],['Confidence','—'],['SLA','—'],['Routed','0'],['Exceptions','0']],
@@ -838,6 +841,8 @@ const AGENTS=[
   outputs:['Approval audit trail','Executive Summaries','Audit Defense Packages'],
   mcp:['Collaboration Tools (Workflows, Chat, Notifications)'],
   trace:[['THINK','Queued — will route the Controllership pack for review once documentation completes.'],
+   ['ACT','Prepared approval chain: Tax Manager → Controllership → CFO sign-off.'],
+   ['ACT','Configured SLA timers and reminder notifications for each approver.'],
    ['ACT','Tracks approvals and logs every decision for audit.']]}
 ];
 const RTAG={THINK:['#e8f1ff','#2563eb'],ACT:['#f0eafe','#7c3aed'],CHECK:['#e3f7ec','#15803d'],FLAG:['#fef3df','#b7791f']};
@@ -845,6 +850,12 @@ const stPill=s=>s==='done'?'ok':s==='run'?'info':'idle';
 const stLab=s=>s==='done'?'Complete':s==='run'?'Running':'Queued';
 const stCol=s=>s==='done'?'#16a34a':s==='run'?'#3b82f6':'#94a3b8';
 
+const DOC_DONE_TRACE=[['ACT','HITL cleared — generated 248 journal entries and 12 intercompany invoices.'],['CHECK','Commentary auto-drafted; figures tie to reconciliation at 100.00% parity.'],['ACT','Controllership pack assembled, versioned and handed off.']];
+const APPR_DONE_TRACE=[['ACT','Routed pack through Tax → Controllership → CFO; 4 of 4 signed off.'],['CHECK','Every approval timestamped and written to the audit trail.'],['CHECK','Period 2025.02 close finalized.']];
+const DOC_DONE_METRICS=[['Documents','12'],['Templates','7'],['Confidence','99.1%'],['Latency','14.2s'],['Exceptions','0']];
+const APPR_DONE_METRICS=[['Approvals','4 / 4'],['Confidence','100%'],['SLA','met'],['Routed','4'],['Exceptions','0']];
+function agTrace(a){if(HITL_DONE&&a.k==='doc')return a.trace.concat(DOC_DONE_TRACE);if(HITL_DONE&&a.k==='approval')return a.trace.concat(APPR_DONE_TRACE);return a.trace;}
+function agMetrics(a){if(HITL_DONE&&a.k==='doc')return DOC_DONE_METRICS;if(HITL_DONE&&a.k==='approval')return APPR_DONE_METRICS;return a.metrics;}
 function renderOrchestration(el){
  const exc=AGENTS.filter(a=>a.exception); const escCount=exc.reduce((s,a)=>s+a.exception.n,0);
  el.innerHTML=`
@@ -908,17 +919,17 @@ function renderAgent(el,key){
  </div>
  ${a.exception?`<div class="hitl-card" style="max-width:none;text-align:left;margin-bottom:16px"><div class="row" style="justify-content:space-between;align-items:flex-start"><div><b>⚠ Escalated to Human-in-the-Loop</b> <span class="muted">· on exception</span><div class="muted" style="font-size:12.5px;margin-top:3px">${a.exception.detail}</div></div><button class="btn btn-ghost" onclick="openHITL()">Open HITL review</button></div></div>`:(key==='risk'&&HITL_DONE?`<div class="hitl-card" style="max-width:none;text-align:left;margin-bottom:16px;border-color:#16a34a;background:#ecfdf3"><b style="color:#15803d">✓ Cleared by Human-in-the-Loop</b> <span class="muted">· approved by ${a._hitlBy||'Reviewer'}</span><div class="muted" style="font-size:12.5px;margin-top:3px">Both exceptions reviewed and approved; Documentation and Approval agents completed automatically.</div></div>`:'')}
  <div class="grid kpis" style="grid-template-columns:repeat(5,1fr);margin-bottom:16px">
-  ${a.metrics.map((m,i)=>kpiTile({ic:['📦','🎯','⏱️','🚀','⚠️'][i],bg:['bg-blue','bg-green','bg-amber','bg-purple',(a.exception&&i===4)?'bg-red':'bg-teal'][i],val:m[1],lab:m[0]})).join('')}
+  ${agMetrics(a).map((m,i)=>kpiTile({ic:['📦','🎯','⏱️','🚀','⚠️'][i],bg:['bg-blue','bg-green','bg-amber','bg-purple',(a.exception&&i===4)?'bg-red':'bg-teal'][i],val:m[1],lab:m[0]})).join('')}
  </div>
  <div class="grid" style="grid-template-columns:1.4fr 1fr;align-items:start">
   <div class="card"><div class="card-h"><h3>🧠 Reasoning Trace</h3><span class="tag">step-level lineage · logged for audit</span></div>
-   <div class="rtrace">${a.trace.map(t=>{const cls=t[0]==='FLAG'?'flag':t[0]==='CHECK'?'check':'';const c=RTAG[t[0]];
+   <div class="rtrace">${agTrace(a).map(t=>{const cls=t[0]==='FLAG'?'flag':t[0]==='CHECK'?'check':'';const c=RTAG[t[0]];
      return `<div class="rt ${cls}"><span class="rttag" style="background:${c[0]};color:${c[1]}">${t[0]}</span><span style="font-size:13px">${t[1]}</span></div>`}).join('')}</div>
    ${a.conf?`<div style="margin-top:10px"><div class="muted" style="font-size:11px;font-weight:700;letter-spacing:.4px;margin-bottom:6px">CONFIDENCE — LAST 6 RUNS</div><div class="chart-wrap" style="height:120px"><canvas id="agSpark"></canvas></div></div>`:''}
   </div>
   <div>
-   <div class="card" style="margin-bottom:14px"><div class="card-h"><h3>Inputs Consumed</h3></div>${a.inputs.map(x=>`<div class="row" style="gap:8px;padding:5px 0"><span class="dotc" style="background:${a.color}"></span><span style="font-size:13px">${x}</span></div>`).join('')}</div>
-   <div class="card" style="margin-bottom:14px"><div class="card-h"><h3>Outputs Produced</h3></div>${a.outputs.map(x=>`<div class="row" style="gap:8px;padding:5px 0"><span style="color:#16a34a;font-weight:700">✓</span><span style="font-size:13px">${x}</span></div>`).join('')}</div>
+   <div class="card" style="margin-bottom:14px"><div class="card-h"><h3>Inputs Consumed</h3></div>${a.inputs.map(x=>`<div class="row" style="gap:8px;padding:5px 0;align-items:flex-start"><span class="dotc" style="background:${a.color};margin-top:6px;flex:none"></span><span style="font-size:13px;line-height:1.45">${x}</span></div>`).join('')}</div>
+   <div class="card" style="margin-bottom:14px"><div class="card-h"><h3>Outputs Produced</h3></div>${a.outputs.map(x=>`<div class="row" style="gap:8px;padding:5px 0;align-items:flex-start"><span style="color:#16a34a;font-weight:700;flex:none;line-height:1.45">✓</span><span style="font-size:13px;line-height:1.45">${x}</span></div>`).join('')}</div>
    <div class="card"><div class="card-h"><h3>MCP Resources</h3></div><div class="row">${a.mcp.map(x=>`<span class="pill idle">🔗 ${x}</span>`).join('')}</div></div>
   </div>
  </div>
@@ -933,12 +944,63 @@ const ANOM=[
  {t:'APAC & EMEA Pool 614 flat',d:'No variance vs prior 3 periods — expected',s:'OK',p:'ok',c:'#16a34a'},
  {t:'No-allocation carve-out intact',d:'GL rollup 990 correctly excluded',s:'OK',p:'ok',c:'#16a34a'}
 ];
-function riskExceptions(){return `<div class="card" style="margin-top:16px"><div class="card-h"><h3>⚠️ Exceptions &amp; Outliers</h3><span class="tag">vs prior periods · sub-gate items routed to HITL</span></div>
- ${ANOM.map(a=>`<div class="row" style="align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--line-2)"><span class="dotc" style="background:${a.c};margin-top:5px"></span><div style="flex:1"><div style="font-weight:600;font-size:13px">${a.t}</div><div class="muted" style="font-size:12px">${a.d}</div></div><span class="pill ${a.p}">${a.s}</span>${a.hitl?(HITL_DONE?'<span class="pill ok">✓ Approved</span>':'<span class="pill warn">→ HITL</span>'):''}</div>`).join('')}</div>`;}
+function excDetail(i){
+ if(i===0)return `<div style="margin-top:8px;background:var(--panel);border-radius:10px;padding:12px">
+   <div class="row" style="justify-content:space-between;margin-bottom:6px"><span class="muted" style="font-size:11.5px">Pool value · period over period</span><span style="font-weight:700;font-size:12.5px">$10.52M → $11.40M  (+8.3% · +$0.88M)</span></div>
+   <div class="muted" style="font-size:11.5px;margin-bottom:8px">Gate: portfolio avg +2.0% MoM · primary driver: merchant-transaction volume +7.9% MoM · confidence 88.7%</div>
+   <table style="font-size:12px"><thead><tr><th>Cost centre</th><th class="num">Allocated</th><th class="num">MoM</th></tr></thead><tbody>
+   <tr><td>41200 · Gateway Processing</td><td class="num">$4.10M</td><td class="num" style="color:#dc2626">+9.1%</td></tr>
+   <tr><td>41250 · Fraud &amp; Risk Services</td><td class="num">$3.05M</td><td class="num" style="color:#dc2626">+8.4%</td></tr>
+   <tr><td>41310 · Settlement Ops</td><td class="num">$2.35M</td><td class="num">+6.2%</td></tr>
+   <tr><td>41400 · Tokenization</td><td class="num">$1.90M</td><td class="num" style="color:#dc2626">+8.8%</td></tr></tbody></table>
+   <div class="muted" style="font-size:11px;margin-top:6px">Source: Transaction Volume Data, Source Cost Ledger · model: Technology &amp; Operations</div></div>`;
+ if(i===1)return `<div style="margin-top:8px;background:var(--panel);border-radius:10px;padding:12px">
+   <div class="muted" style="font-size:11.5px;margin-bottom:8px">Driver: Blended (50% processed transactions + 50% payment volume) · Canada</div>
+   <table style="font-size:12px"><thead><tr><th>Component</th><th class="num">Prior</th><th class="num">Current</th><th class="num">Share</th></tr></thead><tbody>
+   <tr><td>Processed transactions (CAN)</td><td class="num">2.74B</td><td class="num">2.91B</td><td class="num" style="color:#b7791f">21.8% → 22.6%</td></tr>
+   <tr><td>Payment volume (CAN)</td><td class="num">$0.84T</td><td class="num">$0.86T</td><td class="num">19.4%</td></tr>
+   <tr><td>Blended allocation key</td><td class="num">20.6%</td><td class="num">21.0%</td><td class="num">+0.4pt</td></tr></tbody></table>
+   <div class="muted" style="font-size:11px;margin-top:6px">Effect: Canada allocation +$0.4M · within tolerance, driver shift flagged · confidence 88.7%</div></div>`;
+ return `<div style="margin-top:8px;background:var(--panel);border-radius:10px;padding:12px"><div class="muted" style="font-size:12px">No variance vs prior 3 periods — within control limits. No action required.</div></div>`;}
+function toggleExc(i){const d=document.getElementById('excd'+i);if(d)d.style.display=d.style.display==='none'?'block':'none';}
+function riskExceptions(){return `<div class="card" style="margin-top:16px"><div class="card-h"><h3>⚠️ Exceptions &amp; Outliers</h3><span class="tag">click a row to see contributing data</span></div>
+ ${ANOM.map((a,i)=>`<div style="border-bottom:1px solid var(--line-2)">
+   <div class="row" style="align-items:flex-start;gap:10px;padding:10px 0;cursor:pointer" onclick="toggleExc(${i})">
+     <span class="dotc" style="background:${a.c};margin-top:5px;flex:none"></span>
+     <div style="flex:1"><div style="font-weight:600;font-size:13px">${a.t}</div><div class="muted" style="font-size:12px">${a.d}</div></div>
+     <span class="pill ${a.p}">${a.s}</span>${a.hitl?(HITL_DONE?'<span class="pill ok">✓ Approved</span>':'<span class="pill warn">→ HITL</span>'):''}
+     <span class="muted" style="font-size:13px;margin-left:2px">▾</span></div>
+   <div id="excd${i}" style="display:none;padding-bottom:12px">${excDetail(i)}</div></div>`).join('')}</div>`;}
 var HITL_DONE=false;
 function docDraft(){var ok=HITL_DONE;return `<div class="card" style="margin-top:16px"><div class="card-h"><h3>📝 Controllership Commentary (auto-draft)</h3><span class="pill ${ok?'ok':'warn'}">${ok?'cleared · ready':'pending HITL clearance'}</span></div>
  <div style="font-size:13.5px;line-height:1.7;color:var(--ink-soft)">For <b>${STATE.period}</b>, total intercompany allocations settle at <b>${fmtM(totalAllocated())}</b> on a cost-plus basis. <b>Technology & Operations</b> remains the largest model; the period increase concentrates in Canada on a higher blended processing share. The rebuilt engine reconciles to the legacy Access tool at <b>100.00% parity</b>. ${ok?'The 2 Risk Agent exceptions were approved via Human-in-the-Loop; journal entries and intercompany invoices have been generated and handed off to Controllership.':'Journal entries and intercompany invoices are staged for Controllership handoff once the 2 Risk Agent exceptions clear human review.'}</div>
- <div class="row" style="margin-top:14px"><button class="btn btn-green">⬇ Export to Controllership pack</button><button class="btn btn-ghost">✎ Edit narrative</button></div></div>`;}
+ <div class="row" style="margin-top:14px"><button class="btn btn-green" onclick="exportPack()">⬇ Export to Controllership pack</button><button class="btn btn-ghost">✎ Edit narrative</button></div></div>`;}
+function exportPack(){
+ const per=STATE.period,tot=fmtM(totalAllocated()),rt=regionTotals(null),by=(window.CURRENT_USER&&CURRENT_USER.name)||'Reviewer';
+ const rows=MODELS.map(m=>`<tr><td>${m.name}</td><td style="text-align:right">${fmt$(modelAllocated(m))}</td><td style="text-align:right">${m.markup*100}%</td></tr>`).join('');
+ const reg=REGIONS.map(r=>`<tr><td>${r.n}</td><td style="text-align:right">${fmt$(rt[r.k])}</td></tr>`).join('');
+ const je=[['JE-20455','Intercompany cost-plus charge','Corporate HQ',842113],['JE-20456','AR invoice — management fee','APAC & EMEA',1290447],['JE-20457','Accrual — professional fees','Shared Services',-188200],['JE-20458','FX revaluation','LATAM',43980],['JE-20459','AP settlement — vendor','Holdings Co',-512300]].map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td style="text-align:right">${fmt$(r[3])}</td></tr>`).join('');
+ const html=`<!doctype html><html><head><meta charset="utf-8"><title>Controllership Pack ${per}</title>
+ <style>body{font-family:Arial,Helvetica,sans-serif;color:#1e293b;max-width:900px;margin:24px auto;padding:0 20px}h1{font-size:22px}h2{font-size:15px;border-bottom:2px solid #16a34a;padding-bottom:4px;margin-top:26px}table{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}th,td{border:1px solid #e2e8f0;padding:7px 9px}th{background:#f1f5f9;text-align:left}.muted{color:#64748b;font-size:12px}.tag{display:inline-block;background:#ecfdf3;color:#15803d;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:700}</style></head><body>
+ <h1>Global Payment Networks Inc. — Controllership Pack</h1>
+ <div class="muted">Transfer Pricing close · Period ${per} · Generated ${new Date().toISOString().slice(0,10)} · Status: <span class="tag">FINAL — HITL approved by ${by}</span></div>
+ <h2>1. Allocation Summary by Model</h2>
+ <table><thead><tr><th>Allocation model</th><th style="text-align:right">Allocated (cost-plus)</th><th style="text-align:right">Markup</th></tr></thead><tbody>${rows}<tr><th>Total</th><th style="text-align:right">${tot}</th><th></th></tr></tbody></table>
+ <h2>2. Allocation by Recipient Entity</h2>
+ <table><thead><tr><th>Entity / region</th><th style="text-align:right">Allocated</th></tr></thead><tbody>${reg}</tbody></table>
+ <h2>3. Reconciliation</h2>
+ <table><tbody><tr><td>Rebuilt engine vs legacy parity</td><td style="text-align:right">100.00%</td></tr><tr><td>Audit coverage (step-level lineage)</td><td style="text-align:right">100%</td></tr></tbody></table>
+ <h2>4. Exceptions — Human-in-the-Loop</h2>
+ <table><thead><tr><th>Item</th><th>Severity</th><th>Disposition</th></tr></thead><tbody>
+ <tr><td>Subsidiary B pool +8.3% MoM (merchant-volume driven)</td><td>Medium</td><td>Approved — ${by}</td></tr>
+ <tr><td>Canada blended-driver shift 21.8% → 22.6%</td><td>Low</td><td>Approved — ${by}</td></tr></tbody></table>
+ <h2>5. Journal Entries (sample)</h2>
+ <table><thead><tr><th>JE #</th><th>Description</th><th>Entity</th><th style="text-align:right">Amount</th></tr></thead><tbody>${je}</tbody></table>
+ <h2>6. Controllership Commentary</h2>
+ <p style="font-size:13px;line-height:1.6">For ${per}, total intercompany allocations settled at ${tot} on a cost-plus basis. Technology &amp; Operations remained the largest model; the period increase concentrated in Canada on a higher blended processing share. The rebuilt engine reconciled to the legacy tool at 100.00% parity. Two Risk Agent exceptions were reviewed and approved via Human-in-the-Loop; journal entries and intercompany invoices were generated and handed off to Controllership.</p>
+ <p class="muted">Illustrative data — Global Payment Networks Inc. · TP Engine.</p></body></html>`;
+ const blob=new Blob([html],{type:'text/html'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='Controllership_Pack_'+per+'.html';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+}
 /* ---- Human-in-the-Loop review for Risk Agent ---- */
 function hitlAgents(){return {risk:AGENTS.find(a=>a.k==='risk'),doc:AGENTS.find(a=>a.k==='doc'),appr:AGENTS.find(a=>a.k==='approval')};}
 function openHITL(){
