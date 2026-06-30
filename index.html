@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Finance Automation · TP Engine · SbS ConvokeAI</title>
+<title>Finance Automation & Intelligence Platform</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
 :root{
@@ -407,7 +407,7 @@ html[data-theme="dark"] .logo-chip{box-shadow:0 0 0 1px var(--line)}
       <section class="view" id="view-cs-chatbot"></section>
       <section class="view" id="view-compliance"></section>
 
-      <div style="text-align:center;color:var(--faint);font-size:11px;margin-top:34px">2026 © SbS Corp. All Rights Reserved. · TP Engine modernisation POC — illustrative data</div>
+      <div style="text-align:center;color:var(--faint);font-size:11px;margin-top:34px">2026 © SbS Corp. All Rights Reserved. (illustrative data)</div>
     </div>
   </div>
 </div>
@@ -855,7 +855,7 @@ function renderOrchestration(el){
   ${kpiTile({ic:'🧑‍⚖️',bg:'bg-blue',val:escCount,lab:'HITL Reviews Pending',sub:'human-in-the-loop'})}
  </div>
  <div class="card" style="margin-bottom:16px">
-  <div class="card-h"><h3>🔗 Agentic AI Flow (Powered by MCP)</h3><button class="btn btn-primary" onclick="runOrchestration()">▶ Run orchestration</button></div>
+  <div class="card-h"><h3>🔗 Agentic AI Flow (Powered by MCP)</h3><button class="btn btn-ghost" onclick="resetHITL()" style="margin-right:8px">↺ Reset demo</button><button class="btn btn-primary" onclick="runOrchestration()">▶ Run orchestration</button></div>
   <div class="agflow" id="agflow">${agFlowHTML()}</div>
   <div class="hitl-wrap">
    <div class="hitl-conn"></div>
@@ -906,7 +906,7 @@ function renderAgent(el,key){
    </div>
   </div>
  </div>
- ${a.exception?`<div class="hitl-card" style="max-width:none;text-align:left;margin-bottom:16px"><div class="row" style="justify-content:space-between;align-items:flex-start"><div><b>⚠ Escalated to Human-in-the-Loop</b> <span class="muted">· on exception</span><div class="muted" style="font-size:12.5px;margin-top:3px">${a.exception.detail}</div></div><button class="btn btn-ghost">Open HITL review</button></div></div>`:''}
+ ${a.exception?`<div class="hitl-card" style="max-width:none;text-align:left;margin-bottom:16px"><div class="row" style="justify-content:space-between;align-items:flex-start"><div><b>⚠ Escalated to Human-in-the-Loop</b> <span class="muted">· on exception</span><div class="muted" style="font-size:12.5px;margin-top:3px">${a.exception.detail}</div></div><button class="btn btn-ghost" onclick="openHITL()">Open HITL review</button></div></div>`:(key==='risk'&&HITL_DONE?`<div class="hitl-card" style="max-width:none;text-align:left;margin-bottom:16px;border-color:#16a34a;background:#ecfdf3"><b style="color:#15803d">✓ Cleared by Human-in-the-Loop</b> <span class="muted">· approved by ${a._hitlBy||'Reviewer'}</span><div class="muted" style="font-size:12.5px;margin-top:3px">Both exceptions reviewed and approved; Documentation and Approval agents completed automatically.</div></div>`:'')}
  <div class="grid kpis" style="grid-template-columns:repeat(5,1fr);margin-bottom:16px">
   ${a.metrics.map((m,i)=>kpiTile({ic:['📦','🎯','⏱️','🚀','⚠️'][i],bg:['bg-blue','bg-green','bg-amber','bg-purple',(a.exception&&i===4)?'bg-red':'bg-teal'][i],val:m[1],lab:m[0]})).join('')}
  </div>
@@ -934,10 +934,51 @@ const ANOM=[
  {t:'No-allocation carve-out intact',d:'GL rollup 990 correctly excluded',s:'OK',p:'ok',c:'#16a34a'}
 ];
 function riskExceptions(){return `<div class="card" style="margin-top:16px"><div class="card-h"><h3>⚠️ Exceptions &amp; Outliers</h3><span class="tag">vs prior periods · sub-gate items routed to HITL</span></div>
- ${ANOM.map(a=>`<div class="row" style="align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--line-2)"><span class="dotc" style="background:${a.c};margin-top:5px"></span><div style="flex:1"><div style="font-weight:600;font-size:13px">${a.t}</div><div class="muted" style="font-size:12px">${a.d}</div></div><span class="pill ${a.p}">${a.s}</span>${a.hitl?'<span class="pill warn">→ HITL</span>':''}</div>`).join('')}</div>`;}
-function docDraft(){return `<div class="card" style="margin-top:16px"><div class="card-h"><h3>📝 Controllership Commentary (auto-draft)</h3><span class="pill warn">pending HITL clearance</span></div>
- <div style="font-size:13.5px;line-height:1.7;color:var(--ink-soft)">For <b>${STATE.period}</b>, total intercompany allocations settle at <b>${fmtM(totalAllocated())}</b> on a cost-plus basis. <b>Technology & Operations</b> remains the largest model; the period increase concentrates in Canada on a higher blended processing share. The rebuilt engine reconciles to the legacy Access tool at <b>100.00% parity</b>. Journal entries and intercompany invoices are staged for Controllership handoff once the 2 Risk Agent exceptions clear human review.</div>
+ ${ANOM.map(a=>`<div class="row" style="align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--line-2)"><span class="dotc" style="background:${a.c};margin-top:5px"></span><div style="flex:1"><div style="font-weight:600;font-size:13px">${a.t}</div><div class="muted" style="font-size:12px">${a.d}</div></div><span class="pill ${a.p}">${a.s}</span>${a.hitl?(HITL_DONE?'<span class="pill ok">✓ Approved</span>':'<span class="pill warn">→ HITL</span>'):''}</div>`).join('')}</div>`;}
+var HITL_DONE=false;
+function docDraft(){var ok=HITL_DONE;return `<div class="card" style="margin-top:16px"><div class="card-h"><h3>📝 Controllership Commentary (auto-draft)</h3><span class="pill ${ok?'ok':'warn'}">${ok?'cleared · ready':'pending HITL clearance'}</span></div>
+ <div style="font-size:13.5px;line-height:1.7;color:var(--ink-soft)">For <b>${STATE.period}</b>, total intercompany allocations settle at <b>${fmtM(totalAllocated())}</b> on a cost-plus basis. <b>Technology & Operations</b> remains the largest model; the period increase concentrates in Canada on a higher blended processing share. The rebuilt engine reconciles to the legacy Access tool at <b>100.00% parity</b>. ${ok?'The 2 Risk Agent exceptions were approved via Human-in-the-Loop; journal entries and intercompany invoices have been generated and handed off to Controllership.':'Journal entries and intercompany invoices are staged for Controllership handoff once the 2 Risk Agent exceptions clear human review.'}</div>
  <div class="row" style="margin-top:14px"><button class="btn btn-green">⬇ Export to Controllership pack</button><button class="btn btn-ghost">✎ Edit narrative</button></div></div>`;}
+/* ---- Human-in-the-Loop review for Risk Agent ---- */
+function hitlAgents(){return {risk:AGENTS.find(a=>a.k==='risk'),doc:AGENTS.find(a=>a.k==='doc'),appr:AGENTS.find(a=>a.k==='approval')};}
+function openHITL(){
+  const items=ANOM.filter(a=>a.hitl);
+  const by=(window.CURRENT_USER&&CURRENT_USER.name)||'Reviewer';
+  document.getElementById('fmodalTitle').innerHTML='🧑‍⚖️ Human-in-the-Loop Review — Risk Agent';
+  document.getElementById('fmodalBody').innerHTML=`
+   <div class="row" style="justify-content:space-between;margin-bottom:12px">
+     <div class="muted" style="font-size:12.5px">Reviewer: <b style="color:var(--ink)">${by}</b></div>
+     <span class="pill warn">2 items below 90% confidence gate</span></div>
+   <p class="muted" style="font-size:13px;margin-bottom:14px">The Risk Agent paused the close and escalated the items below. Review each, then approve to auto-resume Documentation → Approval → close.</p>
+   ${items.map((a,i)=>`<label class="tool-row" style="align-items:flex-start">
+      <input type="checkbox" id="hitlc${i}" checked style="margin-top:3px">
+      <div><div style="font-weight:700;font-size:13px">${a.t} <span class="pill ${a.p}" style="margin-left:4px">${a.s}</span></div>
+      <div class="muted" style="font-size:12px;margin-top:2px">${a.d}</div>
+      <div class="muted" style="font-size:11.5px;margin-top:2px">Confidence 88.7% · gate 90%</div></div></label>`).join('')}
+   <div class="api-field" style="margin-top:12px"><label>Reviewer note (optional)</label><textarea id="hitlNote">Reviewed against prior periods and policy — variance explained, within tolerance. Approved to proceed.</textarea></div>
+   <div class="row" style="justify-content:flex-end;margin-top:16px;gap:10px">
+     <button class="btn btn-ghost" onclick="closeFoundationModal()">Reject &amp; hold</button>
+     <button class="btn btn-green" onclick="approveHITL()">✓ Approve &amp; resume close</button></div>`;
+  document.getElementById('fmodal').classList.add('show');
+}
+function hitlStep(s){const c=s.s==='done'?'#16a34a':s.s==='run'?'#3b82f6':'#cbd5e1';const ic=s.s==='done'?'✓':s.s==='run'?'⏳':'•';
+  return `<div class="row" style="gap:11px;padding:9px 0;border-bottom:1px solid var(--line-2)"><span style="width:24px;height:24px;border-radius:50%;background:${c}1a;color:${c};display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px">${ic}</span><span style="font-size:13px;font-weight:${s.s==='wait'?'400':'600'};color:${s.s==='wait'?'var(--muted)':'var(--ink)'}">${s.t}</span></div>`;}
+function approveHITL(){
+  const by=(window.CURRENT_USER&&CURRENT_USER.name)||'Reviewer';
+  const g=hitlAgents();
+  g.risk.exception=null; g.risk.status='done'; g.risk._hitlBy=by; HITL_DONE=true;
+  const body=document.getElementById('fmodalBody');
+  const steps=[{t:'Risk Agent — 2 exceptions reviewed & approved by '+by,s:'done'},
+   {t:'Documentation Agent — generating JEs, invoices & commentary',s:'run'},
+   {t:'Approval Agent — routing & tracking sign-off',s:'wait'},
+   {t:'Transfer Pricing close complete',s:'wait'}];
+  function draw(done){body.innerHTML=`<div class="pill ok" style="margin-bottom:14px">✓ Approved — resuming the automated close</div>`+steps.map(hitlStep).join('')+(done?`<div class="row" style="justify-content:flex-end;margin-top:16px"><button class="btn btn-green" onclick="hitlDone()">Done</button></div>`:`<div class="muted" style="font-size:12px;margin-top:12px">Pipeline running…</div>`);}
+  draw(false);
+  setTimeout(()=>{steps[1].s='done';steps[2].s='run';g.doc.status='done';draw(false);},1100);
+  setTimeout(()=>{steps[2].s='done';steps[3].s='done';g.appr.status='done';draw(true);},2400);
+}
+function hitlDone(){closeFoundationModal(); render(current);}
+function resetHITL(){const g=hitlAgents();g.risk.exception={n:2,detail:'2 items scored below the 90% confidence gate and were routed to Human-in-the-Loop for review.'};g.risk.status='run';g.risk._hitlBy=null;g.doc.status='queued';g.appr.status='queued';HITL_DONE=false;render(current);}
 
 /* ============================================================
    DATA MIGRATOR
