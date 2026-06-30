@@ -249,13 +249,12 @@ html[data-theme="dark"] input[type=text],
 html[data-theme="dark"] input[type=password],
 html[data-theme="dark"] textarea,
 html[data-theme="dark"] .login-form input{background:var(--panel);color:var(--ink);border-color:var(--line)}
-.logo-chip{display:inline-flex;align-items:center;justify-content:center}
-.brand-logo{height:40px;width:40px;border-radius:50%;object-fit:cover;display:block;background:#fff}
-.ll-logo{height:58px;width:58px;border-radius:50%;object-fit:cover;display:block;background:#fff}
-.brand-logo-svg svg{height:34px;width:auto;display:block}
-.ll-logo-svg svg{height:46px;width:auto;display:block}
-.brand-logo-svg,.ll-logo-svg{background:#fff;border-radius:8px;padding:3px 8px}
-html[data-theme="dark"] .brand-logo,html[data-theme="dark"] .ll-logo{box-shadow:0 0 0 2px var(--line)}
+.logo-chip{background:#fff;border-radius:9px;padding:5px 11px;display:inline-flex;align-items:center}
+.brand-logo{height:48px;width:auto;display:block;object-fit:contain}
+.ll-logo{height:62px;width:auto;display:block;object-fit:contain}
+.brand-logo-svg svg{height:40px;width:auto;display:block}
+.ll-logo-svg svg{height:52px;width:auto;display:block}
+html[data-theme="dark"] .logo-chip{box-shadow:0 0 0 1px var(--line)}
 </style>
 </head>
 <body>
@@ -265,7 +264,7 @@ html[data-theme="dark"] .brand-logo,html[data-theme="dark"] .ll-logo{box-shadow:
   <div class="login-left">
     <div>
       <span class="logo-chip">
-        <img src="https://pbs.twimg.com/profile_images/1194956981770997760/iMY5oUqL_400x400.png" alt="SBS Corp - Beyond IT" class="ll-logo" onerror="this.style.display='none';this.nextElementSibling.style.display='inline-block'">
+        <img src="https://www.mysbscorp.com/assets/sbscorp-logo-R5eV7zNn.png" referrerpolicy="no-referrer" alt="SBS Corp" class="ll-logo" onerror="this.onerror=function(){this.style.display='none';this.nextElementSibling.style.display='inline-block'};this.src='https://pbs.twimg.com/profile_images/1194956981770997760/iMY5oUqL_400x400.png'">
         <span class="ll-logo-svg" style="display:none"><svg viewBox="0 0 300 152" xmlns="http://www.w3.org/2000/svg" aria-label="SBS Corp - Beyond IT"><text x="20" y="112" font-family="'Arial Rounded MT Bold',Arial,Helvetica,sans-serif" font-weight="800" font-size="120" fill="#161616">S</text><rect x="116" y="22" width="20" height="96" rx="10" fill="#63b63d"/><circle cx="140" cy="94" r="24" fill="none" stroke="#63b63d" stroke-width="18"/><polygon points="126,4 145,32 107,32" fill="#2f7d33"/><text x="176" y="112" font-family="'Arial Rounded MT Bold',Arial,Helvetica,sans-serif" font-weight="800" font-size="120" fill="#161616">S</text><text x="140" y="144" text-anchor="middle" font-family="'Arial Rounded MT Bold',Arial,Helvetica,sans-serif" font-weight="700" font-size="24" letter-spacing="3" fill="#161616">Beyond IT</text></svg></span>
       </span>
     </div>
@@ -284,7 +283,7 @@ html[data-theme="dark"] .brand-logo,html[data-theme="dark"] .ll-logo{box-shadow:
       <h2>Sign in</h2>
       <div class="lf-sub">Access the SBS ConvokeAI console</div>
       <label>Email</label>
-      <input id="loginEmail" type="text" placeholder="you@sbs.com" autocomplete="username">
+      <input id="loginEmail" type="text" placeholder="you@globalpaymentnetworks.com" autocomplete="username">
       <label>Password</label>
       <input id="loginPw" type="password" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" autocomplete="current-password">
       <div class="lf-err" id="loginErr">Invalid email or password. Try a demo account.</div>
@@ -297,7 +296,7 @@ html[data-theme="dark"] .brand-logo,html[data-theme="dark"] .ll-logo{box-shadow:
   <aside class="sidebar">
     <div class="brand">
       <span class="logo-chip">
-        <img src="https://pbs.twimg.com/profile_images/1194956981770997760/iMY5oUqL_400x400.png" alt="SBS Corp - Beyond IT" class="brand-logo" onerror="this.style.display='none';this.nextElementSibling.style.display='inline-block'">
+        <img src="https://www.mysbscorp.com/assets/sbscorp-logo-R5eV7zNn.png" referrerpolicy="no-referrer" alt="SBS Corp" class="brand-logo" onerror="this.onerror=function(){this.style.display='none';this.nextElementSibling.style.display='inline-block'};this.src='https://pbs.twimg.com/profile_images/1194956981770997760/iMY5oUqL_400x400.png'">
         <span class="brand-logo-svg" style="display:none"><svg viewBox="0 0 300 152" xmlns="http://www.w3.org/2000/svg" aria-label="SBS Corp - Beyond IT"><text x="20" y="112" font-family="'Arial Rounded MT Bold',Arial,Helvetica,sans-serif" font-weight="800" font-size="120" fill="#161616">S</text><rect x="116" y="22" width="20" height="96" rx="10" fill="#63b63d"/><circle cx="140" cy="94" r="24" fill="none" stroke="#63b63d" stroke-width="18"/><polygon points="126,4 145,32 107,32" fill="#2f7d33"/><text x="176" y="112" font-family="'Arial Rounded MT Bold',Arial,Helvetica,sans-serif" font-weight="800" font-size="120" fill="#161616">S</text><text x="140" y="144" text-anchor="middle" font-family="'Arial Rounded MT Bold',Arial,Helvetica,sans-serif" font-weight="700" font-size="24" letter-spacing="3" fill="#161616">Beyond IT</text></svg></span>
       </span>
     </div>
@@ -366,7 +365,7 @@ html[data-theme="dark"] .brand-logo,html[data-theme="dark"] .ll-logo{box-shadow:
           <div class="page-sub" id="pageSub">Finance Automation &amp; Intelligence Platform · <span id="periodLabel">Period 2018.02</span></div>
         </div>
         <div class="row">
-          <span class="client-chip"><span class="dot"></span> Sample Client · Consolidated Group</span>
+          <span class="client-chip"><span class="dot"></span> Global Payment Networks Inc. · Consolidated Group</span>
           <span class="today">Today: 27 June</span>
         </div>
       </div>
@@ -1112,13 +1111,17 @@ const ROLES={
   superadmin:{label:'Super Admin',color:'#8b5cf6',views:'*'},
   admin:{label:'Admin',color:'#3b82f6',views:['migrator','transformer','pipeline','scheduler','overview','explorer','recon','orchestration','compliance','nlp-understanding','nlp-retrieval','nlp-langgen','cs-channels','cs-agentassist','exec','finops','workflow','cs-copilot','cs-journey','cs-360','cs-chatbot']},
   manager:{label:'Manager',color:'#14b8a6',views:['overview','explorer','recon','compliance','nlp-understanding','nlp-retrieval','nlp-langgen','cs-channels','cs-agentassist','exec','finops','workflow','cs-copilot','cs-journey','cs-360','cs-chatbot']},
-  dataadmin:{label:'Data Admin',color:'#f59e0b',views:['migrator','transformer','pipeline','scheduler','overview','nlp-understanding','nlp-retrieval','nlp-langgen','cs-channels','cs-agentassist','exec','finops','workflow','cs-copilot','cs-journey','cs-360','cs-chatbot']}
+  dataadmin:{label:'Data Admin',color:'#f59e0b',views:['migrator','transformer','pipeline','scheduler','overview','nlp-understanding','nlp-retrieval','nlp-langgen','cs-channels','cs-agentassist','exec','finops','workflow','cs-copilot','cs-journey','cs-360','cs-chatbot']},
+  taxcollector:{label:'Tax Collector',color:'#0d9488',views:['exec','finops','overview','explorer','recon','scenario','compliance','nlp-retrieval']},
+  demo:{label:'Demo',color:'#64748b',views:'*'}
 };
 const USERS={
-  'superadmin@sbs.com':{pw:'demo123',name:'Sarah Chen',role:'superadmin'},
-  'admin@sbs.com':{pw:'demo123',name:'Michael Torres',role:'admin'},
-  'manager@sbs.com':{pw:'demo123',name:'Priya Nair',role:'manager'},
-  'dataadmin@sbs.com':{pw:'demo123',name:'David Kim',role:'dataadmin'}
+  'superadmin@globalpaymentnetworks.com':{pw:'demo123',name:'Sarah Chen',role:'superadmin'},
+  'admin@globalpaymentnetworks.com':{pw:'demo123',name:'Michael Torres',role:'admin'},
+  'manager@globalpaymentnetworks.com':{pw:'demo123',name:'Priya Nair',role:'manager'},
+  'dataadmin@globalpaymentnetworks.com':{pw:'demo123',name:'David Kim',role:'dataadmin'},
+  'taxcollector@globalpaymentnetworks.com':{pw:'demo123',name:'Tara Voss',role:'taxcollector'},
+  'demo@globalpaymentnetworks.com':{pw:'demo123',name:'Demo User',role:'demo'}
 };
 var CURRENT_USER=null;
 function initials(n){return n.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();}
@@ -1620,7 +1623,7 @@ function renderCsChannels(el){
       <div style="text-align:center">
         <div style="font-weight:700;font-size:13px;margin-bottom:14px">Connect to WhatsApp</div>
         <div style="font-size:34px">🟢</div>
-        <div class="pill idle" style="margin:12px auto">Join Sample Client</div>
+        <div class="pill idle" style="margin:12px auto">Join Global Payment Networks Inc.</div>
         <button class="btn btn-primary" style="margin-top:8px">Say Hi on WhatsApp Web</button>
       </div>
       <div>
@@ -1646,7 +1649,7 @@ function renderCsAgentAssist(el){
   <div class="grid" style="grid-template-columns:300px 1fr 230px;align-items:start">
     <div>
       <div class="card" style="margin-bottom:14px"><div class="card-h"><h3>Conversations</h3></div>
-        <div style="border:1px solid var(--line);border-radius:11px;padding:12px"><div style="font-weight:700;font-size:13px">Allocation Inquiry · Finance</div><div class="muted" style="font-size:12px">Sample Client Support Queue</div></div></div>
+        <div style="border:1px solid var(--line);border-radius:11px;padding:12px"><div style="font-weight:700;font-size:13px">Allocation Inquiry · Finance</div><div class="muted" style="font-size:12px">Global Payment Networks Inc. Support Queue</div></div></div>
       <div class="card"><div class="card-h"><h3>Next Best Actions</h3></div>
         ${NBA.map(a=>`<div style="border:1px solid var(--line);border-radius:11px;padding:11px;margin-bottom:8px"><div class="row" style="gap:9px"><span style="font-size:16px">${a.ic}</span><div><div style="font-weight:600;font-size:13px">${a.t}</div><div class="muted" style="font-size:11.5px">${a.d}</div></div></div></div>`).join('')}</div>
     </div>
