@@ -1016,19 +1016,25 @@ function openHITL(){
      <span class="pill warn">2 items below 90% confidence gate</span></div>
    <p class="muted" style="font-size:13px;margin-bottom:14px">The Risk Agent paused the close and escalated the items below. Review each, then approve to auto-resume Documentation → Approval → close.</p>
    ${items.map((a,i)=>`<label class="tool-row" style="align-items:flex-start">
-      <input type="checkbox" id="hitlc${i}" checked style="margin-top:3px">
+      <input type="checkbox" id="hitlc${i}" onchange="hitlSync()" style="margin-top:3px">
       <div><div style="font-weight:700;font-size:13px">${a.t} <span class="pill ${a.p}" style="margin-left:4px">${a.s}</span></div>
       <div class="muted" style="font-size:12px;margin-top:2px">${a.d}</div>
       <div class="muted" style="font-size:11.5px;margin-top:2px">Confidence 88.7% · gate 90%</div></div></label>`).join('')}
    <div class="api-field" style="margin-top:12px"><label>Reviewer note (optional)</label><textarea id="hitlNote">Reviewed against prior periods and policy — variance explained, within tolerance. Approved to proceed.</textarea></div>
-   <div class="row" style="justify-content:flex-end;margin-top:16px;gap:10px">
-     <button class="btn btn-ghost" onclick="closeFoundationModal()">Reject &amp; hold</button>
-     <button class="btn btn-green" onclick="approveHITL()">✓ Approve &amp; resume close</button></div>`;
-  document.getElementById('fmodal').classList.add('show');
+   <div class="row" style="justify-content:space-between;align-items:center;margin-top:16px;gap:10px">
+     <span class="muted" id="hitlCount" style="font-size:12px">0 of ${items.length} approved</span>
+     <div class="row" style="gap:10px"><button class="btn btn-ghost" onclick="closeFoundationModal()">Reject &amp; hold</button>
+     <button class="btn btn-green" id="hitlApproveBtn" onclick="approveHITL()" disabled style="opacity:.5;cursor:not-allowed">✓ Approve &amp; resume close</button></div></div>`;
+  document.getElementById('fmodal').classList.add('show'); hitlSync();
 }
+function hitlSync(){const items=ANOM.filter(a=>a.hitl);let n=0;items.forEach((a,i)=>{const c=document.getElementById('hitlc'+i);if(c&&c.checked)n++;});
+  const cnt=document.getElementById('hitlCount');if(cnt){cnt.textContent=n+' of '+items.length+' approved';cnt.style.color='';}
+  const b=document.getElementById('hitlApproveBtn');if(b){const ok=n===items.length;b.disabled=!ok;b.style.opacity=ok?'1':'.5';b.style.cursor=ok?'pointer':'not-allowed';}}
 function hitlStep(s){const c=s.s==='done'?'#16a34a':s.s==='run'?'#3b82f6':'#cbd5e1';const ic=s.s==='done'?'✓':s.s==='run'?'⏳':'•';
   return `<div class="row" style="gap:11px;padding:9px 0;border-bottom:1px solid var(--line-2)"><span style="width:24px;height:24px;border-radius:50%;background:${c}1a;color:${c};display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px">${ic}</span><span style="font-size:13px;font-weight:${s.s==='wait'?'400':'600'};color:${s.s==='wait'?'var(--muted)':'var(--ink)'}">${s.t}</span></div>`;}
 function approveHITL(){
+  const items=ANOM.filter(a=>a.hitl);const ok=items.every((a,i)=>{const c=document.getElementById('hitlc'+i);return c&&c.checked;});
+  if(!ok){const cnt=document.getElementById('hitlCount');if(cnt){const left=items.filter((a,i)=>{const c=document.getElementById('hitlc'+i);return !(c&&c.checked);}).length;cnt.textContent='Approve all '+items.length+' items to resume — '+left+' remaining';cnt.style.color='#dc2626';}return;}
   const by=(window.CURRENT_USER&&CURRENT_USER.name)||'Reviewer';
   const g=hitlAgents();
   g.risk.exception=null; g.risk.status='done'; g.risk._hitlBy=by; HITL_DONE=true;
