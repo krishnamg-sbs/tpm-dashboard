@@ -255,6 +255,9 @@ html[data-theme="dark"] .login-form input{background:var(--panel);color:var(--in
 .brand-logo-svg svg{height:40px;width:auto;display:block}
 .ll-logo-svg svg{height:52px;width:auto;display:block}
 html[data-theme="dark"] .logo-chip{box-shadow:0 0 0 1px var(--line)}
+.wfgap{min-width:22px;align-self:stretch;display:flex;align-items:center;justify-content:center;color:var(--faint);font-size:16px;border-radius:8px;transition:.12s}
+.wfnode{text-align:center;min-width:124px;border:1px solid var(--line);border-radius:12px;padding:12px 10px;position:relative;background:var(--card);cursor:pointer;transition:.12s}
+.wfnode:hover{box-shadow:var(--shadow);transform:translateY(-1px)}
 </style>
 </head>
 <body>
@@ -1957,15 +1960,15 @@ function cwSave(){const i=CW.i;closeFoundationModal();
    CUSTOMER SUPPORT AI — Copilot, Journey, 360, Chatbot+Voice
    ============================================================ */
 function renderCsCopilot(el){
-  const feats=[['💡','Intent','#16a34a'],['👤','Customer Profile','#ef4444'],['⏱️','AHT','#3b82f6'],['✅','Next Best Actions','#16a34a'],['🌐','Translation','#ec4899'],['📋','Similar Cases','#f59e0b'],['🙂','Sentiment','#22c55e'],['🔎','Knowledge Search','#8b5cf6']];
+  const feats=[['💡','Intent','#16a34a','Reconciliation · 41%','intent'],['👤','Customer Profile','#ef4444','Francis Mitcham','goto:cs-360'],['⏱️','AHT','#3b82f6','4:12 avg','aht'],['✅','Next Best Actions','#16a34a','5 suggested','nba'],['🌐','Translation','#ec4899','EN ⇄ ES','translation'],['📋','Similar Cases','#f59e0b','3 matched','cases'],['🙂','Sentiment','#22c55e','Positive 62%','sentiment'],['🔎','Knowledge Search','#8b5cf6','2,341 docs','goto:nlp-retrieval']];
   el.innerHTML=`
   <div class="grid" style="grid-template-columns:repeat(8,1fr);gap:10px;margin-bottom:18px">
-    ${feats.map(f=>`<div class="card" style="text-align:center;padding:14px 8px"><div style="font-size:20px">${f[0]}</div><div style="font-size:11px;font-weight:700;color:${f[2]};margin-top:6px">${f[1]}</div></div>`).join('')}
+    ${feats.map(f=>`<div class="card" onclick="cpAction('${f[4]}')" style="text-align:center;padding:13px 8px;cursor:pointer" title="Click for details"><div style="font-size:20px">${f[0]}</div><div style="font-size:11px;font-weight:700;color:${f[2]};margin-top:6px">${f[1]}</div><div class="muted" style="font-size:10.5px;margin-top:3px">${f[3]}</div></div>`).join('')}
   </div>
   <div class="grid" style="grid-template-columns:1fr 1fr 1.2fr 1.3fr;gap:14px;margin-bottom:16px">
     <div class="card"><div class="card-h"><h3>User Intent</h3></div><div class="chart-wrap" style="height:150px"><canvas id="cCopIntent"></canvas></div></div>
     <div class="card"><div class="card-h"><h3>Customer</h3></div><div style="text-align:center"><div class="uava" style="width:54px;height:54px;margin:0 auto;background:#3b82f6">FM</div><div style="font-weight:700;margin-top:8px">Francis Mitcham</div><div class="muted" style="font-size:12px">f.mitcham@acme.com</div><div class="muted" style="font-size:12px">+1-789-123-6345</div></div></div>
-    <div class="card" style="background:linear-gradient(135deg,#f43f5e,#be123c);color:#fff"><div style="font-weight:700">⏱️ AHT SLA Countdown</div><div style="background:rgba(255,255,255,.18);border-radius:10px;padding:14px;text-align:center;margin-top:14px;font-size:20px;font-weight:800">Time Left: 2:53</div></div>
+    <div class="card" id="cpAhtCard" style="background:linear-gradient(135deg,#f43f5e,#be123c);color:#fff"><div class="row" style="justify-content:space-between"><span style="font-weight:700">⏱️ AHT SLA Countdown</span><span class="pill" style="background:rgba(255,255,255,.2);color:#fff">SLA 5:00</span></div><div style="background:rgba(255,255,255,.18);border-radius:10px;padding:14px;text-align:center;margin-top:14px;font-size:20px;font-weight:800" id="cpTimer">Time Left: 2:53</div></div>
     <div class="card"><div class="card-h"><h3>Next Best Actions</h3></div>${['Greet & confirm identity','Pull account & entitlements','Suggest resolution from KB','Offer live escalation','Summarise & close'].map((s,i)=>`<div class="row" style="gap:9px;padding:5px 0"><span style="width:18px;height:18px;border-radius:50%;background:var(--blue);color:#fff;font-size:10px;display:flex;align-items:center;justify-content:center;font-weight:800">${i+1}</span><span style="font-size:12.5px">${s}</span></div>`).join('')}</div>
   </div>
   <div class="grid" style="grid-template-columns:1.2fr 1fr 1fr;gap:14px">
@@ -1976,6 +1979,8 @@ function renderCsCopilot(el){
       ${[['Billing needs update','Solved','ok'],['Help with download','In progress','warn'],['Cannot see attachment','Open','bad']].map(c=>`<div class="row" style="justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line-2)"><span style="font-size:12.5px;font-weight:600">${c[0]}</span><span class="pill ${c[2]}">${c[1]}</span></div>`).join('')}</div>
     <div class="card"><div class="card-h"><h3>Sentiment Trend</h3></div><div class="chart-wrap" style="height:150px"><canvas id="cCopSent"></canvas></div></div>
   </div>`;
+  if(window.__cpTimer)clearInterval(window.__cpTimer);
+  (function(){let sec=173;const f=s=>'Time Left: '+Math.floor(s/60)+':'+((s%60)<10?'0':'')+(s%60);window.__cpTimer=setInterval(()=>{const t=document.getElementById('cpTimer');if(!t){clearInterval(window.__cpTimer);return;}sec=sec<=0?173:sec-1;t.textContent=f(sec);const c=document.getElementById('cpAhtCard');if(c)c.style.background=sec<=30?'linear-gradient(135deg,#f59e0b,#b45309)':'linear-gradient(135deg,#f43f5e,#be123c)';},1000);})();
   charts.cCopIntent=new Chart(cCopIntent,{type:'doughnut',data:{labels:['Liked','Dissatisfied','Refused'],datasets:[{data:[79,12,9],backgroundColor:['#22c55e','#f59e0b','#94a3b8'],borderWidth:2,borderColor:'#fff'}]},options:{cutout:'62%',plugins:{legend:{position:'bottom'}}}});
   charts.cCopSent=new Chart(cCopSent,{type:'line',data:{labels:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],datasets:[
     {label:'Positive',data:[55,58,60,59,61,60,62],borderColor:'#22c55e',tension:.4,pointRadius:0,borderWidth:2},
@@ -1983,6 +1988,16 @@ function renderCsCopilot(el){
     options:{plugins:{legend:{display:false}},scales:{y:{grid:{color:GRIDC()}},x:{grid:{display:false}}}}});
 }
 
+function cpAction(a){ if(a.indexOf('goto:')===0){render(a.slice(5));return;} const info=cpInfo(a); if(!info)return;
+  document.getElementById('fmodalTitle').innerHTML=info.t; document.getElementById('fmodalBody').innerHTML=info.b; document.getElementById('fmodal').classList.add('show'); }
+function cpInfo(a){const M={
+ intent:{t:'💡 Intent Identification',b:`<p class="muted" style="font-size:13px;margin-bottom:10px">Detected intent for the active conversation, derived from the live transcript.</p>`+[['Reconciliation query',41],['Allocation question',24],['Compliance check',15],['Reporting request',12],['Other',8]].map(r=>`<div style="margin:8px 0"><div class="row" style="justify-content:space-between"><span style="font-size:13px;font-weight:600">${r[0]}</span><span class="num">${r[1]}%</span></div><div class="bar-track" style="margin-top:4px"><div class="bar-fill" style="width:${r[1]}%;background:#16a34a"></div></div></div>`).join('')},
+ aht:{t:'⏱️ Average Handle Time',b:`<div class="grid kpis" style="grid-template-columns:repeat(2,1fr)">${kpiTile({ic:'⏱️',bg:'bg-blue',val:'4:12',lab:'AHT (avg)'})}${kpiTile({ic:'🎯',bg:'bg-green',val:'5:00',lab:'SLA target'})}${kpiTile({ic:'📞',bg:'bg-amber',val:'247',lab:'Calls today'})}${kpiTile({ic:'✅',bg:'bg-teal',val:'92%',lab:'Within SLA'})}</div>`},
+ nba:{t:'✅ Next Best Actions',b:['Greet & confirm identity','Pull account & entitlements','Suggest resolution from KB','Offer live escalation','Summarise & close'].map((x,i)=>`<div class="row" style="gap:10px;padding:7px 0;border-bottom:1px solid var(--line-2)"><span style="width:20px;height:20px;border-radius:50%;background:var(--blue);color:#fff;font-size:11px;display:flex;align-items:center;justify-content:center;font-weight:800">${i+1}</span><span style="font-size:13px">${x}</span></div>`).join('')},
+ translation:{t:'🌐 Language Translation',b:`<p class="muted" style="font-size:13px;margin-bottom:10px">Auto-detect plus real-time translation across 11 languages.</p><div class="row" style="gap:10px"><div style="flex:1;background:var(--panel);border-radius:10px;padding:12px"><div style="font-weight:700;font-size:13px">Hello, how can I help?</div><span class="pill info" style="margin-top:6px">EN</span></div><div style="flex:1;background:var(--panel);border-radius:10px;padding:12px"><div style="font-weight:700;font-size:13px">¿Cómo puedo ayudar?</div><span class="pill ok" style="margin-top:6px">ES</span></div></div>`},
+ cases:{t:'📋 Similar Cases',b:[['Billing needs update','Solved','ok'],['Help with download','In progress','warn'],['Cannot see attachment','Open','bad']].map(c=>`<div class="row" style="justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line-2)"><span style="font-size:13px;font-weight:600">${c[0]}</span><span class="pill ${c[2]}">${c[1]}</span></div>`).join('')},
+ sentiment:{t:'🙂 Sentiment',b:`<div class="grid kpis" style="grid-template-columns:repeat(3,1fr)">${kpiTile({ic:'🙂',bg:'bg-green',val:'62%',lab:'Positive'})}${kpiTile({ic:'😐',bg:'bg-amber',val:'25%',lab:'Neutral'})}${kpiTile({ic:'☹️',bg:'bg-red',val:'13%',lab:'Negative'})}</div><p class="muted" style="font-size:12px;margin-top:10px">Live sentiment on the active conversation; weekly trend is on the dashboard.</p>`}
+};return M[a];}
 function renderCsJourney(el){
   el.innerHTML=`
   <div class="grid hero-cards" style="margin-bottom:16px">
@@ -2074,43 +2089,61 @@ const WF_PALETTE=[
  {n:'Commentary',acc:'GenAI',ic:'📝',c:'#ec4899'},
  {n:'Publish / BI',acc:'Power BI',ic:'📊',c:'#0ea5e9'}
 ];
-var WF_FLOW=[0,1,2,3,4,5,7]; // indices into palette — default TP close flow
+function wfMake(pi){const p=WF_PALETTE[pi];return {p:pi,name:p.n,acc:p.acc,timeout:30,retries:1,onErr:'Escalate to HITL'};}
+var WF_DEFAULT=[0,1,2,3,4,5,7];
+var WF_FLOW=WF_DEFAULT.map(wfMake);
 function renderWorkflow(el){
   el.innerHTML=`
   <div class="grid" style="grid-template-columns:240px 1fr;align-items:start">
     <div class="card"><div class="card-h"><h3>🧩 Accelerators</h3></div>
-      <div class="muted" style="font-size:11.5px;margin-bottom:10px">Drag a step onto the canvas →</div>
-      ${WF_PALETTE.map((p,i)=>`<div draggable="true" ondragstart="event.dataTransfer.setData('t','${i}')" style="border:1px solid var(--line);border-left:4px solid ${p.c};border-radius:10px;padding:9px 11px;margin-bottom:8px;cursor:grab">
+      <div class="muted" style="font-size:11.5px;margin-bottom:10px">Drag a step into the flow — drop in any gap to insert.</div>
+      ${WF_PALETTE.map((p,i)=>`<div draggable="true" ondragstart="event.dataTransfer.setData('text','palette:${i}')" style="border:1px solid var(--line);border-left:4px solid ${p.c};border-radius:10px;padding:9px 11px;margin-bottom:8px;cursor:grab">
         <div style="font-weight:700;font-size:12.5px">${p.ic} ${p.n}</div><div class="muted" style="font-size:10.5px">⚡ ${p.acc}</div></div>`).join('')}
     </div>
     <div>
       <div class="card" style="margin-bottom:14px"><div class="row" style="justify-content:space-between"><h3>Transfer Pricing Close — Process Flow</h3>
-        <div class="row"><button class="btn btn-ghost" onclick="WF_FLOW=[0,1,2,3,4,5,7];renderWorkflow(document.getElementById('view-workflow'))">↺ Reset</button><button class="btn btn-green" onclick="wfRun()">▶ Run flow</button></div></div>
-        <div id="wfCanvas" ondragover="event.preventDefault()" ondrop="wfDrop(event)" style="display:flex;flex-wrap:wrap;align-items:center;gap:0;min-height:160px;border:2px dashed var(--line);border-radius:14px;padding:18px;margin-top:12px">
+        <div class="row"><button class="btn btn-ghost" onclick="WF_FLOW=WF_DEFAULT.map(wfMake);renderWorkflow(document.getElementById('view-workflow'))">↺ Reset</button><button class="btn btn-green" onclick="wfRun()">▶ Run flow</button></div></div>
+        <div id="wfCanvas" ondragover="event.preventDefault()" ondrop="wfDrop(event,WF_FLOW.length)" style="display:flex;flex-wrap:wrap;align-items:stretch;align-content:center;justify-content:center;row-gap:26px;min-height:300px;border:2px dashed var(--line);border-radius:14px;padding:24px;margin-top:12px">
           ${wfNodes()}
         </div>
-        <div class="muted" style="font-size:11.5px;margin-top:10px" id="wfMsg">Each node is powered by an accelerator. Drag steps from the left, or drop to extend the flow.</div>
+        <div class="muted" style="font-size:11.5px;margin-top:10px" id="wfMsg">Drop a step in any gap to insert · drag a node to reorder · click a node to configure.</div>
       </div>
       <div class="card"><div class="card-h"><h3>Flow Summary</h3><span class="tag">${WF_FLOW.length} steps</span></div>
-        <table><thead><tr><th>#</th><th>Step</th><th>Accelerator</th><th>Est. runtime</th></tr></thead>
-        <tbody>${WF_FLOW.map((idx,i)=>{const p=WF_PALETTE[idx];return `<tr><td>${i+1}</td><td style="font-weight:600">${p.ic} ${p.n}</td><td><span class="pill" style="background:${p.c}1a;color:${p.c}">⚡ ${p.acc}</span></td><td class="muted">${(Math.random()*40+5|0)}s</td></tr>`}).join('')}</tbody></table>
+        <table><thead><tr><th>#</th><th>Step</th><th>Accelerator</th><th>On error</th><th class="num">Timeout</th></tr></thead>
+        <tbody>${WF_FLOW.map((n,i)=>{const p=WF_PALETTE[n.p];return `<tr><td>${i+1}</td><td style="font-weight:600">${p.ic} ${n.name}</td><td><span class="pill" style="background:${p.c}1a;color:${p.c}">⚡ ${n.acc}</span></td><td class="muted">${n.onErr}</td><td class="num">${n.timeout}s</td></tr>`}).join('')}</tbody></table>
       </div>
     </div>
   </div>`;
 }
-function wfNodes(){
-  return WF_FLOW.map((idx,i)=>{const p=WF_PALETTE[idx];
-   return `<div id="wfn${i}" style="text-align:center;min-width:120px;border:1px solid var(--line);border-top:3px solid ${p.c};border-radius:12px;padding:12px 10px;position:relative;background:var(--card)">
-     <div style="font-size:20px">${p.ic}</div><div style="font-weight:700;font-size:12px;margin-top:5px">${p.n}</div>
-     <div class="muted" style="font-size:10px;margin-top:3px">⚡ ${p.acc}</div>
-     <span onclick="WF_FLOW.splice(${i},1);renderWorkflow(document.getElementById('view-workflow'))" style="position:absolute;top:4px;right:6px;cursor:pointer;color:var(--faint);font-size:12px">✕</span>
-   </div>${i<WF_FLOW.length-1?'<div style="color:var(--faint);font-size:18px;padding:0 6px">→</div>':''}`}).join('');
-}
-function wfDrop(e){e.preventDefault();const t=e.dataTransfer.getData('t');if(t!=='')WF_FLOW.push(+t);renderWorkflow(document.getElementById('view-workflow'));}
+function wfGap(i){const mid=i>0&&i<WF_FLOW.length;return `<div class="wfgap" ondragover="wfOver(event,this)" ondragleave="wfLeave(this)" ondrop="wfDrop(event,${i})">${mid?'→':''}</div>`;}
+function wfNodes(){let h='';for(let i=0;i<=WF_FLOW.length;i++){h+=wfGap(i);if(i<WF_FLOW.length){const n=WF_FLOW[i],p=WF_PALETTE[n.p];
+   h+=`<div class="wfnode" id="wfn${i}" draggable="true" ondragstart="event.dataTransfer.setData('text','node:${i}')" onclick="wfConfig(${i})" style="border-top:3px solid ${p.c}">
+     <div style="font-size:20px">${p.ic}</div><div style="font-weight:700;font-size:12px;margin-top:5px">${n.name}</div>
+     <div class="muted" style="font-size:10px;margin-top:3px">⚡ ${n.acc}</div>
+     <span onclick="event.stopPropagation();wfRemove(${i})" style="position:absolute;top:4px;right:6px;cursor:pointer;color:var(--faint);font-size:12px">✕</span>
+     <span style="position:absolute;top:4px;left:7px;color:var(--faint);font-size:11px">⋮⋮</span></div>`;}}return h;}
+function wfOver(e,el){e.preventDefault();el.style.minWidth='40px';el.style.background='rgba(59,130,246,.16)';el.style.outline='2px dashed #3b82f6';}
+function wfLeave(el){el.style.minWidth='';el.style.background='';el.style.outline='';}
+function wfDrop(e,pos){e.preventDefault();e.stopPropagation();const data=e.dataTransfer.getData('text')||'';const k=data.split(':')[0],idx=+data.split(':')[1];
+  if(k==='palette'){WF_FLOW.splice(pos,0,wfMake(idx));}
+  else if(k==='node'){const moved=WF_FLOW[idx];WF_FLOW.splice(idx,1);let p=pos;if(idx<pos)p--;WF_FLOW.splice(p,0,moved);}
+  renderWorkflow(document.getElementById('view-workflow'));}
+function wfRemove(i){WF_FLOW.splice(i,1);renderWorkflow(document.getElementById('view-workflow'));}
+function wfConfig(i){const n=WF_FLOW[i],p=WF_PALETTE[n.p];const accs=WF_PALETTE.map(x=>x.acc);if(accs.indexOf(n.acc)<0)accs.push(n.acc);
+  document.getElementById('fmodalTitle').innerHTML=p.ic+' Configure step — '+n.name;
+  document.getElementById('fmodalBody').innerHTML=`
+   <div class="api-field"><label>Step name</label><input type="text" id="wfName" value="${n.name}"></div>
+   <div class="api-field"><label>Accelerator</label><select id="wfAcc">${accs.map(x=>`<option ${x===n.acc?'selected':''}>${x}</option>`).join('')}</select></div>
+   <div class="row" style="gap:12px"><div class="api-field" style="flex:1"><label>Timeout (s)</label><input type="text" id="wfTimeout" value="${n.timeout}"></div>
+     <div class="api-field" style="flex:1"><label>Retries</label><input type="text" id="wfRetries" value="${n.retries}"></div></div>
+   <div class="api-field"><label>On error</label><select id="wfErr">${['Escalate to HITL','Retry then skip','Halt flow'].map(o=>`<option ${o===n.onErr?'selected':''}>${o}</option>`).join('')}</select></div>
+   <div class="row" style="justify-content:flex-end;margin-top:14px;gap:10px"><button class="btn btn-ghost" onclick="closeFoundationModal()">Cancel</button><button class="btn btn-green" onclick="wfSave(${i})">Save step</button></div>`;
+  document.getElementById('fmodal').classList.add('show');}
+function wfSave(i){const n=WF_FLOW[i];n.name=document.getElementById('wfName').value||n.name;n.acc=document.getElementById('wfAcc').value;n.timeout=document.getElementById('wfTimeout').value;n.retries=document.getElementById('wfRetries').value;n.onErr=document.getElementById('wfErr').value;closeFoundationModal();renderWorkflow(document.getElementById('view-workflow'));}
 function wfRun(){const msg=document.getElementById('wfMsg');let i=0;
   const tick=()=>{if(i>=WF_FLOW.length){msg.textContent='✓ Flow completed — outputs published to BI & Controllership.';return;}
-    const n=document.getElementById('wfn'+i);if(n){n.style.boxShadow='0 0 0 3px '+WF_PALETTE[WF_FLOW[i]].c+'55';setTimeout(()=>{if(n)n.style.boxShadow='';},650);}
-    msg.textContent='Running: '+WF_PALETTE[WF_FLOW[i]].n+' ('+WF_PALETTE[WF_FLOW[i]].acc+')…';i++;setTimeout(tick,650);};tick();}
+    const node=document.getElementById('wfn'+i);if(node){const c=WF_PALETTE[WF_FLOW[i].p].c;node.style.boxShadow='0 0 0 3px '+c+'55';setTimeout(()=>{if(node)node.style.boxShadow='';},650);}
+    msg.textContent='Running: '+WF_FLOW[i].name+' ('+WF_FLOW[i].acc+')…';i++;setTimeout(tick,650);};tick();}
 
 const TITLES={exec:['Finance','Dashboard'],finops:['Finance','Operations'],
  overview:['Transfer Pricing','Overview'],explorer:['Transfer Pricing','Allocation Explorer'],recon:['Transfer Pricing','Reconciliation'],scenario:['Transfer Pricing','Scenario Lab'],
