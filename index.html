@@ -281,9 +281,9 @@ html[data-theme="dark"] .logo-chip{box-shadow:0 0 0 1px var(--line)}
   <div class="login-right">
     <div class="login-form">
       <h2>Sign in</h2>
-      <div class="lf-sub">Access the SBS ConvokeAI console</div>
+      <div class="lf-sub">Access the Global Payment Networks Inc. console</div>
       <label>Email</label>
-      <input id="loginEmail" type="text" placeholder="you@globalpaymentnetworks.com" autocomplete="username">
+      <input id="loginEmail" type="text" placeholder="you@globalpay.net" autocomplete="username">
       <label>Password</label>
       <input id="loginPw" type="password" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" autocomplete="current-password">
       <div class="lf-err" id="loginErr">Invalid email or password. Try a demo account.</div>
@@ -362,7 +362,7 @@ html[data-theme="dark"] .logo-chip{box-shadow:0 0 0 1px var(--line)}
       <div class="page-head">
         <div>
           <div class="page-title">Finance Automation</div>
-          <div class="page-sub" id="pageSub">Finance Automation &amp; Intelligence Platform · <span id="periodLabel">Period 2018.02</span></div>
+          <div class="page-sub" id="pageSub">Finance Automation &amp; Intelligence Platform · <span id="periodLabel">Period 2025.02</span></div>
         </div>
         <div class="row">
           <span class="client-chip"><span class="dot"></span> Global Payment Networks Inc. · Consolidated Group</span>
@@ -491,10 +491,10 @@ const POOLS=[
   {n:'Professional Fees (Cost+)',model:'cs',v:3.1e6},
 ];
 const PERIODS=[
-  {k:'2017.11',m:.92},{k:'2017.12',m:.95},{k:'2018.01',m:.97},
-  {k:'2018.02',m:1.00},{k:'2018.03',m:1.04},
+  {k:'2024.11',m:.92},{k:'2024.12',m:.95},{k:'2025.01',m:.97},
+  {k:'2025.02',m:1.00},{k:'2025.03',m:1.04},
 ];
-var STATE={period:'2018.02', modelFilter:'all', scenario:{rab:0,markup:10,driver:0}, drift:false};
+var STATE={period:'2025.02', modelFilter:'all', scenario:{rab:0,markup:10,driver:0}, drift:false};
 var charts={};
 function pm(){return PERIODS.find(p=>p.k===STATE.period).m}
 function modelAllocated(m){return m.base*(1+m.markup)*pm()}
@@ -770,12 +770,12 @@ const AGENTS=[
  {k:'intake',n:'Intake Agent',role:'Understands and structures data',ic:'📥',color:'#7c3aed',status:'done',handoff:'Data Review Agent',
   metrics:[['Sources','11'],['Confidence','99.2%'],['Latency','8.4s'],['Throughput','3.94M'],['Exceptions','0']],
   inputs:['Intercompany Agreements','Financial Data (Revenue, Costs, Allocations)','Entity & Organizational Structure','Policies & Guidelines'],
-  outputs:['Structured period dataset (2018.02)','Source manifest + schema map'],
+  outputs:['Structured period dataset (2025.02)','Source manifest + schema map'],
   mcp:['Data Sources (Internal/External)','Document Services (OCR/Gen)','Ingestion Connectors'],
   trace:[['ACT','Connected 11 MCP source connectors — Access .accdb, Azure Blob, SAP GL, Workday, SharePoint.'],
    ['THINK','Classified each source against the TP Engine schema: 4 hierarchies, 6 transactional, 1 RAB file.'],
    ['ACT','Parsed Source Cost Ledger (341,556 rows) and Transaction Volume Data (2.94M rows) into typed frames.'],
-   ['CHECK','All 11 sources structured · 0 unreadable files · period stamp 2018.02 confirmed.']],
+   ['CHECK','All 11 sources structured · 0 unreadable files · period stamp 2025.02 confirmed.']],
   conf:[97,98,98.5,99,99.1,99.2]},
  {k:'datareview',n:'Data Review Agent',role:'Validates data quality and completeness',ic:'🔍',color:'#2563eb',status:'done',handoff:'Entity Mapping Agent',
   metrics:[['Records','3.94M'],['Confidence','98.6%'],['Latency','12.1s'],['Null/Dupe','0.3%'],['Exceptions','0']],
@@ -1116,12 +1116,12 @@ const ROLES={
   demo:{label:'Demo',color:'#64748b',views:'*'}
 };
 const USERS={
-  'superadmin@globalpaymentnetworks.com':{pw:'demo123',name:'Sarah Chen',role:'superadmin'},
-  'admin@globalpaymentnetworks.com':{pw:'demo123',name:'Michael Torres',role:'admin'},
-  'manager@globalpaymentnetworks.com':{pw:'demo123',name:'Priya Nair',role:'manager'},
-  'dataadmin@globalpaymentnetworks.com':{pw:'demo123',name:'David Kim',role:'dataadmin'},
-  'taxcollector@globalpaymentnetworks.com':{pw:'demo123',name:'Tara Voss',role:'taxcollector'},
-  'demo@globalpaymentnetworks.com':{pw:'demo123',name:'Demo User',role:'demo'}
+  'superadmin@globalpay.net':{pw:'demo123',name:'Sarah Chen',role:'superadmin'},
+  'admin@globalpay.net':{pw:'demo123',name:'Michael Torres',role:'admin'},
+  'manager@globalpay.net':{pw:'demo123',name:'Priya Nair',role:'manager'},
+  'dataadmin@globalpay.net':{pw:'demo123',name:'David Kim',role:'dataadmin'},
+  'taxcollector@globalpay.net':{pw:'demo123',name:'Tara Voss',role:'taxcollector'},
+  'demo@globalpay.net':{pw:'demo123',name:'Demo User',role:'demo'}
 };
 var CURRENT_USER=null;
 function initials(n){return n.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();}
@@ -1240,7 +1240,7 @@ function protocolBody(){return `
 Content-Type: application/json</textarea></div>
    <div class="api-field"><label>Payload (JSON)</label><textarea id="apiBody">{
   "tool": "sap_gl_query",
-  "params": { "period": "2018.02", "entity": "T&O" }
+  "params": { "period": "2025.02", "entity": "T&O" }
 }</textarea></div>
    <button class="btn btn-green" onclick="sendApi()">&#9654; Send request</button>
    <div class="api-field" style="margin-top:16px"><label>Response</label><div class="resp-box" id="apiResp">// response will appear here</div></div>
@@ -1264,7 +1264,7 @@ function metaBody(){return `
    ${MCP_TOOLS.map((t,i)=>`<div class="reg-card" onclick="toggleReg(${i})">
      <div class="row" style="justify-content:space-between"><div style="font-weight:700;font-size:13.5px">${t.n}</div><span class="pill ${t.st==='connected'?'ok':'idle'}">v${1+i%3}.${i%5}.0</span></div>
      <div id="reg${i}" class="muted" style="display:none;margin-top:9px;font-size:12px;line-height:1.7">
-       <div>Category: <b>${t.cat}</b></div><div>Schema version: <b>2024-11</b></div><div>Last updated: <b>2018-02-${10+i}</b></div>
+       <div>Category: <b>${t.cat}</b></div><div>Schema version: <b>2024-11</b></div><div>Last updated: <b>2025-02-${10+i}</b></div>
        <div style="margin-top:5px">Capabilities: ${['read','query','stream','batch'].slice(0,2+i%3).map(c=>`<span class="pill idle">${c}</span>`).join(' ')}</div>
      </div></div>`).join('')}
  </div>
@@ -1329,13 +1329,13 @@ function obsBody(){return `
  </div>`;}
 /* ---- Audit Trail & Traceability (Observability) ---- */
 const AUDIT=[
- {agent:'Intake Agent',ts:'2018-02-27 02:14:07',outcome:'Passed',step:'parse.damien_file',reason:'All 11 sources structured; 0 unreadable files; period stamp 2018.02 confirmed.',sev:'-',actor:'system',trace:'mcp-a1f09c22',input:'11 MCP source connectors',remediation:'None required.'},
- {agent:'Data Review Agent',ts:'2018-02-27 02:14:21',outcome:'Passed',step:'validate.referential_integrity',reason:'Cost centre to GL to legal-entity tie-out 100%; completeness 99.7% within tolerance.',sev:'-',actor:'system',trace:'mcp-b7720e15',input:'3.94M rows across 11 files',remediation:'None required.'},
- {agent:'Entity Mapping Agent',ts:'2018-02-27 02:14:33',outcome:'Passed',step:'map.costcentre_to_entity',reason:'9,640 cost centres mapped to 12 recipient entities; carve-out (990) isolated.',sev:'-',actor:'system',trace:'mcp-c3391aa8',input:'Validated dataset',remediation:'None required.'},
- {agent:'Pricing Method Agent',ts:'2018-02-27 02:14:39',outcome:'Passed',step:'assign.method_and_drivers',reason:'Method + 10 drivers assigned across 16 pools; markups 10% / 5% applied.',sev:'-',actor:'system',trace:'mcp-d90e1f74',input:'Entity-service map',remediation:'None required.'},
- {agent:'Benchmark Agent',ts:'2018-02-27 02:14:48',outcome:'Failed',step:'benchmark.fetch_market_data',reason:'External Tools connector "benchmark_lookup" returned HTTP 429 (rate-limited) after 3 retries; arm-length range for 1 of 4 models could not be refreshed.',sev:'High',actor:'system -> HITL',trace:'mcp-e1224b0a',input:'Method assignment, period 2018.02',remediation:'Fell back to cached trailing-period range; Subsidiary B model flagged for analyst confirmation; live retry scheduled 02:30.'},
- {agent:'Risk Agent',ts:'2018-02-27 02:14:55',outcome:'Escalated',step:'risk.confidence_gate',reason:'2 items scored 88.7% below the 90% confidence gate - Subsidiary B pool +8.3% MoM and Canada blended-driver shift 21.8% to 22.6%.',sev:'Medium',actor:'Human-in-the-Loop',trace:'mcp-f0563d91',input:'16 cost pools',remediation:'Routed to HITL review queue; awaiting analyst sign-off before documentation proceeds.'},
- {agent:'Documentation Agent',ts:'2018-02-27 02:15:02',outcome:'Blocked',step:'doc.generate_close_pack',reason:'Upstream Risk Agent HITL clearance pending - cannot draft journal entries / invoices.',sev:'Low',actor:'system',trace:'mcp-09ab77c2',input:'Approved allocations (pending)',remediation:'Auto-resumes the moment HITL approval is recorded.'},
+ {agent:'Intake Agent',ts:'2025-02-27 02:14:07',outcome:'Passed',step:'parse.damien_file',reason:'All 11 sources structured; 0 unreadable files; period stamp 2025.02 confirmed.',sev:'-',actor:'system',trace:'mcp-a1f09c22',input:'11 MCP source connectors',remediation:'None required.'},
+ {agent:'Data Review Agent',ts:'2025-02-27 02:14:21',outcome:'Passed',step:'validate.referential_integrity',reason:'Cost centre to GL to legal-entity tie-out 100%; completeness 99.7% within tolerance.',sev:'-',actor:'system',trace:'mcp-b7720e15',input:'3.94M rows across 11 files',remediation:'None required.'},
+ {agent:'Entity Mapping Agent',ts:'2025-02-27 02:14:33',outcome:'Passed',step:'map.costcentre_to_entity',reason:'9,640 cost centres mapped to 12 recipient entities; carve-out (990) isolated.',sev:'-',actor:'system',trace:'mcp-c3391aa8',input:'Validated dataset',remediation:'None required.'},
+ {agent:'Pricing Method Agent',ts:'2025-02-27 02:14:39',outcome:'Passed',step:'assign.method_and_drivers',reason:'Method + 10 drivers assigned across 16 pools; markups 10% / 5% applied.',sev:'-',actor:'system',trace:'mcp-d90e1f74',input:'Entity-service map',remediation:'None required.'},
+ {agent:'Benchmark Agent',ts:'2025-02-27 02:14:48',outcome:'Failed',step:'benchmark.fetch_market_data',reason:'External Tools connector "benchmark_lookup" returned HTTP 429 (rate-limited) after 3 retries; arm-length range for 1 of 4 models could not be refreshed.',sev:'High',actor:'system -> HITL',trace:'mcp-e1224b0a',input:'Method assignment, period 2025.02',remediation:'Fell back to cached trailing-period range; Subsidiary B model flagged for analyst confirmation; live retry scheduled 02:30.'},
+ {agent:'Risk Agent',ts:'2025-02-27 02:14:55',outcome:'Escalated',step:'risk.confidence_gate',reason:'2 items scored 88.7% below the 90% confidence gate - Subsidiary B pool +8.3% MoM and Canada blended-driver shift 21.8% to 22.6%.',sev:'Medium',actor:'Human-in-the-Loop',trace:'mcp-f0563d91',input:'16 cost pools',remediation:'Routed to HITL review queue; awaiting analyst sign-off before documentation proceeds.'},
+ {agent:'Documentation Agent',ts:'2025-02-27 02:15:02',outcome:'Blocked',step:'doc.generate_close_pack',reason:'Upstream Risk Agent HITL clearance pending - cannot draft journal entries / invoices.',sev:'Low',actor:'system',trace:'mcp-09ab77c2',input:'Approved allocations (pending)',remediation:'Auto-resumes the moment HITL approval is recorded.'},
  {agent:'Approval Agent',ts:'-',outcome:'Queued',step:'approval.route_for_review',reason:'Not started - awaiting the documentation pack from the Documentation Agent.',sev:'-',actor:'system',trace:'-',input:'-',remediation:'-'}
 ];
 function auditPill(o){return o==='Passed'?'ok':o==='Failed'?'bad':o==='Escalated'?'warn':'idle';}
@@ -1369,7 +1369,7 @@ function renderAudit(){
    </div>`;}).join(''):'<div class="muted" style="padding:22px;text-align:center">No audit events match the filter.</div>';
 }
 const LOGS=[
- ['INFO','sap_gl_query','Fetched 312 GL rows for 2018.02'],
+ ['INFO','sap_gl_query','Fetched 312 GL rows for 2025.02'],
  ['INFO','azure_blob_read','Streamed merchant_txn.csv (88.4MB)'],
  ['WARN','workday_headcount','Retry 1/3 — API latency 1.8s'],
  ['INFO','sharepoint_fetch','Loaded run-rate master'],
@@ -1548,7 +1548,7 @@ function runKR(){
   const res=[
    {t:'TP Policy Manual §4.2 — Cost-Plus Markups',s:96,d:'Direct cost pools allocated to LATAM (entity 501) carry a 5% markup; all other direct and indirect pools carry the standard 10% cost-plus markup.'},
    {t:'Intercompany Agreement — Schedule B',s:91,d:'Markup rates are applied on a cost-plus basis consistent with the transactional net margin method (TNMM) and reviewed annually.'},
-   {t:'Prior Period Filing — 2017 Local File',s:84,d:'Historical markup treatment for LATAM direct pools confirmed at 5%, accepted by local tax authority with no adjustment.'}
+   {t:'Prior Period Filing — 2024 Local File',s:84,d:'Historical markup treatment for LATAM direct pools confirmed at 5%, accepted by local tax authority with no adjustment.'}
   ];
   document.getElementById('krOut').innerHTML=`<div class="muted" style="font-size:12px;margin-bottom:8px">Top matches for: <b>"${q}"</b></div>`+
    res.map(r=>`<div style="border:1px solid var(--line);border-radius:11px;padding:12px 14px;margin-bottom:9px">
@@ -1692,7 +1692,7 @@ function renderExec(el){
   <div class="grid" style="grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:16px">
     ${kpiTile({ic:'📥',bg:'bg-amber',val:'$8.4M',lab:'Accounts Payable',delta:'-3%',sub:'DPO 42 days'})}
     ${kpiTile({ic:'📤',bg:'bg-blue',val:'$11.2M',lab:'Accounts Receivable',delta:'+4%',sub:'DSO 38 days'})}
-    ${kpiTile({ic:'📒',bg:'bg-green',val:'92%',lab:'GL Close Progress',sub:'period 2018.02'})}
+    ${kpiTile({ic:'📒',bg:'bg-green',val:'92%',lab:'GL Close Progress',sub:'period 2025.02'})}
     ${kpiTile({ic:'🏦',bg:'bg-teal',val:'$300.6M',lab:'Intercompany Allocated',sub:'cost-plus, period'})}
   </div>
   <div class="grid" style="grid-template-columns:1.5fr 1fr;margin-bottom:16px">
@@ -1747,7 +1747,7 @@ function renderFinOps(el){
   <div class="grid" style="grid-template-columns:1.3fr 1fr;margin-bottom:16px">
     <div class="card"><div class="card-h"><h3>Cash Flow — Operating / Investing / Financing</h3><span class="tag">6 months</span></div>
       <div class="chart-wrap" style="height:250px"><canvas id="cCash"></canvas></div></div>
-    <div class="card"><div class="card-h"><h3>GL Close Progress</h3><span class="tag">period 2018.02</span></div>
+    <div class="card"><div class="card-h"><h3>GL Close Progress</h3><span class="tag">period 2025.02</span></div>
       ${[['Sub-ledgers reconciled',100,'#16a34a'],['Intercompany eliminations',92,'#3b82f6'],['Accruals & provisions',78,'#f59e0b'],['FX revaluation',64,'#8b5cf6'],['Management review',40,'#ef4444']].map(r=>`<div style="margin:12px 0"><div class="row" style="justify-content:space-between"><span style="font-weight:600;font-size:13px">${r[0]}</span><span class="num">${r[1]}%</span></div><div class="bar-track" style="margin-top:5px"><div class="bar-fill" style="width:${r[1]}%;background:${r[2]}"></div></div></div>`).join('')}
     </div>
   </div>
@@ -1925,7 +1925,7 @@ function renderCs360(el){
   </div>`;
 }
 
-const KB_DOCS=[['TP Policy Manual.pdf','§4.2 Cost-plus markups'],['Intercompany Agreement.pdf','Schedule B — rates'],['2017 Local File.pdf','LATAM markup precedent'],['Onboarding Guide.pdf','Platform setup']];
+const KB_DOCS=[['TP Policy Manual.pdf','§4.2 Cost-plus markups'],['Intercompany Agreement.pdf','Schedule B — rates'],['2024 Local File.pdf','LATAM markup precedent'],['Onboarding Guide.pdf','Platform setup']];
 function renderCsChatbot(el){
   el.innerHTML=`
   <div class="grid" style="grid-template-columns:1.3fr 1fr;align-items:start">
